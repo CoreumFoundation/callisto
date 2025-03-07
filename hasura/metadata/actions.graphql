@@ -12,7 +12,7 @@ type Query {
     action_delegator_withdraw_address(
         address: String!
     ): ActionAddress!
-    
+
     action_delegation(
         address: String!
         height: Int
@@ -72,6 +72,10 @@ type Query {
         limit: Int
         count_total: Boolean
     ): ActionUnbondingDelegationResponse
+
+    action_address_risk_score(
+        address: String!
+    ): AddressRiskScore
 }
 
 type ActionBalance {
@@ -85,6 +89,12 @@ type ActionDelegationReward {
 
 type ActionAddress {
     address: String!
+}
+
+type AddressRiskScore {
+  data: json
+  status: Int!
+  err_msg: String!
 }
 
 type ActionDelegationResponse {
