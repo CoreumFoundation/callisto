@@ -6,7 +6,7 @@ on:
 
 jobs:
   ci:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:
       - name: Check Tag
         id: check-tag

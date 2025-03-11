@@ -190,7 +190,7 @@ actions:
     - value: application/json
       name: Content-Type
   permissions:
-  - role: anonymous  
+  - role: anonymous
 
 - name: action_validator_redelegations_from
   definition:
@@ -236,6 +236,31 @@ actions:
   permissions:
   - role: anonymous
 
+- name: action_address_risk_score
+  definition:
+    kind: synchronous
+    handler: "https://bei.anchainai.com/api/address_risk_score?"
+    output_type: AddressRiskScore
+    arguments:
+    - name: address
+      type: String!
+    type: query
+    headers:
+    - value: application/json
+      name: Content-Type
+    request_transform:
+      version: 2
+      url: '{{$base_url}}'
+      template_engine: Kriti
+      method: GET
+      content_type: application/json
+      query_params:
+        proto: 'coreum'
+        apikey: 'ANCHAIN_AI_API_KEY_PLACEHOLDER'
+        address: '{{ $body.input.address }}'
+  permissions:
+  - role: anonymous
+
 ############### CUSTOM TYPES ###############
 custom_types:
   scalars:
@@ -245,6 +270,7 @@ custom_types:
   - name: ActionPagination
   - name: ActionRedelegation
   - name: ActionUnbondingDelegation
+
 
   objects:
   - name: ActionBalance
@@ -267,7 +293,7 @@ custom_types:
       type: ActionPagination
 
   - name: ActionAddress
-    fields: 
+    fields:
     - name: address
       type: String!
 
@@ -284,8 +310,17 @@ custom_types:
       type: [ActionUnbondingDelegation]
     - name: pagination
       type: ActionPagination
-  
+
   - name: ActionValidatorCommissionAmount
     fields:
     - name: coins
       type: [ActionCoin]
+
+  - name: AddressRiskScore
+    fields:
+    - name: data
+      type: json
+    - name: status
+      type: Int!
+    - name: err_msg
+      type: String!
