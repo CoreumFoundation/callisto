@@ -31,14 +31,11 @@ func buildDockerImage(ctx context.Context, push bool) error {
 		action = docker.ActionLoad
 	}
 	return docker.BuildImage(ctx, docker.BuildImageConfig{
-		ContextDir: ".", // TODO (wojciech): Later on, move `hasura` dir here
-		ImageName:  config.DockerHubUsername + "/hasura",
-		TargetPlatforms: []tools.TargetPlatform{
-			tools.TargetPlatformLinuxAMD64InDocker,
-			tools.TargetPlatformLinuxARM64InDocker,
-		},
-		Dockerfile: dockerfile,
-		Action:     action,
+		ContextDir:      ".", // TODO (wojciech): Later on, move `hasura` dir here
+		ImageName:       config.DockerHubUsername + "/hasura",
+		TargetPlatforms: []tools.TargetPlatform{tools.TargetPlatformLinuxLocalArchInDocker},
+		Dockerfile:      dockerfile,
+		Action:          action,
 		Versions: []string{
 			"latest",
 		},
