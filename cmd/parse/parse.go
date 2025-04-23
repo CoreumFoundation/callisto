@@ -3,6 +3,7 @@ package parse
 import (
 	parseauth "github.com/forbole/callisto/v4/cmd/parse/auth"
 	parsebank "github.com/forbole/callisto/v4/cmd/parse/bank"
+	parsedex "github.com/forbole/callisto/v4/cmd/parse/dex"
 	parsedistribution "github.com/forbole/callisto/v4/cmd/parse/distribution"
 	parsefeegrant "github.com/forbole/callisto/v4/cmd/parse/feegrant"
 	parsegov "github.com/forbole/callisto/v4/cmd/parse/gov"
@@ -37,6 +38,7 @@ func NewParseCmd(parseCfg *parse.Config, parser messages.MessageAddressesParser)
 		parsepricefeed.NewPricefeedCmd(parseCfg),
 		parsestaking.NewStakingCmd(parseCfg),
 		parsetransaction.NewTransactionsCmd(parseCfg),
+		parsedex.NewDexCmd(parseCfg),
 	)
 
 	return cmd
