@@ -75,7 +75,7 @@ type Sources struct {
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
 	switch cfg := nodeCfg.Details.(type) {
 	case *remote.Details:
-		return buildRemoteSources(cfg)
+		return buildRemoteSources(cfg, cdc)
 	case *local.Details:
 		return buildLocalSources(cfg, cdc)
 
@@ -115,8 +115,8 @@ func buildLocalSources(cfg *local.Details, cdc codec.Codec) (*Sources, error) {
 	return sources, nil
 }
 
-func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
-	source, err := remote.NewSource(cfg.GRPC)
+func buildRemoteSources(cfg *remote.Details, cdc codec.Codec) (*Sources, error) {
+	source, err := remote.NewSource(cfg.GRPC, cdc)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating remote source: %s", err)
 	}

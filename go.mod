@@ -13,7 +13,7 @@ replace (
 	// TODO(v5): remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// Coreum verison of the juno
-	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250114085506-751e5a09005b
+	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250428094244-38b78185095b
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
 	// pin the version of goleveldb to v1.0.1-0.20210819022825-2ae1ddf74ef7 required by SDK v47 upgrade guide.
 	// replace broken goleveldb
