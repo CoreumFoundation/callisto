@@ -9,6 +9,7 @@ import (
 	"github.com/forbole/callisto/v4/modules/assetnft"
 	"github.com/forbole/callisto/v4/modules/auth"
 	"github.com/forbole/callisto/v4/modules/bank"
+	"github.com/forbole/callisto/v4/modules/bridge"
 	"github.com/forbole/callisto/v4/modules/consensus"
 	"github.com/forbole/callisto/v4/modules/customparams"
 	dailyrefetch "github.com/forbole/callisto/v4/modules/daily_refetch"
@@ -105,6 +106,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		db,
 	)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
+	bridgeModule := bridge.NewModule(sources.BridgeSource, r.cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, ctx.Database),
@@ -131,6 +133,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		assetFTModule,
 		assetNFTModule,
 		dexModule,
+		bridgeModule,
 		// This must be the last item.
 		addresses.NewModule(r.parser, r.cdc, db),
 	}

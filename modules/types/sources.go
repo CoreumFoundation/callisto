@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -24,6 +25,8 @@ import (
 	banksource "github.com/forbole/callisto/v4/modules/bank/source"
 	localbanksource "github.com/forbole/callisto/v4/modules/bank/source/local"
 	remotebanksource "github.com/forbole/callisto/v4/modules/bank/source/remote"
+	bridgesource "github.com/forbole/callisto/v4/modules/bridge/source"
+	remotebridgesource "github.com/forbole/callisto/v4/modules/bridge/source/remote"
 	customparamssource "github.com/forbole/callisto/v4/modules/customparams/source"
 	remotecustomparamssource "github.com/forbole/callisto/v4/modules/customparams/source/remote"
 	dexsource "github.com/forbole/callisto/v4/modules/dex/source"
@@ -70,6 +73,7 @@ type Sources struct {
 	AssetFTSource      assetftsource.Source
 	AssetNFTSource     assetnftsource.Source
 	DEXSource          dexsource.Source
+	BridgeSource       bridgesource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
@@ -134,5 +138,6 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		AssetFTSource:      remoteassetftsource.NewSource(source, assetfttypes.NewQueryClient(source.GrpcConn)),
 		AssetNFTSource:     remoteassetnftsource.NewSource(source, assetnfttypes.NewQueryClient(source.GrpcConn)),
 		DEXSource:          remotedexsource.NewSource(source, dextypes.NewQueryClient(source.GrpcConn)),
+		BridgeSource:       remotebridgesource.NewSource(source, wasmtypes.NewQueryClient(source.GrpcConn)),
 	}, nil
 }
