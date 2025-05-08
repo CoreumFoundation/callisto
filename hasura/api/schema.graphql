@@ -73,6 +73,26 @@ input Boolean_comparison_exp {
 """
 Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
 """
+input Int_array_comparison_exp {
+  """is the array contained in the given array value"""
+  _contained_in: [Int!]
+
+  """does the array contain the given value"""
+  _contains: [Int!]
+  _eq: [Int!]
+  _gt: [Int!]
+  _gte: [Int!]
+  _in: [[Int!]!]
+  _is_null: Boolean
+  _lt: [Int!]
+  _lte: [Int!]
+  _neq: [Int!]
+  _nin: [[Int!]!]
+}
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
 input Int_comparison_exp {
   _eq: Int
   _gt: Int
@@ -3164,6 +3184,670 @@ input block_variance_order_by {
   height: order_by
   num_txs: order_by
   total_gas: order_by
+}
+
+"""
+columns and relationships of "bridge_evidence"
+"""
+type bridge_evidence {
+  hash: String!
+  height: bigint!
+  id: Int!
+  sender: String!
+  threshold_reached: Boolean!
+  tx_id: bigint!
+}
+
+"""
+aggregated selection of "bridge_evidence"
+"""
+type bridge_evidence_aggregate {
+  aggregate: bridge_evidence_aggregate_fields
+  nodes: [bridge_evidence!]!
+}
+
+"""
+aggregate fields of "bridge_evidence"
+"""
+type bridge_evidence_aggregate_fields {
+  avg: bridge_evidence_avg_fields
+  count(columns: [bridge_evidence_select_column!], distinct: Boolean): Int!
+  max: bridge_evidence_max_fields
+  min: bridge_evidence_min_fields
+  stddev: bridge_evidence_stddev_fields
+  stddev_pop: bridge_evidence_stddev_pop_fields
+  stddev_samp: bridge_evidence_stddev_samp_fields
+  sum: bridge_evidence_sum_fields
+  var_pop: bridge_evidence_var_pop_fields
+  var_samp: bridge_evidence_var_samp_fields
+  variance: bridge_evidence_variance_fields
+}
+
+"""aggregate avg on columns"""
+type bridge_evidence_avg_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""
+Boolean expression to filter rows from the table "bridge_evidence". All fields are combined with a logical 'AND'.
+"""
+input bridge_evidence_bool_exp {
+  _and: [bridge_evidence_bool_exp!]
+  _not: bridge_evidence_bool_exp
+  _or: [bridge_evidence_bool_exp!]
+  hash: String_comparison_exp
+  height: bigint_comparison_exp
+  id: Int_comparison_exp
+  sender: String_comparison_exp
+  threshold_reached: Boolean_comparison_exp
+  tx_id: bigint_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "bridge_evidence"
+"""
+enum bridge_evidence_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  bridge_evidence_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "bridge_evidence"
+"""
+input bridge_evidence_inc_input {
+  height: bigint
+  id: Int
+  tx_id: bigint
+}
+
+"""
+input type for inserting data into table "bridge_evidence"
+"""
+input bridge_evidence_insert_input {
+  hash: String
+  height: bigint
+  id: Int
+  sender: String
+  threshold_reached: Boolean
+  tx_id: bigint
+}
+
+"""aggregate max on columns"""
+type bridge_evidence_max_fields {
+  hash: String
+  height: bigint
+  id: Int
+  sender: String
+  tx_id: bigint
+}
+
+"""aggregate min on columns"""
+type bridge_evidence_min_fields {
+  hash: String
+  height: bigint
+  id: Int
+  sender: String
+  tx_id: bigint
+}
+
+"""
+response of any mutation on the table "bridge_evidence"
+"""
+type bridge_evidence_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [bridge_evidence!]!
+}
+
+"""
+on_conflict condition type for table "bridge_evidence"
+"""
+input bridge_evidence_on_conflict {
+  constraint: bridge_evidence_constraint!
+  update_columns: [bridge_evidence_update_column!]! = []
+  where: bridge_evidence_bool_exp
+}
+
+"""Ordering options when selecting data from "bridge_evidence"."""
+input bridge_evidence_order_by {
+  hash: order_by
+  height: order_by
+  id: order_by
+  sender: order_by
+  threshold_reached: order_by
+  tx_id: order_by
+}
+
+"""primary key columns input for table: bridge_evidence"""
+input bridge_evidence_pk_columns_input {
+  id: Int!
+}
+
+"""
+select columns of table "bridge_evidence"
+"""
+enum bridge_evidence_select_column {
+  """column name"""
+  hash
+
+  """column name"""
+  height
+
+  """column name"""
+  id
+
+  """column name"""
+  sender
+
+  """column name"""
+  threshold_reached
+
+  """column name"""
+  tx_id
+}
+
+"""
+input type for updating data in table "bridge_evidence"
+"""
+input bridge_evidence_set_input {
+  hash: String
+  height: bigint
+  id: Int
+  sender: String
+  threshold_reached: Boolean
+  tx_id: bigint
+}
+
+"""aggregate stddev on columns"""
+type bridge_evidence_stddev_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type bridge_evidence_stddev_pop_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type bridge_evidence_stddev_samp_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""
+Streaming cursor of the table "bridge_evidence"
+"""
+input bridge_evidence_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: bridge_evidence_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input bridge_evidence_stream_cursor_value_input {
+  hash: String
+  height: bigint
+  id: Int
+  sender: String
+  threshold_reached: Boolean
+  tx_id: bigint
+}
+
+"""aggregate sum on columns"""
+type bridge_evidence_sum_fields {
+  height: bigint
+  id: Int
+  tx_id: bigint
+}
+
+"""
+update columns of table "bridge_evidence"
+"""
+enum bridge_evidence_update_column {
+  """column name"""
+  hash
+
+  """column name"""
+  height
+
+  """column name"""
+  id
+
+  """column name"""
+  sender
+
+  """column name"""
+  threshold_reached
+
+  """column name"""
+  tx_id
+}
+
+input bridge_evidence_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: bridge_evidence_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: bridge_evidence_set_input
+
+  """filter the rows which have to be updated"""
+  where: bridge_evidence_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type bridge_evidence_var_pop_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""aggregate var_samp on columns"""
+type bridge_evidence_var_samp_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""aggregate variance on columns"""
+type bridge_evidence_variance_fields {
+  height: Float
+  id: Float
+  tx_id: Float
+}
+
+"""
+columns and relationships of "bridge_transaction"
+"""
+type bridge_transaction {
+  amount: String!
+  counterparty: String!
+  counterparty_hash: String
+  direction: String!
+  final_hash: String
+  final_height: bigint
+  id: Int!
+  init_hash: String!
+  init_height: bigint!
+  operation_ids: [Int!]
+  recipient: String!
+  result: String
+  sender: String!
+}
+
+"""
+aggregated selection of "bridge_transaction"
+"""
+type bridge_transaction_aggregate {
+  aggregate: bridge_transaction_aggregate_fields
+  nodes: [bridge_transaction!]!
+}
+
+"""
+aggregate fields of "bridge_transaction"
+"""
+type bridge_transaction_aggregate_fields {
+  avg: bridge_transaction_avg_fields
+  count(columns: [bridge_transaction_select_column!], distinct: Boolean): Int!
+  max: bridge_transaction_max_fields
+  min: bridge_transaction_min_fields
+  stddev: bridge_transaction_stddev_fields
+  stddev_pop: bridge_transaction_stddev_pop_fields
+  stddev_samp: bridge_transaction_stddev_samp_fields
+  sum: bridge_transaction_sum_fields
+  var_pop: bridge_transaction_var_pop_fields
+  var_samp: bridge_transaction_var_samp_fields
+  variance: bridge_transaction_variance_fields
+}
+
+"""aggregate avg on columns"""
+type bridge_transaction_avg_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""
+Boolean expression to filter rows from the table "bridge_transaction". All fields are combined with a logical 'AND'.
+"""
+input bridge_transaction_bool_exp {
+  _and: [bridge_transaction_bool_exp!]
+  _not: bridge_transaction_bool_exp
+  _or: [bridge_transaction_bool_exp!]
+  amount: String_comparison_exp
+  counterparty: String_comparison_exp
+  counterparty_hash: String_comparison_exp
+  direction: String_comparison_exp
+  final_hash: String_comparison_exp
+  final_height: bigint_comparison_exp
+  id: Int_comparison_exp
+  init_hash: String_comparison_exp
+  init_height: bigint_comparison_exp
+  operation_ids: Int_array_comparison_exp
+  recipient: String_comparison_exp
+  result: String_comparison_exp
+  sender: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "bridge_transaction"
+"""
+enum bridge_transaction_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  bridge_transaction_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "bridge_transaction"
+"""
+input bridge_transaction_inc_input {
+  final_height: bigint
+  id: Int
+  init_height: bigint
+}
+
+"""
+input type for inserting data into table "bridge_transaction"
+"""
+input bridge_transaction_insert_input {
+  amount: String
+  counterparty: String
+  counterparty_hash: String
+  direction: String
+  final_hash: String
+  final_height: bigint
+  id: Int
+  init_hash: String
+  init_height: bigint
+  operation_ids: [Int!]
+  recipient: String
+  result: String
+  sender: String
+}
+
+"""aggregate max on columns"""
+type bridge_transaction_max_fields {
+  amount: String
+  counterparty: String
+  counterparty_hash: String
+  direction: String
+  final_hash: String
+  final_height: bigint
+  id: Int
+  init_hash: String
+  init_height: bigint
+  operation_ids: [Int!]
+  recipient: String
+  result: String
+  sender: String
+}
+
+"""aggregate min on columns"""
+type bridge_transaction_min_fields {
+  amount: String
+  counterparty: String
+  counterparty_hash: String
+  direction: String
+  final_hash: String
+  final_height: bigint
+  id: Int
+  init_hash: String
+  init_height: bigint
+  operation_ids: [Int!]
+  recipient: String
+  result: String
+  sender: String
+}
+
+"""
+response of any mutation on the table "bridge_transaction"
+"""
+type bridge_transaction_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [bridge_transaction!]!
+}
+
+"""
+on_conflict condition type for table "bridge_transaction"
+"""
+input bridge_transaction_on_conflict {
+  constraint: bridge_transaction_constraint!
+  update_columns: [bridge_transaction_update_column!]! = []
+  where: bridge_transaction_bool_exp
+}
+
+"""Ordering options when selecting data from "bridge_transaction"."""
+input bridge_transaction_order_by {
+  amount: order_by
+  counterparty: order_by
+  counterparty_hash: order_by
+  direction: order_by
+  final_hash: order_by
+  final_height: order_by
+  id: order_by
+  init_hash: order_by
+  init_height: order_by
+  operation_ids: order_by
+  recipient: order_by
+  result: order_by
+  sender: order_by
+}
+
+"""primary key columns input for table: bridge_transaction"""
+input bridge_transaction_pk_columns_input {
+  id: Int!
+}
+
+"""
+select columns of table "bridge_transaction"
+"""
+enum bridge_transaction_select_column {
+  """column name"""
+  amount
+
+  """column name"""
+  counterparty
+
+  """column name"""
+  counterparty_hash
+
+  """column name"""
+  direction
+
+  """column name"""
+  final_hash
+
+  """column name"""
+  final_height
+
+  """column name"""
+  id
+
+  """column name"""
+  init_hash
+
+  """column name"""
+  init_height
+
+  """column name"""
+  operation_ids
+
+  """column name"""
+  recipient
+
+  """column name"""
+  result
+
+  """column name"""
+  sender
+}
+
+"""
+input type for updating data in table "bridge_transaction"
+"""
+input bridge_transaction_set_input {
+  amount: String
+  counterparty: String
+  counterparty_hash: String
+  direction: String
+  final_hash: String
+  final_height: bigint
+  id: Int
+  init_hash: String
+  init_height: bigint
+  operation_ids: [Int!]
+  recipient: String
+  result: String
+  sender: String
+}
+
+"""aggregate stddev on columns"""
+type bridge_transaction_stddev_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type bridge_transaction_stddev_pop_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type bridge_transaction_stddev_samp_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""
+Streaming cursor of the table "bridge_transaction"
+"""
+input bridge_transaction_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: bridge_transaction_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input bridge_transaction_stream_cursor_value_input {
+  amount: String
+  counterparty: String
+  counterparty_hash: String
+  direction: String
+  final_hash: String
+  final_height: bigint
+  id: Int
+  init_hash: String
+  init_height: bigint
+  operation_ids: [Int!]
+  recipient: String
+  result: String
+  sender: String
+}
+
+"""aggregate sum on columns"""
+type bridge_transaction_sum_fields {
+  final_height: bigint
+  id: Int
+  init_height: bigint
+}
+
+"""
+update columns of table "bridge_transaction"
+"""
+enum bridge_transaction_update_column {
+  """column name"""
+  amount
+
+  """column name"""
+  counterparty
+
+  """column name"""
+  counterparty_hash
+
+  """column name"""
+  direction
+
+  """column name"""
+  final_hash
+
+  """column name"""
+  final_height
+
+  """column name"""
+  id
+
+  """column name"""
+  init_hash
+
+  """column name"""
+  init_height
+
+  """column name"""
+  operation_ids
+
+  """column name"""
+  recipient
+
+  """column name"""
+  result
+
+  """column name"""
+  sender
+}
+
+input bridge_transaction_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: bridge_transaction_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: bridge_transaction_set_input
+
+  """filter the rows which have to be updated"""
+  where: bridge_transaction_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type bridge_transaction_var_pop_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""aggregate var_samp on columns"""
+type bridge_transaction_var_samp_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
+}
+
+"""aggregate variance on columns"""
+type bridge_transaction_variance_fields {
+  final_height: Float
+  id: Float
+  init_height: Float
 }
 
 scalar coin
@@ -7446,6 +8130,32 @@ type mutation_root {
   delete_block_by_pk(height: bigint!): block
 
   """
+  delete data from the table: "bridge_evidence"
+  """
+  delete_bridge_evidence(
+    """filter the rows which have to be deleted"""
+    where: bridge_evidence_bool_exp!
+  ): bridge_evidence_mutation_response
+
+  """
+  delete single row from the table: "bridge_evidence"
+  """
+  delete_bridge_evidence_by_pk(id: Int!): bridge_evidence
+
+  """
+  delete data from the table: "bridge_transaction"
+  """
+  delete_bridge_transaction(
+    """filter the rows which have to be deleted"""
+    where: bridge_transaction_bool_exp!
+  ): bridge_transaction_mutation_response
+
+  """
+  delete single row from the table: "bridge_transaction"
+  """
+  delete_bridge_transaction_by_pk(id: Int!): bridge_transaction
+
+  """
   delete data from the table: "community_pool"
   """
   delete_community_pool(
@@ -8134,6 +8844,50 @@ type mutation_root {
     """upsert condition"""
     on_conflict: block_on_conflict
   ): block
+
+  """
+  insert data into the table: "bridge_evidence"
+  """
+  insert_bridge_evidence(
+    """the rows to be inserted"""
+    objects: [bridge_evidence_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: bridge_evidence_on_conflict
+  ): bridge_evidence_mutation_response
+
+  """
+  insert a single row into the table: "bridge_evidence"
+  """
+  insert_bridge_evidence_one(
+    """the row to be inserted"""
+    object: bridge_evidence_insert_input!
+
+    """upsert condition"""
+    on_conflict: bridge_evidence_on_conflict
+  ): bridge_evidence
+
+  """
+  insert data into the table: "bridge_transaction"
+  """
+  insert_bridge_transaction(
+    """the rows to be inserted"""
+    objects: [bridge_transaction_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: bridge_transaction_on_conflict
+  ): bridge_transaction_mutation_response
+
+  """
+  insert a single row into the table: "bridge_transaction"
+  """
+  insert_bridge_transaction_one(
+    """the row to be inserted"""
+    object: bridge_transaction_insert_input!
+
+    """upsert condition"""
+    on_conflict: bridge_transaction_on_conflict
+  ): bridge_transaction
 
   """
   insert data into the table: "community_pool"
@@ -9462,6 +10216,74 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [block_updates!]!
   ): [block_mutation_response]
+
+  """
+  update data of the table: "bridge_evidence"
+  """
+  update_bridge_evidence(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: bridge_evidence_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: bridge_evidence_set_input
+
+    """filter the rows which have to be updated"""
+    where: bridge_evidence_bool_exp!
+  ): bridge_evidence_mutation_response
+
+  """
+  update single row of the table: "bridge_evidence"
+  """
+  update_bridge_evidence_by_pk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: bridge_evidence_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: bridge_evidence_set_input
+    pk_columns: bridge_evidence_pk_columns_input!
+  ): bridge_evidence
+
+  """
+  update multiples rows of table: "bridge_evidence"
+  """
+  update_bridge_evidence_many(
+    """updates to execute, in order"""
+    updates: [bridge_evidence_updates!]!
+  ): [bridge_evidence_mutation_response]
+
+  """
+  update data of the table: "bridge_transaction"
+  """
+  update_bridge_transaction(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: bridge_transaction_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: bridge_transaction_set_input
+
+    """filter the rows which have to be updated"""
+    where: bridge_transaction_bool_exp!
+  ): bridge_transaction_mutation_response
+
+  """
+  update single row of the table: "bridge_transaction"
+  """
+  update_bridge_transaction_by_pk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: bridge_transaction_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: bridge_transaction_set_input
+    pk_columns: bridge_transaction_pk_columns_input!
+  ): bridge_transaction
+
+  """
+  update multiples rows of table: "bridge_transaction"
+  """
+  update_bridge_transaction_many(
+    """updates to execute, in order"""
+    updates: [bridge_transaction_updates!]!
+  ): [bridge_transaction_mutation_response]
 
   """
   update data of the table: "community_pool"
@@ -14764,6 +15586,94 @@ type query_root {
   block_by_pk(height: bigint!): block
 
   """
+  fetch data from the table: "bridge_evidence"
+  """
+  bridge_evidence(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """
+  fetch aggregated fields from the table: "bridge_evidence"
+  """
+  bridge_evidence_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): bridge_evidence_aggregate!
+
+  """fetch data from the table: "bridge_evidence" using primary key columns"""
+  bridge_evidence_by_pk(id: Int!): bridge_evidence
+
+  """
+  fetch data from the table: "bridge_transaction"
+  """
+  bridge_transaction(
+    """distinct select on columns"""
+    distinct_on: [bridge_transaction_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_transaction_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_transaction_bool_exp
+  ): [bridge_transaction!]!
+
+  """
+  fetch aggregated fields from the table: "bridge_transaction"
+  """
+  bridge_transaction_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_transaction_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_transaction_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_transaction_bool_exp
+  ): bridge_transaction_aggregate!
+
+  """
+  fetch data from the table: "bridge_transaction" using primary key columns
+  """
+  bridge_transaction_by_pk(id: Int!): bridge_transaction
+
+  """
   fetch data from the table: "community_pool"
   """
   community_pool(
@@ -18252,6 +19162,122 @@ type subscription_root {
     """filter the rows returned"""
     where: block_bool_exp
   ): [block!]!
+
+  """
+  fetch data from the table: "bridge_evidence"
+  """
+  bridge_evidence(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """
+  fetch aggregated fields from the table: "bridge_evidence"
+  """
+  bridge_evidence_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): bridge_evidence_aggregate!
+
+  """fetch data from the table: "bridge_evidence" using primary key columns"""
+  bridge_evidence_by_pk(id: Int!): bridge_evidence
+
+  """
+  fetch data from the table in a streaming manner: "bridge_evidence"
+  """
+  bridge_evidence_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [bridge_evidence_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """
+  fetch data from the table: "bridge_transaction"
+  """
+  bridge_transaction(
+    """distinct select on columns"""
+    distinct_on: [bridge_transaction_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_transaction_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_transaction_bool_exp
+  ): [bridge_transaction!]!
+
+  """
+  fetch aggregated fields from the table: "bridge_transaction"
+  """
+  bridge_transaction_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_transaction_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_transaction_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_transaction_bool_exp
+  ): bridge_transaction_aggregate!
+
+  """
+  fetch data from the table: "bridge_transaction" using primary key columns
+  """
+  bridge_transaction_by_pk(id: Int!): bridge_transaction
+
+  """
+  fetch data from the table in a streaming manner: "bridge_transaction"
+  """
+  bridge_transaction_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [bridge_transaction_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: bridge_transaction_bool_exp
+  ): [bridge_transaction!]!
 
   """
   fetch data from the table: "community_pool"
@@ -26964,4 +27990,3 @@ input vesting_period_variance_order_by {
   period_order: order_by
   vesting_account_id: order_by
 }
-
