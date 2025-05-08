@@ -1,0 +1,15 @@
+table:
+  name: bridge_evidence
+  schema: public
+
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - id
+        - tx_id
+        - height
+        - hash
+        - sender
+        - threshold_reached
+      filter: {}

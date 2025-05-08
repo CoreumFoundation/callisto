@@ -50,3 +50,4 @@
 - "!include public_dex_params.yaml"
 - "!include public_auth_params.yaml"
 - "!include public_bridge_transaction.yaml"
+- "!include public_bridge_evidence.yaml"
