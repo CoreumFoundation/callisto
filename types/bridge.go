@@ -5,9 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// this is the default address used in znet
-const BridgeContractAddress = "devcore14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sd4f0ak"
-
 type BridgeTxDir string
 
 const (

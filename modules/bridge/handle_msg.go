@@ -31,8 +31,7 @@ func (m *Module) HandleMsg(
 
 	cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &wasmtypes.MsgExecuteContract{})
 
-	// TODO: move this to a configuration
-	if cosmosMsg.Contract != types.BridgeContractAddress {
+	if cosmosMsg.Contract != m.cfg.ContractAddress {
 		return nil
 	}
 
@@ -68,7 +67,7 @@ func (m *Module) addCoreumToXRPLTransfer(height uint64, _ juno.Message, tx *juno
 				return fmt.Errorf("error while getting coin attribute: %s", err)
 			}
 
-			operationIds, err := m.Source.GetSendToXRPLOperationIDs(recipient.Value, height)
+			operationIds, err := m.Source.GetSendToXRPLOperationIDs(m.cfg.ContractAddress, recipient.Value, height)
 			if err != nil {
 				return fmt.Errorf("error while getting operation id: %s", err)
 			}
@@ -161,7 +160,6 @@ func (m *Module) addCoreumToXRPLTransfer(height uint64, _ juno.Message, tx *juno
 						return fmt.Errorf("error while saving evidence for operation finalization: %s", err)
 					}
 				} else {
-					// TODO: check if the evidences come after finalization
 					err = m.db.SaveOutgoingPendingEvidence(
 						evidence,
 						uint32(operationIdInt),

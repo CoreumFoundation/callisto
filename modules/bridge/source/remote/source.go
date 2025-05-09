@@ -33,18 +33,23 @@ func (s Source) Name() string {
 	return "remote"
 }
 
+// GetSendToXRPLOperationIDs returns the operation IDs of the send_to_xrpl operations
+// Implementation is based on the actual bridge relayer logic, for simple replication of the code in the future,
+// the same style of the reference code is used.
+// https://github.com/CoreumFoundation/coreumbridge-xrpl/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
 func (s *Source) GetSendToXRPLOperationIDs(
+	contractAddress string,
 	recipient string,
 	height uint64,
 ) ([]uint32, error) {
 	beforeCtx := remote.GetHeightRequestContext(s.Ctx, int64(height-1))
-	operationsBefore, err := s.getPendingOperations(beforeCtx)
+	operationsBefore, err := s.getPendingOperations(beforeCtx, contractAddress)
 	if err != nil {
 		return nil, err
 	}
 
 	afterCtx := remote.GetHeightRequestContext(s.Ctx, int64(height))
-	operationsAfter, err := s.getPendingOperations(afterCtx)
+	operationsAfter, err := s.getPendingOperations(afterCtx, contractAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -70,12 +75,12 @@ func (s *Source) GetSendToXRPLOperationIDs(
 }
 
 // getPendingOperations returns a list of all pending operations.
-func (s Source) getPendingOperations(ctx context.Context) ([]types.Operation, error) {
+func (s Source) getPendingOperations(ctx context.Context, contractAddress string) ([]types.Operation, error) {
 	operations := make([]types.Operation, 0)
 	var startAfterKey *uint32
 	for {
 		var res types.PendingOperationsResponse
-		err := s.query(ctx, map[types.QueryMethod]types.PagingUint32KeyRequest{
+		err := s.query(ctx, contractAddress, map[types.QueryMethod]types.PagingUint32KeyRequest{
 			types.QueryMethodPendingOperations: {
 				StartAfterKey: startAfterKey,
 				Limit:         &types.Limit,
@@ -94,14 +99,14 @@ func (s Source) getPendingOperations(ctx context.Context) ([]types.Operation, er
 	return operations, nil
 }
 
-func (s Source) query(ctx context.Context, request, response any) error {
+func (s Source) query(ctx context.Context, contractAddress string, request, response any) error {
 	payload, err := json.Marshal(request)
 	if err != nil {
 		return fmt.Errorf("failed to marshal query request: %w", err)
 	}
 
 	query := &wasmtypes.QuerySmartContractStateRequest{
-		Address:   types.BridgeContractAddress,
+		Address:   contractAddress,
 		QueryData: payload,
 	}
 	resp, err := s.queryClient.SmartContractState(ctx, query)

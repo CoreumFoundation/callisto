@@ -106,7 +106,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		db,
 	)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
-	bridgeModule := bridge.NewModule(sources.BridgeSource, r.cdc, db)
+	bridgeModule := bridge.NewModule(ctx.JunoConfig, sources.BridgeSource, r.cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, ctx.Database),
