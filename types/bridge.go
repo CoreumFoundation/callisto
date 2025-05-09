@@ -5,48 +5,54 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// BridgeTxDir is the direction of the bridge transaction.
+// It can be either outgoing (from Coreum to XRPL) or incoming (from XRPL to Coreum).
 type BridgeTxDir string
 
 const (
-	BridgeTxDir_UNKNOWN  BridgeTxDir = "UNKNOWN"
-	BridgeTxDir_Outgoing BridgeTxDir = "Outgoing"
-	BridgeTxDir_Incoming BridgeTxDir = "Incoming"
+	BridgeTxDirUnknown  BridgeTxDir = "UNKNOWN"
+	BridgeTxDirOutgoing BridgeTxDir = "Outgoing"
+	BridgeTxDirIncoming BridgeTxDir = "Incoming"
 )
 
 var StrToBridgeTxDir = map[string]BridgeTxDir{
-	"UNKNOWN":  BridgeTxDir_UNKNOWN,
-	"Outgoing": BridgeTxDir_Outgoing,
-	"Incoming": BridgeTxDir_Incoming,
+	"UNKNOWN":  BridgeTxDirUnknown,
+	"Outgoing": BridgeTxDirOutgoing,
+	"Incoming": BridgeTxDirIncoming,
 }
 
+// BridgeTxResult is the result of the bridge transaction.
+// It can be either accepted, rejected, or invalid.
 type BridgeTxResult string
 
 const (
-	BridgeTxResult_UNKNOWN  BridgeTxResult = "UNKNOWN"
-	BridgeTxResult_ACCEPTED BridgeTxResult = "transaction_accepted"
-	BridgeTxResult_REJECTED BridgeTxResult = "transaction_rejected"
-	BridgeTxResult_INVALID  BridgeTxResult = "transaction_invalid"
+	BridgeTxResultUnknown  BridgeTxResult = "UNKNOWN"
+	BridgeTxResultAccepted BridgeTxResult = "transaction_accepted"
+	BridgeTxResultRejected BridgeTxResult = "transaction_rejected"
+	BridgeTxResultInvalid  BridgeTxResult = "transaction_invalid"
 )
 
 var BridgeTxResultToStr = map[string]BridgeTxResult{
-	"UNKNOWN":              BridgeTxResult_UNKNOWN,
-	"transaction_accepted": BridgeTxResult_ACCEPTED,
-	"transaction_rejected": BridgeTxResult_REJECTED,
-	"transaction_invalid":  BridgeTxResult_INVALID,
+	"UNKNOWN":              BridgeTxResultUnknown,
+	"transaction_accepted": BridgeTxResultAccepted,
+	"transaction_rejected": BridgeTxResultRejected,
+	"transaction_invalid":  BridgeTxResultInvalid,
 }
 
+// Counterparty is the counterparty of the bridge transaction.
 type Counterparty string
 
 const (
-	Counterparty_UNKNOWN Counterparty = "UNKNOWN"
-	Counterparty_XRPL    Counterparty = "XRPL"
+	CounterpartyUnknown Counterparty = "UNKNOWN"
+	CounterpartyXRPL    Counterparty = "XRPL"
 )
 
 var StrToCounterparty = map[string]Counterparty{
-	"UNKNOWN": Counterparty_UNKNOWN,
-	"XRPL":    Counterparty_XRPL,
+	"UNKNOWN": CounterpartyUnknown,
+	"XRPL":    CounterpartyXRPL,
 }
 
+// BridgeTransaction is the structure of the bridge transaction.
 type BridgeTransaction struct {
 	ID               int64          `json:"id"`
 	InitHeight       int64          `json:"init_height"`
@@ -63,6 +69,7 @@ type BridgeTransaction struct {
 	OperationIDs     []uint32       `json:"operation_ids"`
 }
 
+// NewOutgoingPendingBridgeTransaction creates a new outgoing pending bridge transaction.
 func NewOutgoingPendingBridgeTransaction(txHash string, height uint64, counterparty Counterparty, sender, recipient, amount string, direction BridgeTxDir, operationIDs []uint32) BridgeTransaction {
 	return BridgeTransaction{
 		InitHash:     txHash,
@@ -76,6 +83,7 @@ func NewOutgoingPendingBridgeTransaction(txHash string, height uint64, counterpa
 	}
 }
 
+// NewIncomingPendingBridgeTransaction creates a new incoming pending bridge transaction.
 func NewIncomingPendingBridgeTransaction(txHash string, height uint64, counterparty Counterparty, counterpartyHash, sender, recipient, amount string, direction BridgeTxDir) BridgeTransaction {
 	return BridgeTransaction{
 		InitHash:         txHash,
@@ -89,6 +97,7 @@ func NewIncomingPendingBridgeTransaction(txHash string, height uint64, counterpa
 	}
 }
 
+// BridgeEvidence is the structure of the bridge evidence.
 type BridgeEvidence struct {
 	ID               int64  `json:"id"`
 	BridgeTxID       int64  `json:"tx_id"`
@@ -98,6 +107,7 @@ type BridgeEvidence struct {
 	ThresholdReached bool   `json:"threshold_reached"`
 }
 
+// NewBridgeEvidence creates a new bridge evidence.
 func NewBridgeEvidence(height uint64, hash string, relayer string, thresholdReached bool) BridgeEvidence {
 	return BridgeEvidence{
 		Height:           int64(height),
@@ -107,12 +117,7 @@ func NewBridgeEvidence(height uint64, hash string, relayer string, thresholdReac
 	}
 }
 
-type Source interface {
-	GetSendToXRPLOperationID(
-		recipient string,
-		height uint64,
-	) (uint32, error)
-}
+// *** the following code is a copy of the original code from the bridge relayer ***
 
 // QueryMethod is contract query method.
 type QueryMethod string

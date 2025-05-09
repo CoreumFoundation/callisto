@@ -5,6 +5,7 @@ import (
 	"github.com/lib/pq"
 )
 
+// SaveOutgoingTransfer saves the outgoing transfer to the database
 func (db *Db) SaveOutgoingTransfer(tx types.BridgeTransaction) error {
 	stmt := `
 	INSERT INTO 
@@ -29,6 +30,7 @@ func (db *Db) SaveOutgoingTransfer(tx types.BridgeTransaction) error {
 	return nil
 }
 
+// SaveOutgoingPendingTransaction saves the outgoing pending transaction to the database
 func (db *Db) GetOutgoingPendingTransaction(operationIDs []uint32) (*types.BridgeTransaction, error) {
 	stmt := `
 	SELECT init_height, init_hash, counterparty, sender, recipient, amount, direction, operation_ids 
@@ -57,6 +59,7 @@ func (db *Db) GetOutgoingPendingTransaction(operationIDs []uint32) (*types.Bridg
 	return &bridgeTx, nil
 }
 
+// SaveOutgoingPendingEvidence saves the outgoing pending evidence to the database
 func (db *Db) SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operationId uint32) error {
 	stmt := `
 	INSERT INTO bridge_evidence (tx_id, height, hash, sender, threshold_reached) 
@@ -75,6 +78,7 @@ func (db *Db) SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operati
 	return nil
 }
 
+// SaveOutgoingFinalEvidence saves the outgoing final evidence to the database
 func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operationId uint32, txResult types.BridgeTxResult, counterpartyHash string) error {
 	stmt := `
 	WITH updated_transaction AS (
@@ -106,6 +110,7 @@ func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operation
 	return nil
 }
 
+// SaveIncomingPendingTxAndEvidence saves the incoming pending transaction and evidence to the database
 func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, relayer string) error {
 	stmt := `
 	WITH selected_tx AS (
@@ -142,6 +147,7 @@ func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, relay
 	return nil
 }
 
+// SaveIncomingFinalTxAndEvidence saves the incoming final transaction and evidence to the database
 func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, counterparty types.Counterparty, counterpartyHash string, txResult types.BridgeTxResult) error {
 	stmt := `
 	WITH updated_transaction AS (
