@@ -1,9 +1,9 @@
 package source
 
 type Source interface {
-	GetSendToXRPLOperationIDs(
+	GetSendToXRPLOperationID(
 		contractAddress string,
 		recipient string,
 		height uint64,
-	) ([]uint32, error)
+	) (uint32, error)
 }

@@ -46,7 +46,7 @@ func (m *Module) HandleMsg(
 }
 
 // addCoreumXrplTwoWayTransfers adds the coreum to xrpl and xrpl to coreum transfer to the database
-func (m *Module) addCoreumXrplTwoWayTransfers(height uint64, _ juno.Message, tx *juno.Transaction) error {
+func (m *Module) addCoreumXrplTwoWayTransfers(height uint64, msg juno.Message, tx *juno.Transaction) error {
 	events := juno.FindEventsByType(tx.Events, "wasm")
 	for _, event := range events {
 		action, err := juno.FindAttributeByKey(event, "action")
@@ -84,28 +84,47 @@ func (m *Module) handleSendToXrpl(event abci.Event, height uint64, tx *juno.Tran
 		return fmt.Errorf("error while getting coin attribute: %s", err)
 	}
 
-	operationIds, err := m.Source.GetSendToXRPLOperationIDs(m.cfg.ContractAddress, recipient.Value, height)
-	if err != nil {
-		return fmt.Errorf("error while getting operation id: %s", err)
+	operationUniqueId, err := juno.FindAttributeByKey(event, "operation_unique_id")
+	if err != nil && err.Error() != "no attribute with key operation_unique_id found inside event with type wasm" {
+		return fmt.Errorf("error while getting operation type attribute: %s", err)
 	}
 
-	pendingTx, err := m.db.GetOutgoingPendingTransaction(operationIds)
+	var operationId uint32
+	if operationUniqueId.Value == "" {
+		// legacy operation id query
+		operationId, err = m.Source.GetSendToXRPLOperationID(m.cfg.ContractAddress, recipient.Value, height)
+		if err != nil {
+			return fmt.Errorf("error while getting operation id: %s", err)
+		}
+	} else {
+		parts := strings.Split(operationUniqueId.Value, "-")
+		if len(parts) != 2 {
+			return fmt.Errorf("invalid operation unique id format: %s", operationUniqueId.Value)
+		}
+		operationIdInt, err := strconv.ParseUint(parts[1], 10, 32)
+		if err != nil {
+			return fmt.Errorf("error while parsing operation id: %s", err)
+		}
+		operationId = uint32(operationIdInt)
+	}
+
+	pendingTx, err := m.db.GetOutgoingPendingTransaction(operationId)
 	if err != nil && !strings.Contains(err.Error(), "sql: no rows in result set") {
 		return fmt.Errorf("error while getting pending transaction: %s", err)
 	}
 	if pendingTx != nil {
-		return fmt.Errorf("pending transaction already exists for operation id %v", operationIds)
+		return fmt.Errorf("pending transaction already exists for operation id %v", operationId)
 	}
 
 	return m.db.SaveOutgoingTransfer(types.NewOutgoingPendingBridgeTransaction(
-		tx.TxHash,
 		height,
-		types.CounterpartyXRPL,
+		tx.TxHash,
+		types.ChainCoreum,
+		types.ChainXRPL,
 		sender.Value,
 		recipient.Value,
 		coin.Value,
-		types.BridgeTxDirOutgoing,
-		operationIds,
+		operationId,
 	))
 }
 
@@ -130,7 +149,7 @@ func (m *Module) handleSaveEvidence(event abci.Event, height uint64, tx *juno.Tr
 	if err != nil {
 		return fmt.Errorf("error while getting threshold reached attribute: %s", err)
 	}
-	isThresholdReached, err := strconv.ParseBool(thresholdReached.Value)
+	thresholdReachedValue, err := strconv.ParseBool(thresholdReached.Value)
 	if err != nil {
 		return fmt.Errorf("error while parsing threshold reached value: %s", err)
 	}
@@ -139,18 +158,18 @@ func (m *Module) handleSaveEvidence(event abci.Event, height uint64, tx *juno.Tr
 		height,
 		tx.TxHash,
 		relayerAcc.Value,
-		isThresholdReached,
+		thresholdReachedValue,
 	)
 
 	if operationType.Value == "coreum_to_xrpl_transfer" {
-		return m.handleCoreumToXrplEvidence(event, evidence, isThresholdReached)
+		return m.handleCoreumToXrplEvidence(event, evidence)
 	}
-	return m.handleXrplToCoreumEvidence(event, evidence, isThresholdReached, height, tx)
+	return m.handleXrplToCoreumEvidence(event, evidence, tx)
 }
 
 // handleCoreumToXrplEvidence handles the coreum to xrpl evidence
 // and saves the evidence to the database
-func (m *Module) handleCoreumToXrplEvidence(event abci.Event, evidence types.BridgeEvidence, isThresholdReached bool) error {
+func (m *Module) handleCoreumToXrplEvidence(event abci.Event, evidence types.BridgeEvidence) error {
 	operationId, err := juno.FindAttributeByKey(event, "operation_id")
 	if err != nil {
 		return fmt.Errorf("error while getting operation id attribute: %s", err)
@@ -161,7 +180,7 @@ func (m *Module) handleCoreumToXrplEvidence(event abci.Event, evidence types.Bri
 		return fmt.Errorf("error while parsing operation id: %s", err)
 	}
 
-	if isThresholdReached {
+	if evidence.ThresholdReached {
 		transactionResult, err := juno.FindAttributeByKey(event, "transaction_result")
 		if err != nil {
 			return fmt.Errorf("error while getting transaction result attribute: %s", err)
@@ -187,7 +206,7 @@ func (m *Module) handleCoreumToXrplEvidence(event abci.Event, evidence types.Bri
 
 // handleXrplToCoreumEvidence handles the xrpl to coreum evidence
 // and saves the evidence to the database
-func (m *Module) handleXrplToCoreumEvidence(event abci.Event, evidence types.BridgeEvidence, isThresholdReached bool, height uint64, tx *juno.Transaction) error {
+func (m *Module) handleXrplToCoreumEvidence(event abci.Event, evidence types.BridgeEvidence, tx *juno.Transaction) error {
 	xrplHash, err := juno.FindAttributeByKey(event, "hash")
 	if err != nil {
 		return fmt.Errorf("error while getting hash attribute: %s", err)
@@ -197,10 +216,10 @@ func (m *Module) handleXrplToCoreumEvidence(event abci.Event, evidence types.Bri
 		return fmt.Errorf("error while getting recipient attribute: %s", err)
 	}
 
-	if isThresholdReached {
+	if evidence.ThresholdReached {
 		return m.db.SaveIncomingFinalTxAndEvidence(
 			evidence,
-			types.CounterpartyXRPL,
+			types.ChainXRPL,
 			xrplHash.Value,
 			types.BridgeTxResultAccepted,
 		)
@@ -221,15 +240,13 @@ func (m *Module) handleXrplToCoreumEvidence(event abci.Event, evidence types.Bri
 
 	return m.db.SaveIncomingPendingTxAndEvidence(
 		types.NewIncomingPendingBridgeTransaction(
-			tx.TxHash,
-			height,
-			types.CounterpartyXRPL,
 			xrplHash.Value,
+			types.ChainXRPL,
+			types.ChainCoreum,
 			issuer.Value,
 			recipient.Value,
 			strings.Join([]string{amount.Value, currency.Value}, ""),
-			types.BridgeTxDirIncoming,
 		),
-		evidence.Relayer,
+		evidence,
 	)
 }

@@ -2,27 +2,25 @@ package database
 
 import (
 	"github.com/forbole/callisto/v4/types"
-	"github.com/lib/pq"
 )
 
 // SaveOutgoingTransfer saves the outgoing transfer to the database
 func (db *Db) SaveOutgoingTransfer(tx types.BridgeTransaction) error {
 	stmt := `
 	INSERT INTO 
-	bridge_transaction (init_height, init_hash, counterparty, sender, recipient, amount, direction, operation_ids) 
+	bridge_transaction (user_initiated_height, user_initiated_hash, source_chain, destination_chain, sender, recipient, amount, operation_id) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
-
 	_, err := db.SQL.Exec(
 		stmt,
-		tx.InitHeight,
-		tx.InitHash,
-		tx.Counterparty,
+		tx.UserInitiatedHeight,
+		tx.UserInitiatedHash,
+		tx.SourceChain,
+		tx.DestinationChain,
 		tx.Sender,
 		tx.Recipient,
 		tx.Amount,
-		tx.Direction,
-		pq.Array(tx.OperationIDs),
+		tx.OperationID,
 	)
 	if err != nil {
 		return err
@@ -30,26 +28,25 @@ func (db *Db) SaveOutgoingTransfer(tx types.BridgeTransaction) error {
 	return nil
 }
 
-// SaveOutgoingPendingTransaction saves the outgoing pending transaction to the database
-func (db *Db) GetOutgoingPendingTransaction(operationIDs []uint32) (*types.BridgeTransaction, error) {
+// GetOutgoingPendingTransaction saves the outgoing pending transaction to the database
+func (db *Db) GetOutgoingPendingTransaction(operationID uint32) (*types.BridgeTransaction, error) {
 	stmt := `
-	SELECT init_height, init_hash, counterparty, sender, recipient, amount, direction, operation_ids 
+	SELECT user_initiated_hash, source_chain, destination_chain, sender, recipient, amount, operation_id
 	FROM bridge_transaction
-	WHERE  operation_ids && $1 AND final_height IS NULL
+	WHERE operation_id = $1 AND final_evidence_hash IS NULL
 `
 
-	row := db.SQL.QueryRow(stmt, pq.Array(operationIDs))
+	row := db.SQL.QueryRow(stmt, operationID)
 
 	var bridgeTx types.BridgeTransaction
 	err := row.Scan(
-		&bridgeTx.InitHeight,
-		&bridgeTx.InitHash,
-		&bridgeTx.Counterparty,
+		&bridgeTx.UserInitiatedHash,
+		&bridgeTx.SourceChain,
+		&bridgeTx.DestinationChain,
 		&bridgeTx.Sender,
 		&bridgeTx.Recipient,
 		&bridgeTx.Amount,
-		&bridgeTx.Direction,
-		&bridgeTx.OperationIDs,
+		&bridgeTx.OperationID,
 	)
 
 	if err != nil {
@@ -62,15 +59,15 @@ func (db *Db) GetOutgoingPendingTransaction(operationIDs []uint32) (*types.Bridg
 // SaveOutgoingPendingEvidence saves the outgoing pending evidence to the database
 func (db *Db) SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operationId uint32) error {
 	stmt := `
-	INSERT INTO bridge_evidence (tx_id, height, hash, sender, threshold_reached) 
-	VALUES ((SELECT id FROM bridge_transaction WHERE final_height IS NULL AND operation_ids && $4), $1, $2, $3, FALSE)
+	INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached) 
+	VALUES ((SELECT id FROM bridge_transaction WHERE final_evidence_hash IS NULL AND operation_id = $4), $1, $2, $3, FALSE)
 `
 	_, err := db.SQL.Exec(
 		stmt,
 		evidence.Height,
 		evidence.Hash,
-		evidence.Relayer,
-		pq.Array([]uint32{operationId}),
+		evidence.RelayerAddress,
+		operationId,
 	)
 	if err != nil {
 		return err
@@ -79,18 +76,18 @@ func (db *Db) SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operati
 }
 
 // SaveOutgoingFinalEvidence saves the outgoing final evidence to the database
-func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operationId uint32, txResult types.BridgeTxResult, counterpartyHash string) error {
+func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operationId uint32, txResult types.BridgeTxResult, settlementHash string) error {
 	stmt := `
 	WITH updated_transaction AS (
 		UPDATE bridge_transaction
-			SET final_height = $1,
-				final_hash = $2,
-				counterparty_hash = $5,
+			SET 
+				settlement_hash = $5,
+				final_evidence_hash = $2,
 				result = $6
-			WHERE operation_ids && $4 AND final_height IS NULL
+			WHERE final_evidence_hash IS NULL AND operation_id = $4
 			RETURNING id
 	)
-	INSERT INTO bridge_evidence (tx_id, height, hash, sender, threshold_reached)
+	INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached)
 	SELECT ut.id, $1, $2, $3, TRUE
 	FROM updated_transaction ut
 	WHERE ut.id IS NOT NULL;
@@ -99,9 +96,9 @@ func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operation
 		stmt,
 		evidence.Height,
 		evidence.Hash,
-		evidence.Relayer,
-		pq.Array([]uint32{operationId}),
-		counterpartyHash,
+		evidence.RelayerAddress,
+		operationId,
+		settlementHash,
 		txResult,
 	)
 	if err != nil {
@@ -111,34 +108,34 @@ func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operation
 }
 
 // SaveIncomingPendingTxAndEvidence saves the incoming pending transaction and evidence to the database
-func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, relayer string) error {
+func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, evidence types.BridgeEvidence) error {
 	stmt := `
 	WITH selected_tx AS (
 		SELECT id
 		FROM bridge_transaction
-		WHERE counterparty = $3 AND counterparty_hash = $4
+		WHERE source_chain = $2 AND user_initiated_hash = $1
     ), inserted_tx AS (
-		INSERT INTO bridge_transaction (init_height, init_hash, counterparty, counterparty_hash, sender, recipient, amount, direction)
-		SELECT $1, $2, $3, $4, $5, $6, $7, $8
+		INSERT INTO bridge_transaction (user_initiated_hash, source_chain, destination_chain, sender, recipient, amount)
+		SELECT $1, $2, $3, $4, $5, $6
 		WHERE NOT EXISTS (SELECT 1 FROM selected_tx)
 		RETURNING id
 	)
-	INSERT INTO bridge_evidence (tx_id, height, hash, sender, threshold_reached)
-	SELECT it.id, $1, $2, $9, FALSE
+	INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached)
+	SELECT it.id, $7, $8, $9, FALSE
 	FROM (SELECT id FROM inserted_tx UNION ALL SELECT id FROM selected_tx) it;
 `
 
 	_, err := db.SQL.Exec(
 		stmt,
-		tx.InitHeight,
-		tx.InitHash,
-		tx.Counterparty,
-		tx.CounterpartyHash,
+		tx.UserInitiatedHash,
+		tx.SourceChain,
+		tx.DestinationChain,
 		tx.Sender,
 		tx.Recipient,
 		tx.Amount,
-		tx.Direction,
-		relayer,
+		evidence.Height,
+		evidence.Hash,
+		evidence.RelayerAddress,
 	)
 
 	if err != nil {
@@ -148,15 +145,15 @@ func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, relay
 }
 
 // SaveIncomingFinalTxAndEvidence saves the incoming final transaction and evidence to the database
-func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, counterparty types.Counterparty, counterpartyHash string, txResult types.BridgeTxResult) error {
+func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, sourceChain types.Chain, sourceHash string, txResult types.BridgeTxResult) error {
 	stmt := `
 	WITH updated_transaction AS (
 		UPDATE bridge_transaction
-		SET final_height = $1, final_hash = $2, result = $6
-		WHERE counterparty = $4 AND counterparty_hash = $5
+		SET settlement_hash = $2, final_evidence_hash = $2, result = $6
+		WHERE source_chain = $4 AND user_initiated_hash = $5
 		RETURNING id
 	)
-	INSERT INTO bridge_evidence (tx_id, height, hash, sender, threshold_reached)
+	INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached)
 	SELECT ut.id, $1, $2, $3, TRUE
 	FROM updated_transaction ut;
 `
@@ -165,9 +162,9 @@ func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, coun
 		stmt,
 		evidence.Height,
 		evidence.Hash,
-		evidence.Relayer,
-		counterparty,
-		counterpartyHash,
+		evidence.RelayerAddress,
+		sourceChain,
+		sourceHash,
 		txResult,
 	)
 

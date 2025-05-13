@@ -33,25 +33,25 @@ func (s Source) Name() string {
 	return "remote"
 }
 
-// GetSendToXRPLOperationIDs returns the operation IDs of the send_to_xrpl operations
+// GetSendToXRPLOperationID returns the operation IDs of the send_to_xrpl operations
 // Implementation is based on the actual bridge relayer logic, for simple replication of the code in the future,
 // the same style of the reference code is used.
 // https://github.com/CoreumFoundation/coreumbridge-xrpl/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
-func (s *Source) GetSendToXRPLOperationIDs(
+func (s *Source) GetSendToXRPLOperationID(
 	contractAddress string,
 	recipient string,
 	height uint64,
-) ([]uint32, error) {
+) (uint32, error) {
 	beforeCtx := remote.GetHeightRequestContext(s.Ctx, int64(height-1))
 	operationsBefore, err := s.getPendingOperations(beforeCtx, contractAddress)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	afterCtx := remote.GetHeightRequestContext(s.Ctx, int64(height))
 	operationsAfter, err := s.getPendingOperations(afterCtx, contractAddress)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	operationsBeforeMap := lo.SliceToMap(operationsBefore, func(operation types.Operation) (uint32, types.Operation) {
@@ -71,7 +71,14 @@ func (s *Source) GetSendToXRPLOperationIDs(
 		}
 	}
 
-	return operationIDs, nil
+	switch len(operationIDs) {
+	case 0:
+		return 0, fmt.Errorf("no operation ID found for recipient %s", recipient)
+	case 1:
+		return operationIDs[0], nil
+	default:
+		return 0, fmt.Errorf("multiple operation IDs found for recipient %s: %v", recipient, operationIDs)
+	}
 }
 
 // getPendingOperations returns a list of all pending operations.

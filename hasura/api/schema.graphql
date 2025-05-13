@@ -73,26 +73,6 @@ input Boolean_comparison_exp {
 """
 Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
 """
-input Int_array_comparison_exp {
-  """is the array contained in the given array value"""
-  _contained_in: [Int!]
-
-  """does the array contain the given value"""
-  _contains: [Int!]
-  _eq: [Int!]
-  _gt: [Int!]
-  _gte: [Int!]
-  _in: [[Int!]!]
-  _is_null: Boolean
-  _lt: [Int!]
-  _lte: [Int!]
-  _neq: [Int!]
-  _nin: [[Int!]!]
-}
-
-"""
-Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
-"""
 input Int_comparison_exp {
   _eq: Int
   _gt: Int
@@ -3193,9 +3173,9 @@ type bridge_evidence {
   hash: String!
   height: bigint!
   id: Int!
-  sender: String!
+  relayer_address: String!
   threshold_reached: Boolean!
-  tx_id: bigint!
+  transaction_id: bigint!
 }
 
 """
@@ -3227,7 +3207,7 @@ type bridge_evidence_aggregate_fields {
 type bridge_evidence_avg_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """
@@ -3240,9 +3220,9 @@ input bridge_evidence_bool_exp {
   hash: String_comparison_exp
   height: bigint_comparison_exp
   id: Int_comparison_exp
-  sender: String_comparison_exp
+  relayer_address: String_comparison_exp
   threshold_reached: Boolean_comparison_exp
-  tx_id: bigint_comparison_exp
+  transaction_id: bigint_comparison_exp
 }
 
 """
@@ -3261,7 +3241,7 @@ input type for incrementing numeric columns in table "bridge_evidence"
 input bridge_evidence_inc_input {
   height: bigint
   id: Int
-  tx_id: bigint
+  transaction_id: bigint
 }
 
 """
@@ -3271,9 +3251,9 @@ input bridge_evidence_insert_input {
   hash: String
   height: bigint
   id: Int
-  sender: String
+  relayer_address: String
   threshold_reached: Boolean
-  tx_id: bigint
+  transaction_id: bigint
 }
 
 """aggregate max on columns"""
@@ -3281,8 +3261,8 @@ type bridge_evidence_max_fields {
   hash: String
   height: bigint
   id: Int
-  sender: String
-  tx_id: bigint
+  relayer_address: String
+  transaction_id: bigint
 }
 
 """aggregate min on columns"""
@@ -3290,8 +3270,8 @@ type bridge_evidence_min_fields {
   hash: String
   height: bigint
   id: Int
-  sender: String
-  tx_id: bigint
+  relayer_address: String
+  transaction_id: bigint
 }
 
 """
@@ -3319,9 +3299,9 @@ input bridge_evidence_order_by {
   hash: order_by
   height: order_by
   id: order_by
-  sender: order_by
+  relayer_address: order_by
   threshold_reached: order_by
-  tx_id: order_by
+  transaction_id: order_by
 }
 
 """primary key columns input for table: bridge_evidence"""
@@ -3343,13 +3323,13 @@ enum bridge_evidence_select_column {
   id
 
   """column name"""
-  sender
+  relayer_address
 
   """column name"""
   threshold_reached
 
   """column name"""
-  tx_id
+  transaction_id
 }
 
 """
@@ -3359,30 +3339,30 @@ input bridge_evidence_set_input {
   hash: String
   height: bigint
   id: Int
-  sender: String
+  relayer_address: String
   threshold_reached: Boolean
-  tx_id: bigint
+  transaction_id: bigint
 }
 
 """aggregate stddev on columns"""
 type bridge_evidence_stddev_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """aggregate stddev_pop on columns"""
 type bridge_evidence_stddev_pop_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """aggregate stddev_samp on columns"""
 type bridge_evidence_stddev_samp_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """
@@ -3401,16 +3381,16 @@ input bridge_evidence_stream_cursor_value_input {
   hash: String
   height: bigint
   id: Int
-  sender: String
+  relayer_address: String
   threshold_reached: Boolean
-  tx_id: bigint
+  transaction_id: bigint
 }
 
 """aggregate sum on columns"""
 type bridge_evidence_sum_fields {
   height: bigint
   id: Int
-  tx_id: bigint
+  transaction_id: bigint
 }
 
 """
@@ -3427,13 +3407,13 @@ enum bridge_evidence_update_column {
   id
 
   """column name"""
-  sender
+  relayer_address
 
   """column name"""
   threshold_reached
 
   """column name"""
-  tx_id
+  transaction_id
 }
 
 input bridge_evidence_updates {
@@ -3451,21 +3431,21 @@ input bridge_evidence_updates {
 type bridge_evidence_var_pop_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """aggregate var_samp on columns"""
 type bridge_evidence_var_samp_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """aggregate variance on columns"""
 type bridge_evidence_variance_fields {
   height: Float
   id: Float
-  tx_id: Float
+  transaction_id: Float
 }
 
 """
@@ -3473,18 +3453,17 @@ columns and relationships of "bridge_transaction"
 """
 type bridge_transaction {
   amount: String!
-  counterparty: String!
-  counterparty_hash: String
-  direction: String!
-  final_hash: String
-  final_height: bigint
+  destination_chain: String!
+  final_evidence_hash: String
   id: Int!
-  init_hash: String!
-  init_height: bigint!
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String!
   result: String
   sender: String!
+  settlement_hash: String
+  source_chain: String!
+  user_initiated_hash: String!
+  user_initiated_height: bigint
 }
 
 """
@@ -3514,9 +3493,9 @@ type bridge_transaction_aggregate_fields {
 
 """aggregate avg on columns"""
 type bridge_transaction_avg_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """
@@ -3527,18 +3506,17 @@ input bridge_transaction_bool_exp {
   _not: bridge_transaction_bool_exp
   _or: [bridge_transaction_bool_exp!]
   amount: String_comparison_exp
-  counterparty: String_comparison_exp
-  counterparty_hash: String_comparison_exp
-  direction: String_comparison_exp
-  final_hash: String_comparison_exp
-  final_height: bigint_comparison_exp
+  destination_chain: String_comparison_exp
+  final_evidence_hash: String_comparison_exp
   id: Int_comparison_exp
-  init_hash: String_comparison_exp
-  init_height: bigint_comparison_exp
-  operation_ids: Int_array_comparison_exp
+  operation_id: Int_comparison_exp
   recipient: String_comparison_exp
   result: String_comparison_exp
   sender: String_comparison_exp
+  settlement_hash: String_comparison_exp
+  source_chain: String_comparison_exp
+  user_initiated_hash: String_comparison_exp
+  user_initiated_height: bigint_comparison_exp
 }
 
 """
@@ -3555,9 +3533,9 @@ enum bridge_transaction_constraint {
 input type for incrementing numeric columns in table "bridge_transaction"
 """
 input bridge_transaction_inc_input {
-  final_height: bigint
   id: Int
-  init_height: bigint
+  operation_id: Int
+  user_initiated_height: bigint
 }
 
 """
@@ -3565,52 +3543,49 @@ input type for inserting data into table "bridge_transaction"
 """
 input bridge_transaction_insert_input {
   amount: String
-  counterparty: String
-  counterparty_hash: String
-  direction: String
-  final_hash: String
-  final_height: bigint
+  destination_chain: String
+  final_evidence_hash: String
   id: Int
-  init_hash: String
-  init_height: bigint
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String
   result: String
   sender: String
+  settlement_hash: String
+  source_chain: String
+  user_initiated_hash: String
+  user_initiated_height: bigint
 }
 
 """aggregate max on columns"""
 type bridge_transaction_max_fields {
   amount: String
-  counterparty: String
-  counterparty_hash: String
-  direction: String
-  final_hash: String
-  final_height: bigint
+  destination_chain: String
+  final_evidence_hash: String
   id: Int
-  init_hash: String
-  init_height: bigint
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String
   result: String
   sender: String
+  settlement_hash: String
+  source_chain: String
+  user_initiated_hash: String
+  user_initiated_height: bigint
 }
 
 """aggregate min on columns"""
 type bridge_transaction_min_fields {
   amount: String
-  counterparty: String
-  counterparty_hash: String
-  direction: String
-  final_hash: String
-  final_height: bigint
+  destination_chain: String
+  final_evidence_hash: String
   id: Int
-  init_hash: String
-  init_height: bigint
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String
   result: String
   sender: String
+  settlement_hash: String
+  source_chain: String
+  user_initiated_hash: String
+  user_initiated_height: bigint
 }
 
 """
@@ -3636,18 +3611,17 @@ input bridge_transaction_on_conflict {
 """Ordering options when selecting data from "bridge_transaction"."""
 input bridge_transaction_order_by {
   amount: order_by
-  counterparty: order_by
-  counterparty_hash: order_by
-  direction: order_by
-  final_hash: order_by
-  final_height: order_by
+  destination_chain: order_by
+  final_evidence_hash: order_by
   id: order_by
-  init_hash: order_by
-  init_height: order_by
-  operation_ids: order_by
+  operation_id: order_by
   recipient: order_by
   result: order_by
   sender: order_by
+  settlement_hash: order_by
+  source_chain: order_by
+  user_initiated_hash: order_by
+  user_initiated_height: order_by
 }
 
 """primary key columns input for table: bridge_transaction"""
@@ -3663,31 +3637,16 @@ enum bridge_transaction_select_column {
   amount
 
   """column name"""
-  counterparty
+  destination_chain
 
   """column name"""
-  counterparty_hash
-
-  """column name"""
-  direction
-
-  """column name"""
-  final_hash
-
-  """column name"""
-  final_height
+  final_evidence_hash
 
   """column name"""
   id
 
   """column name"""
-  init_hash
-
-  """column name"""
-  init_height
-
-  """column name"""
-  operation_ids
+  operation_id
 
   """column name"""
   recipient
@@ -3697,6 +3656,18 @@ enum bridge_transaction_select_column {
 
   """column name"""
   sender
+
+  """column name"""
+  settlement_hash
+
+  """column name"""
+  source_chain
+
+  """column name"""
+  user_initiated_hash
+
+  """column name"""
+  user_initiated_height
 }
 
 """
@@ -3704,39 +3675,38 @@ input type for updating data in table "bridge_transaction"
 """
 input bridge_transaction_set_input {
   amount: String
-  counterparty: String
-  counterparty_hash: String
-  direction: String
-  final_hash: String
-  final_height: bigint
+  destination_chain: String
+  final_evidence_hash: String
   id: Int
-  init_hash: String
-  init_height: bigint
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String
   result: String
   sender: String
+  settlement_hash: String
+  source_chain: String
+  user_initiated_hash: String
+  user_initiated_height: bigint
 }
 
 """aggregate stddev on columns"""
 type bridge_transaction_stddev_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """aggregate stddev_pop on columns"""
 type bridge_transaction_stddev_pop_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """aggregate stddev_samp on columns"""
 type bridge_transaction_stddev_samp_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """
@@ -3753,25 +3723,24 @@ input bridge_transaction_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input bridge_transaction_stream_cursor_value_input {
   amount: String
-  counterparty: String
-  counterparty_hash: String
-  direction: String
-  final_hash: String
-  final_height: bigint
+  destination_chain: String
+  final_evidence_hash: String
   id: Int
-  init_hash: String
-  init_height: bigint
-  operation_ids: [Int!]
+  operation_id: Int
   recipient: String
   result: String
   sender: String
+  settlement_hash: String
+  source_chain: String
+  user_initiated_hash: String
+  user_initiated_height: bigint
 }
 
 """aggregate sum on columns"""
 type bridge_transaction_sum_fields {
-  final_height: bigint
   id: Int
-  init_height: bigint
+  operation_id: Int
+  user_initiated_height: bigint
 }
 
 """
@@ -3782,31 +3751,16 @@ enum bridge_transaction_update_column {
   amount
 
   """column name"""
-  counterparty
+  destination_chain
 
   """column name"""
-  counterparty_hash
-
-  """column name"""
-  direction
-
-  """column name"""
-  final_hash
-
-  """column name"""
-  final_height
+  final_evidence_hash
 
   """column name"""
   id
 
   """column name"""
-  init_hash
-
-  """column name"""
-  init_height
-
-  """column name"""
-  operation_ids
+  operation_id
 
   """column name"""
   recipient
@@ -3816,6 +3770,18 @@ enum bridge_transaction_update_column {
 
   """column name"""
   sender
+
+  """column name"""
+  settlement_hash
+
+  """column name"""
+  source_chain
+
+  """column name"""
+  user_initiated_hash
+
+  """column name"""
+  user_initiated_height
 }
 
 input bridge_transaction_updates {
@@ -3831,23 +3797,23 @@ input bridge_transaction_updates {
 
 """aggregate var_pop on columns"""
 type bridge_transaction_var_pop_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """aggregate var_samp on columns"""
 type bridge_transaction_var_samp_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 """aggregate variance on columns"""
 type bridge_transaction_variance_fields {
-  final_height: Float
   id: Float
-  init_height: Float
+  operation_id: Float
+  user_initiated_height: Float
 }
 
 scalar coin
@@ -27990,3 +27956,4 @@ input vesting_period_variance_order_by {
   period_order: order_by
   vesting_account_id: order_by
 }
+

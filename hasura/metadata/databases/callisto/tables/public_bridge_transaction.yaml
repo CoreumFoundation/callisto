@@ -7,16 +7,15 @@ select_permissions:
     permission:
       columns:
         - id
-        - init_height
-        - final_height
-        - init_hash
-        - final_hash
-        - counterparty
-        - counterparty_hash
+        - user_initiated_height
+        - user_initiated_hash
+        - settlement_hash
+        - final_evidence_hash
+        - source_chain
+        - destination_chain
         - sender
         - recipient
         - amount
-        - direction
         - result
-        - operation_ids
+        - operation_id
       filter: {}
