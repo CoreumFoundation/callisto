@@ -7,6 +7,7 @@ select_permissions:
     permission:
       columns:
         - id
+        - operation_id
         - user_initiated_height
         - user_initiated_hash
         - settlement_hash
@@ -17,5 +18,4 @@ select_permissions:
         - recipient
         - amount
         - result
-        - operation_id
       filter: {}

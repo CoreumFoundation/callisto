@@ -33,11 +33,11 @@ func (s Source) Name() string {
 	return "remote"
 }
 
-// GetSendToXRPLOperationID returns the operation IDs of the send_to_xrpl operations
+// GetOutgoingPendingOperationID returns the operation ID of the outgoing operations
 // Implementation is based on the actual bridge relayer logic, for simple replication of the code in the future,
 // the same style of the reference code is used.
 // https://github.com/CoreumFoundation/coreumbridge-xrpl/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
-func (s *Source) GetSendToXRPLOperationID(
+func (s *Source) GetOutgoingPendingOperationID(
 	contractAddress string,
 	recipient string,
 	height uint64,

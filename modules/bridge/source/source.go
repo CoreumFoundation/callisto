@@ -1,7 +1,7 @@
 package source
 
 type Source interface {
-	GetSendToXRPLOperationID(
+	GetOutgoingPendingOperationID(
 		contractAddress string,
 		recipient string,
 		height uint64,

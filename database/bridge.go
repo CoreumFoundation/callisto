@@ -22,13 +22,10 @@ func (db *Db) SaveOutgoingTransfer(tx types.BridgeTransaction) error {
 		tx.Amount,
 		tx.OperationID,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-// GetOutgoingPendingTransaction saves the outgoing pending transaction to the database
+// GetOutgoingPendingTransaction retrieves the outgoing pending transaction from the database
 func (db *Db) GetOutgoingPendingTransaction(operationID uint32) (*types.BridgeTransaction, error) {
 	stmt := `
 	SELECT user_initiated_hash, source_chain, destination_chain, sender, recipient, amount, operation_id
@@ -69,10 +66,7 @@ func (db *Db) SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operati
 		evidence.RelayerAddress,
 		operationId,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // SaveOutgoingFinalEvidence saves the outgoing final evidence to the database
@@ -101,10 +95,7 @@ func (db *Db) SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operation
 		settlementHash,
 		txResult,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // SaveIncomingPendingTxAndEvidence saves the incoming pending transaction and evidence to the database
@@ -137,15 +128,11 @@ func (db *Db) SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, evide
 		evidence.Hash,
 		evidence.RelayerAddress,
 	)
-
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-// SaveIncomingFinalTxAndEvidence saves the incoming final transaction and evidence to the database
-func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, sourceChain types.Chain, sourceHash string, txResult types.BridgeTxResult) error {
+// SaveIncomingFinalizedTxAndEvidence saves the incoming final transaction and evidence to the database
+func (db *Db) SaveIncomingFinalizedTxAndEvidence(evidence types.BridgeEvidence, sourceChain types.Chain, sourceHash string, txResult types.BridgeTxResult) error {
 	stmt := `
 	WITH updated_transaction AS (
 		UPDATE bridge_transaction
@@ -167,9 +154,5 @@ func (db *Db) SaveIncomingFinalTxAndEvidence(evidence types.BridgeEvidence, sour
 		sourceHash,
 		txResult,
 	)
-
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

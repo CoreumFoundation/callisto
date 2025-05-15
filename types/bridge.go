@@ -42,6 +42,8 @@ var StrToChain = map[string]Chain{
 type BridgeTransaction struct {
 	// ID is the auto-generated serial ID of the transaction.
 	ID int64 `json:"id"`
+	// OperationID is the operation ID of the transaction (it might be null if there are no pending operations).
+	OperationID uint32 `json:"operation_id"`
 	// UserInitiatedHeight is the height of the transaction when it is originated.
 	UserInitiatedHeight int64 `json:"user_initiated_height"`
 	// UserInitiatedHash is the hash of the transaction when it is originated.
@@ -62,8 +64,6 @@ type BridgeTransaction struct {
 	Amount string `json:"amount"`
 	// Result is the result of the transaction.
 	Result BridgeTxResult `json:"result"`
-	// OperationID is the operation ID of the transaction (it might be null if there are no pending operations).
-	OperationID uint32 `json:"operation_id"`
 }
 
 // NewOutgoingPendingBridgeTransaction creates a new outgoing pending bridge transaction.

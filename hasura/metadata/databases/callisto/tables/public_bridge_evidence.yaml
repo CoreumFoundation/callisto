@@ -8,7 +8,7 @@ select_permissions:
       columns:
         - id
         - transaction_id
-        - height  
+        - height
         - hash
         - relayer_address
         - threshold_reached

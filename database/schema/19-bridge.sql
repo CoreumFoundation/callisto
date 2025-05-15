@@ -2,6 +2,7 @@
 CREATE TABLE
     bridge_transaction (
         id SERIAL NOT NULL PRIMARY KEY,
+        operation_id INTEGER NULL DEFAULT NULL,
         user_initiated_height BIGINT NULL,
         user_initiated_hash TEXT NOT NULL,
         settlement_hash TEXT NULL DEFAULT NULL,
@@ -11,8 +12,7 @@ CREATE TABLE
         sender TEXT NOT NULL,
         recipient TEXT NOT NULL,
         amount TEXT NOT NULL,
-        result TEXT NULL DEFAULT NULL,
-        operation_id INTEGER NULL DEFAULT NULL
+        result TEXT NULL DEFAULT NULL
     );
 CREATE INDEX bridge_transaction_user_initiated_hash_idx ON bridge_transaction (user_initiated_hash);
 CREATE INDEX bridge_transaction_sender_idx ON bridge_transaction (sender);
