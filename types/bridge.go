@@ -3,6 +3,8 @@ package types
 import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 // BridgeTxResult is the result of the bridge transaction.
@@ -10,14 +12,14 @@ import (
 type BridgeTxResult string
 
 const (
-	BridgeTxResultUnknown  BridgeTxResult = "UNKNOWN"
+	BridgeTxResultPending  BridgeTxResult = "pending"
 	BridgeTxResultAccepted BridgeTxResult = "transaction_accepted"
 	BridgeTxResultRejected BridgeTxResult = "transaction_rejected"
 	BridgeTxResultInvalid  BridgeTxResult = "transaction_invalid"
 )
 
 var BridgeTxResultToStr = map[string]BridgeTxResult{
-	"UNKNOWN":              BridgeTxResultUnknown,
+	"pending":              BridgeTxResultPending,
 	"transaction_accepted": BridgeTxResultAccepted,
 	"transaction_rejected": BridgeTxResultRejected,
 	"transaction_invalid":  BridgeTxResultInvalid,
@@ -43,61 +45,45 @@ type BridgeTransaction struct {
 	// ID is the auto-generated serial ID of the transaction.
 	ID int64 `json:"id"`
 	// OperationID is the operation ID of the transaction (it might be null if there are no pending operations).
-	OperationID uint32 `json:"operation_id"`
-	// UserInitiatedHeight is the height of the transaction when it is originated.
-	UserInitiatedHeight int64 `json:"user_initiated_height"`
+	OperationID *string `json:"operation_id"`
+	// Height is the height of the transaction when it is originated.
+	Height *int64 `json:"height"`
 	// UserInitiatedHash is the hash of the transaction when it is originated.
 	UserInitiatedHash string `json:"user_initiated_hash"`
-	// SettlementHash is the hash of the actual fund transfer transaction.
-	SettlementHash string `json:"settlement_hash"`
-	// FinalEvidenceHash is the hash of the evidence when it is finalized.
-	FinalEvidenceHash string `json:"final_evidence_hash"`
 	// SourceChain is the source chain of the transfer origin.
 	SourceChain Chain `json:"source_chain"`
 	// DestinationChain is the destination chain of the transfer.
 	DestinationChain Chain `json:"destination_chain"`
+	// Issuer is the issuer address of the transfer.
+	Issuer *string `json:"issuer"`
 	// Sender is the sender address of the transfer.
-	Sender string `json:"sender"`
+	Sender *string `json:"sender"`
 	// Recipient is the recipient address of the transfer.
 	Recipient string `json:"recipient"`
-	// Amount is the amount of the transfer.§
+	// Denom is the denomination of the amount.
+	Denom string `json:"denom"`
+	// Amount is the amount of the transfer.
 	Amount string `json:"amount"`
-	// Result is the result of the transaction.
-	Result BridgeTxResult `json:"result"`
 }
 
-// NewOutgoingPendingBridgeTransaction creates a new outgoing pending bridge transaction.
-func NewOutgoingPendingBridgeTransaction(
-	userInitiatedHeight uint64,
+// NewBridgeTransaction creates a bridge transaction.
+func NewBridgeTransaction(
+	operationID *string,
+	height *int64,
 	userInitiatedHash string,
 	sourceChain, destinationChain Chain,
-	sender, recipient, amount string,
-	operationID uint32,
+	issuer, sender *string, recipient, denom, amount string,
 ) BridgeTransaction {
 	return BridgeTransaction{
-		UserInitiatedHeight: int64(userInitiatedHeight),
-		UserInitiatedHash:   userInitiatedHash,
-		SourceChain:         sourceChain,
-		DestinationChain:    destinationChain,
-		Sender:              sender,
-		Recipient:           recipient,
-		Amount:              amount,
-		OperationID:         operationID,
-	}
-}
-
-// NewIncomingPendingBridgeTransaction creates a new incoming pending bridge transaction.
-func NewIncomingPendingBridgeTransaction(
-	userInitiatedHash string,
-	sourceChain, destinationChain Chain,
-	sender, recipient, amount string,
-) BridgeTransaction {
-	return BridgeTransaction{
+		OperationID:       operationID,
+		Height:            height,
 		UserInitiatedHash: userInitiatedHash,
 		SourceChain:       sourceChain,
 		DestinationChain:  destinationChain,
+		Issuer:            issuer,
 		Sender:            sender,
 		Recipient:         recipient,
+		Denom:             denom,
 		Amount:            amount,
 	}
 }
@@ -116,16 +102,31 @@ type BridgeEvidence struct {
 	RelayerAddress string `json:"relayer_address"`
 	// ThresholdReached is the flag indicating whether the threshold is reached which means transfer is finalized.
 	ThresholdReached bool `json:"threshold_reached"`
+	// SettlementHash is the hash of the actual fund transfer transaction.
+	SettlementHash *string `json:"settlement_hash"`
+	// Result is the result of the transaction.
+	Result BridgeTxResult `json:"result"`
 }
 
 // NewBridgeEvidence creates a new bridge evidence.
-func NewBridgeEvidence(height uint64, hash string, relayer string, thresholdReached bool) BridgeEvidence {
+func NewBridgeEvidence(
+	height uint64,
+	hash string,
+	relayerAddress string,
+	thresholdReached bool,
+) BridgeEvidence {
 	return BridgeEvidence{
 		Height:           int64(height),
 		Hash:             hash,
-		RelayerAddress:   relayer,
+		RelayerAddress:   relayerAddress,
 		ThresholdReached: thresholdReached,
+		Result:           BridgeTxResultPending,
 	}
+}
+
+func (e *BridgeEvidence) SetFinalProps(settlementHash string, result BridgeTxResult) {
+	e.SettlementHash = &settlementHash
+	e.Result = result
 }
 
 // *** the following code is a copy of the original code from the bridge relayer ***

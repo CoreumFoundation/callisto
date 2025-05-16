@@ -23,12 +23,9 @@ type TxHandler interface {
 // database operations in the bridge module. It is used to interact with
 // the database and perform operations such as saving transactions and evidence.
 type DbHandler interface {
-	GetOutgoingPendingTransaction(id uint32) (*types.BridgeTransaction, error)
-	SaveOutgoingTransfer(tx types.BridgeTransaction) error
-	SaveOutgoingFinalEvidence(evidence types.BridgeEvidence, operationId uint32, txResult types.BridgeTxResult, settlementHash string) error
-	SaveOutgoingPendingEvidence(evidence types.BridgeEvidence, operationId uint32) error
-	SaveIncomingFinalizedTxAndEvidence(evidence types.BridgeEvidence, sourceChain types.Chain, sourceHash string, txResult types.BridgeTxResult) error
-	SaveIncomingPendingTxAndEvidence(tx types.BridgeTransaction, evidence types.BridgeEvidence) error
+	GetBridgeTransaction(id string) (types.BridgeTransaction, error)
+	SaveBridgeTransaction(tx types.BridgeTransaction) (int64, error)
+	SaveBridgeEvidence(evidence types.BridgeEvidence) (int64, error)
 }
 
 var msgFilter = map[string]bool{

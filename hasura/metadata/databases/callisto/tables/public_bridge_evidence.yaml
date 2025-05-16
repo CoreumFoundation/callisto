@@ -12,4 +12,6 @@ select_permissions:
         - hash
         - relayer_address
         - threshold_reached
+        - settlement_hash
+        - result
       filter: {}

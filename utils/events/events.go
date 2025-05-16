@@ -1,10 +1,18 @@
 package events
 
 import (
+	"fmt"
 	"strconv"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// JunoAttributeNotFoundError returns an error message indicating that the attribute was not found
+// in the event with the given type.
+func JunoAttributeNotFoundError(attr string, event abci.Event) string {
+	return fmt.Sprintf("no attribute with key %s found inside event with type %s", attr, event.Type)
+}
 
 // FindEventByType returns the event with the given type
 func FindEventByType(events sdk.StringEvents, eventType string) (sdk.StringEvent, bool) {

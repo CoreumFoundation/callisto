@@ -2,22 +2,24 @@
 CREATE TABLE
     bridge_transaction (
         id SERIAL NOT NULL PRIMARY KEY,
-        operation_id INTEGER NULL DEFAULT NULL,
-        user_initiated_height BIGINT NULL,
+        operation_unique_id TEXT NULL DEFAULT NULL,
+        height BIGINT NULL,
         user_initiated_hash TEXT NOT NULL,
-        settlement_hash TEXT NULL DEFAULT NULL,
-        final_evidence_hash TEXT NULL DEFAULT NULL,
         source_chain TEXT NOT NULL,
         destination_chain TEXT NOT NULL,
-        sender TEXT NOT NULL,
+        issuer TEXT NULL DEFAULT NULL,
+        sender TEXT NULL DEFAULT NULL,
         recipient TEXT NOT NULL,
-        amount TEXT NOT NULL,
-        result TEXT NULL DEFAULT NULL
+        denom TEXT NOT NULL,
+        amount TEXT NOT NULL
     );
+
 CREATE INDEX bridge_transaction_user_initiated_hash_idx ON bridge_transaction (user_initiated_hash);
+CREATE INDEX bridge_transaction_operation_unique_id_idx ON bridge_transaction (operation_unique_id); -- for GetBridgeTransaction
+CREATE INDEX bridge_transaction_operation_unique_id_user_initiated_hash_idx ON bridge_transaction (operation_unique_id, user_initiated_hash); -- for SaveBridgeTransaction
 CREATE INDEX bridge_transaction_sender_idx ON bridge_transaction (sender);
 CREATE INDEX bridge_transaction_recipient_idx ON bridge_transaction (recipient);
-CREATE INDEX bridge_transaction_final_evidence_hash_operation_id_idx ON bridge_transaction (final_evidence_hash, operation_id);
+
 
 /* ---- Evidence ---- */
 CREATE TABLE
@@ -27,7 +29,11 @@ CREATE TABLE
         height BIGINT NOT NULL REFERENCES block (height),
         hash TEXT NOT NULL, --indexed
         relayer_address TEXT NOT NULL, --indexed
-        threshold_reached BOOLEAN NOT NULL
+        threshold_reached BOOLEAN NOT NULL,
+        settlement_hash TEXT NULL DEFAULT NULL,
+        result TEXT NULL DEFAULT NULL
     );
+
 CREATE INDEX bridge_evidence_hash_idx ON bridge_evidence (hash);
 CREATE INDEX bridge_evidence_relayer_address_idx ON bridge_evidence (relayer_address);
+CREATE INDEX bridge_evidence_relayer_address_hash_idx ON bridge_evidence (relayer_address, hash); -- for SaveBridgeEvidence
