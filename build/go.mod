@@ -1,13 +1,16 @@
 module github.com/CoreumFoundation/callisto/build
 
-go 1.23.3
+go 1.24
+
+toolchain go1.24.3
 
 // Crust replacements
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-require github.com/CoreumFoundation/crust v0.0.0-20250404130536-23de310e6eb8
-
-require github.com/CoreumFoundation/crust/znet v0.0.0-20250404130536-23de310e6eb8
+require (
+	github.com/CoreumFoundation/crust v0.0.0-20250519091438-152b10021791
+	github.com/CoreumFoundation/crust/znet v0.0.0-20250519091438-152b10021791
+)
 
 require (
 	cel.dev/expr v0.19.0 // indirect
@@ -34,7 +37,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/CoreumFoundation/coreum-tools v0.4.1-0.20241202115740-dbc6962a4d0a // indirect
-	github.com/CoreumFoundation/coreum/v5 v5.0.0-20250325092415-36505c89c3fb // indirect
+	github.com/CoreumFoundation/coreum/v6 v6.0.0-20250421142245-52bdcb2a0560 // indirect
 	github.com/CosmWasm/wasmd v0.54.0 // indirect
 	github.com/CosmWasm/wasmvm/v2 v2.2.2 // indirect
 	github.com/DataDog/datadog-go v4.8.3+incompatible // indirect
