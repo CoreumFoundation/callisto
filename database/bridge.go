@@ -77,7 +77,7 @@ func (db *Db) SaveBridgeEvidence(evidence types.BridgeEvidence) (int64, error) {
 	WITH selected_ev AS (
 		SELECT id
 		FROM bridge_evidence
-		WHERE hash = $3 and relayer_address = $4
+		WHERE transaction_id = $1 and relayer_address = $4
     ), inserted_ev AS (
 		INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached, settlement_hash, result) 
 		select $1, $2, $3, $4, $5, $6::TEXT, $7
