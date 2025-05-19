@@ -27,8 +27,8 @@ CREATE TABLE
         id SERIAL NOT NULL PRIMARY KEY,
         transaction_id BIGINT NOT NULL REFERENCES bridge_transaction (id),
         height BIGINT NOT NULL REFERENCES block (height),
-        hash TEXT NOT NULL, --indexed
-        relayer_address TEXT NOT NULL, --indexed
+        hash TEXT NOT NULL,
+        relayer_address TEXT NOT NULL,
         threshold_reached BOOLEAN NOT NULL,
         settlement_hash TEXT NULL DEFAULT NULL,
         result TEXT NULL DEFAULT NULL
