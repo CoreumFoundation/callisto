@@ -3485,7 +3485,6 @@ type bridge_transaction {
   destination_chain: String!
   height: bigint
   id: Int!
-  issuer: String
   operation_unique_id: String
   recipient: String!
   sender: String
@@ -3536,7 +3535,6 @@ input bridge_transaction_bool_exp {
   destination_chain: String_comparison_exp
   height: bigint_comparison_exp
   id: Int_comparison_exp
-  issuer: String_comparison_exp
   operation_unique_id: String_comparison_exp
   recipient: String_comparison_exp
   sender: String_comparison_exp
@@ -3571,7 +3569,6 @@ input bridge_transaction_insert_input {
   destination_chain: String
   height: bigint
   id: Int
-  issuer: String
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3586,7 +3583,6 @@ type bridge_transaction_max_fields {
   destination_chain: String
   height: bigint
   id: Int
-  issuer: String
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3601,7 +3597,6 @@ type bridge_transaction_min_fields {
   destination_chain: String
   height: bigint
   id: Int
-  issuer: String
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3636,7 +3631,6 @@ input bridge_transaction_order_by {
   destination_chain: order_by
   height: order_by
   id: order_by
-  issuer: order_by
   operation_unique_id: order_by
   recipient: order_by
   sender: order_by
@@ -3669,9 +3663,6 @@ enum bridge_transaction_select_column {
   id
 
   """column name"""
-  issuer
-
-  """column name"""
   operation_unique_id
 
   """column name"""
@@ -3696,7 +3687,6 @@ input bridge_transaction_set_input {
   destination_chain: String
   height: bigint
   id: Int
-  issuer: String
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3740,7 +3730,6 @@ input bridge_transaction_stream_cursor_value_input {
   destination_chain: String
   height: bigint
   id: Int
-  issuer: String
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3772,9 +3761,6 @@ enum bridge_transaction_update_column {
 
   """column name"""
   id
-
-  """column name"""
-  issuer
 
   """column name"""
   operation_unique_id

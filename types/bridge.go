@@ -54,8 +54,6 @@ type BridgeTransaction struct {
 	SourceChain Chain `json:"source_chain"`
 	// DestinationChain is the destination chain of the transfer.
 	DestinationChain Chain `json:"destination_chain"`
-	// Issuer is the issuer address of the transfer.
-	Issuer *string `json:"issuer"`
 	// Sender is the sender address of the transfer.
 	Sender *string `json:"sender"`
 	// Recipient is the recipient address of the transfer.
@@ -72,7 +70,7 @@ func NewBridgeTransaction(
 	height *int64,
 	userInitiatedHash string,
 	sourceChain, destinationChain Chain,
-	issuer, sender *string, recipient, denom, amount string,
+	sender *string, recipient, denom, amount string,
 ) BridgeTransaction {
 	return BridgeTransaction{
 		OperationUniqueID: operationUniqueID,
@@ -80,7 +78,6 @@ func NewBridgeTransaction(
 		UserInitiatedHash: userInitiatedHash,
 		SourceChain:       sourceChain,
 		DestinationChain:  destinationChain,
-		Issuer:            issuer,
 		Sender:            sender,
 		Recipient:         recipient,
 		Denom:             denom,

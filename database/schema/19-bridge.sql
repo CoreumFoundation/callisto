@@ -7,7 +7,6 @@ CREATE TABLE
         user_initiated_hash TEXT NOT NULL,
         source_chain TEXT NOT NULL,
         destination_chain TEXT NOT NULL,
-        issuer TEXT NULL DEFAULT NULL,
         sender TEXT NULL DEFAULT NULL,
         recipient TEXT NOT NULL,
         denom TEXT NOT NULL,

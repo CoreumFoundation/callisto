@@ -13,8 +13,8 @@ func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) 
 		FROM bridge_transaction
 		WHERE user_initiated_hash = $3 AND ($1::TEXT IS NULL OR operation_unique_id = $1::TEXT)
 	), inserted_tx AS (
-		INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, issuer, sender, recipient, denom, amount)
-		SELECT $1::TEXT, $2::BIGINT, $3, $4, $5, $6::TEXT, $7::TEXT, $8, $9, $10
+		INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount)
+		SELECT $1::TEXT, $2::BIGINT, $3, $4, $5, $6::TEXT, $7, $8, $9
 		WHERE NOT EXISTS (SELECT 1 FROM selected_tx)
 		RETURNING id
 	)
@@ -28,7 +28,6 @@ func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) 
 		tx.UserInitiatedHash,
 		tx.SourceChain,
 		tx.DestinationChain,
-		tx.Issuer,
 		tx.Sender,
 		tx.Recipient,
 		tx.Denom,
@@ -41,7 +40,7 @@ func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) 
 // It returns the transaction if found, or an error if not found.
 func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransaction, error) {
 	stmt := `
-	SELECT operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, issuer, sender, recipient, denom, amount
+	SELECT operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount
 	FROM bridge_transaction
 	WHERE operation_unique_id = $1::TEXT
 `
@@ -55,7 +54,6 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 		&bridgeTx.UserInitiatedHash,
 		&bridgeTx.SourceChain,
 		&bridgeTx.DestinationChain,
-		&bridgeTx.Issuer,
 		&bridgeTx.Sender,
 		&bridgeTx.Recipient,
 		&bridgeTx.Denom,
@@ -80,7 +78,7 @@ func (db *Db) SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error) 
 		WHERE transaction_id = $1 and relayer_address = $4
     ), inserted_ev AS (
 		INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached, settlement_hash, result) 
-		select $1, $2, $3, $4, $5, $6::TEXT, $7
+		SELECT $1, $2, $3, $4, $5, $6::TEXT, $7
 		WHERE NOT EXISTS (SELECT 1 FROM selected_ev)
 		RETURNING id
 	)

@@ -136,7 +136,6 @@ func (h *XrplMsgHandler) extractCoreumToXrplTransaction(event abci.Event) (*type
 		h.tx.TxHash,
 		types.ChainCoreum,
 		types.ChainXRPL,
-		nil,
 		&sender.Value,
 		recipient.Value,
 		parsedCoin.Denom,
@@ -181,13 +180,13 @@ func (h *XrplMsgHandler) handleSaveEvidence(event abci.Event) (*types.BridgeTran
 	if operationType.Value == "coreum_to_xrpl_transfer" {
 		operationUniqueIdAttr, err := juno.FindAttributeByKey(event, "operation_unique_id")
 		if err != nil && err.Error() != events.JunoAttributeNotFoundError("operation_unique_id", event) {
-			return nil, nil, fmt.Errorf("error while getting operation type attribute in coreum_to_xrpl_transfer: %s", err)
+			return nil, nil, fmt.Errorf("error while getting operation_unique_id attribute in coreum_to_xrpl_transfer: %s", err)
 		}
 		operationUniqueId := operationUniqueIdAttr.Value
 		if operationUniqueId == "" {
 			operationIdAttr, err := juno.FindAttributeByKey(event, "operation_id")
 			if err != nil {
-				return nil, nil, fmt.Errorf("error while getting operation id in coreum_to_xrpl_transfer: %s", err)
+				return nil, nil, fmt.Errorf("error while getting operation_id attribute in coreum_to_xrpl_transfer: %s", err)
 			}
 			operationUniqueId = operationIdAttr.Value
 		}
@@ -235,16 +234,19 @@ func (h *XrplMsgHandler) handleSaveEvidence(event abci.Event) (*types.BridgeTran
 			return nil, nil, fmt.Errorf("error while getting amount attribute: %s", err)
 		}
 
+		// concat the issuer and currency to create the denom alias,
+		// this will store the issuer and currency in the denom field
+		denom := issuer.Value + "-" + currency.Value
+
 		transaction := types.NewBridgeTransaction(
 			nil,
 			nil,
 			xrplTxHash.Value,
 			types.ChainXRPL,
 			types.ChainCoreum,
-			&issuer.Value,
 			nil,
 			recipient.Value,
-			currency.Value,
+			denom,
 			amount.Value,
 		)
 
