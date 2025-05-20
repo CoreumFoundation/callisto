@@ -49,3 +49,27 @@ func FindEventsByMsgIndex(events sdk.StringEvents, msgIndex int) sdk.StringEvent
 	}
 	return res
 }
+func FindEventMap(event sdk.StringEvent, requiredAttributes []string, optionalAttributes []string) (map[string]string, error) {
+	result := make(map[string]string)
+
+	// Check for required attributes
+	for _, key := range requiredAttributes {
+		attr, ok := FindAttributeByKey(event, key)
+		if !ok {
+			return nil, fmt.Errorf("required attribute %s not found", key)
+		}
+		result[key] = attr.Value
+	}
+
+	// Check for optional attributes
+	for _, key := range optionalAttributes {
+		attr, ok := FindAttributeByKey(event, key)
+		if ok {
+			result[key] = attr.Value
+		} else {
+			result[key] = "" // Set to empty string if not found
+		}
+	}
+
+	return result, nil
+}

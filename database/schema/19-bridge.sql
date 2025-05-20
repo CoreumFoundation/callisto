@@ -12,10 +12,8 @@ CREATE TABLE
         denom TEXT NOT NULL,
         amount TEXT NOT NULL
     );
-
-CREATE INDEX bridge_transaction_user_initiated_hash_idx ON bridge_transaction (user_initiated_hash);
+CREATE UNIQUE INDEX bridge_transaction_user_initiated_hash_idx ON bridge_transaction (user_initiated_hash);
 CREATE INDEX bridge_transaction_operation_unique_id_idx ON bridge_transaction (operation_unique_id); -- for GetBridgeTransaction
-CREATE INDEX bridge_transaction_operation_unique_id_user_initiated_hash_idx ON bridge_transaction (operation_unique_id, user_initiated_hash); -- for SaveBridgeTransaction
 CREATE INDEX bridge_transaction_sender_idx ON bridge_transaction (sender);
 CREATE INDEX bridge_transaction_recipient_idx ON bridge_transaction (recipient);
 
@@ -27,6 +25,7 @@ CREATE TABLE
         transaction_id BIGINT NOT NULL REFERENCES bridge_transaction (id),
         height BIGINT NOT NULL REFERENCES block (height),
         hash TEXT NOT NULL,
+        msg_index BIGINT NOT NULL,
         relayer_address TEXT NOT NULL,
         threshold_reached BOOLEAN NOT NULL,
         settlement_hash TEXT NULL DEFAULT NULL,
@@ -35,4 +34,4 @@ CREATE TABLE
 
 CREATE INDEX bridge_evidence_hash_idx ON bridge_evidence (hash);
 CREATE INDEX bridge_evidence_relayer_address_idx ON bridge_evidence (relayer_address);
-CREATE INDEX bridge_evidence_relayer_address_hash_idx ON bridge_evidence (relayer_address, hash); -- for SaveBridgeEvidence
+CREATE UNIQUE INDEX bridge_evidence_hash_msg_index_idx ON bridge_evidence (hash, msg_index); -- for SaveBridgeEvidence

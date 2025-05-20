@@ -3,18 +3,22 @@ package bridge
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	relayertypes "github.com/CoreumFoundation/coreumbridge-xrpl/relayer/coreum"
+
 	bridgesource "github.com/forbole/callisto/v4/modules/bridge/source"
 	"github.com/forbole/callisto/v4/types"
-	"github.com/forbole/callisto/v4/utils/events"
-	juno "github.com/forbole/juno/v6/types"
+	eventsutil "github.com/forbole/callisto/v4/utils/events"
 )
 
 const (
-	senderAttribute            = "sender"
+	OperationTypeCoreumToXrplTransfer = "coreum_to_xrpl_transfer"
+)
+
+const (
 	recipientAttribute         = "recipient"
 	coinAttribute              = "coin"
 	operationTypeAttribute     = "operation_type"
@@ -26,11 +30,7 @@ const (
 	currencyAttribute          = "currency"
 	amountAttribute            = "amount"
 	operationIdAttribute       = "operation_id"
-	operationUniqueIdAttribute = "operation_unique_id"
-)
-
-const (
-	OperationTypeCoreumToXrplTransfer = "coreum_to_xrpl_transfer"
+	operationUniqueIDAttribute = "operation_unique_id"
 )
 
 // XrplMsgHandler is a struct that implements the TxHandler interface
@@ -38,19 +38,21 @@ const (
 type XrplMsgHandler struct {
 	smartContractAddress string
 	height               uint64
-	msg                  juno.Message
-	tx                   *juno.Transaction
+	txHash               string
+	msgIndex             int
+	msgEvents            sdk.StringEvents
 	db                   DbHandler
 	bridgesource.Source
 }
 
 // NewXrplMsgHandler creates a new XrplMsgHandler instance
-func NewXrplMsgHandler(smartContractAddress string, height uint64, msg juno.Message, tx *juno.Transaction, db DbHandler, source bridgesource.Source) *XrplMsgHandler {
+func NewXrplMsgHandler(smartContractAddress string, height uint64, txHash string, msgIndex int, msgEvents sdk.StringEvents, db DbHandler, source bridgesource.Source) *XrplMsgHandler {
 	return &XrplMsgHandler{
 		smartContractAddress: smartContractAddress,
 		height:               height,
-		msg:                  msg,
-		tx:                   tx,
+		txHash:               txHash,
+		msgIndex:             msgIndex,
+		msgEvents:            msgEvents,
 		db:                   db,
 		Source:               source,
 	}
@@ -58,222 +60,192 @@ func NewXrplMsgHandler(smartContractAddress string, height uint64, msg juno.Mess
 
 // HandleMsg handles the message for the XrplMsgHandler
 func (h *XrplMsgHandler) HandleMsg() error {
-	wasmEvents := juno.FindEventsByType(h.tx.Events, "wasm")
-	for _, event := range wasmEvents {
-		action, err := juno.FindAttributeByKey(event, "action")
-		if err != nil {
-			return fmt.Errorf("error while getting action attribute: %s", err)
-		}
-
-		var transaction *types.BridgeTransaction
-		var evidence *types.BridgeEvidence
-		switch action.Value {
-		case "send_to_xrpl":
-			transaction, err = h.extractCoreumToXrplTransaction(event)
-			if err != nil {
-				return fmt.Errorf("error while extracting coreum to xrpl transaction: %s", err)
-			}
-		case "save_evidence":
-			transaction, evidence, err = h.extractXrplToCoreumTransactionAndEvidence(event)
-			if err != nil {
-				return fmt.Errorf("error while handling save evidence: %s", err)
-			}
-		default:
+	for _, msgEvent := range h.msgEvents {
+		if msgEvent.Type != wasmtypes.WasmModuleEventType {
 			continue
 		}
 
-		// if the transaction is nil, it means that the event is not relevant
-		// it happens if the event is save_evidence and operation_type is not
-		// coreum_to_xrpl_transfer or empty which is xrpl to coreum evidence.
-		if transaction == nil {
-			continue
-		}
-
-		transactionId, err := h.db.SaveBridgeTransaction(transaction)
-		if err != nil {
-			return fmt.Errorf("error while saving transaction: %s", err)
-		}
-
-		if evidence != nil {
-			evidence.TransactionId = transactionId
-			_, err = h.db.SaveBridgeEvidence(evidence)
-			if err != nil {
-				return fmt.Errorf("error while saving evidence: %s", err)
+		for _, attr := range msgEvent.Attributes {
+			if attr.Key == sdk.AttributeKeyAction {
+				switch attr.Value {
+				case string(relayertypes.ExecSendToXRPL):
+					if err := h.handleCoreumToXrplEvent(msgEvent); err != nil {
+						return fmt.Errorf("error while extracting coreum to xrpl transaction: %w", err)
+					}
+				case string(relayertypes.ExecMethodSaveEvidence):
+					if err := h.handleSaveEvidenceEvent(msgEvent); err != nil {
+						return fmt.Errorf("error while handling save evidence: %w", err)
+					}
+				}
 			}
 		}
+
 	}
+
 	return nil
 }
 
-// extractCoreumToXrplTransaction extracts the coreum to xrpl transaction from the event
+// handleCoreumToXrplEvent extracts the coreum to xrpl transaction from the event
 // It returns the transaction and an error if any
-func (h *XrplMsgHandler) extractCoreumToXrplTransaction(event abci.Event) (*types.BridgeTransaction, error) {
-	sender, err := juno.FindAttributeByKey(event, senderAttribute)
+func (h *XrplMsgHandler) handleCoreumToXrplEvent(event sdk.StringEvent) error {
+	parsedEvent, err := eventsutil.FindEventMap(event, []string{
+		sdk.AttributeKeySender,
+		recipientAttribute,
+		coinAttribute,
+	}, []string{
+		operationUniqueIDAttribute,
+	})
 	if err != nil {
-		return nil, err
-	}
-	recipient, err := juno.FindAttributeByKey(event, recipientAttribute)
-	if err != nil {
-		return nil, err
-	}
-	coin, err := juno.FindAttributeByKey(event, coinAttribute)
-	if err != nil {
-		return nil, err
+		return err
 	}
 
-	operationUniqueIdAttr, err := juno.FindAttributeByKey(event, operationUniqueIdAttribute)
-	if err != nil && err.Error() != events.JunoAttributeNotFoundError(operationUniqueIdAttribute, event) {
-		return nil, err
-	}
-	operationUniqueID := operationUniqueIdAttr.Value
+	operationUniqueID := parsedEvent[operationUniqueIDAttribute]
 	if operationUniqueID == "" {
 		// legacy operation id query
-		operationId, err := h.Source.GetOutgoingPendingOperationSequence(h.smartContractAddress, recipient.Value, h.height)
+		operationId, err := h.Source.GetOutgoingPendingOperationSequence(h.smartContractAddress, parsedEvent[recipientAttribute], h.height)
 		if err != nil {
-			return nil, err
+			return err
 		}
-
-		operationUniqueID = strconv.FormatUint(uint64(operationId), 10)
+		operationIdStr := strconv.FormatUint(uint64(operationId), 10)
+		operationUniqueID = operationIdStr
 	}
 
-	pendingTx, err := h.db.GetBridgeTransaction(operationUniqueID)
-	if err != nil && !strings.Contains(err.Error(), "sql: no rows in result set") {
-		return nil, fmt.Errorf("error while getting pending transaction: %s", err)
-	}
-	if pendingTx.ID != 0 {
-		return nil, fmt.Errorf("pending transaction already exists for operation unique id %v", operationUniqueID)
-	}
-
-	parsedCoin, err := sdk.ParseCoinNormalized(coin.Value)
+	parsedCoin, err := sdk.ParseCoinNormalized(parsedEvent[coinAttribute])
 	if err != nil {
-		return nil, fmt.Errorf("error while parsing coins: %s", err)
+		return fmt.Errorf("error while parsing coins: %s", err)
 	}
 
 	heightInt64 := int64(h.height)
+	parsedSender := parsedEvent[sdk.AttributeKeySender]
 	transaction := types.NewBridgeTransaction(
 		&operationUniqueID,
 		&heightInt64,
-		h.tx.TxHash,
+		h.txHash,
 		types.ChainCoreum,
 		types.ChainXRPL,
-		&sender.Value,
-		recipient.Value,
+		&parsedSender,
+		parsedEvent[recipientAttribute],
 		parsedCoin.Denom,
 		parsedCoin.Amount.String(),
 	)
-	return &transaction, nil
+
+	_, err = h.db.SaveBridgeTransaction(&transaction)
+	if err != nil {
+		return fmt.Errorf("error while saving transaction: %s", err)
+	}
+
+	return nil
 }
 
-// extractXrplToCoreumTransactionAndEvidence handles the save evidence event and returns the transaction and evidence
+// handleSaveEvidenceEvent handles the save evidence event and returns the transaction and evidence
 // If the event is not a save evidence event, it returns an empty transaction and evidence
-func (h *XrplMsgHandler) extractXrplToCoreumTransactionAndEvidence(event abci.Event) (*types.BridgeTransaction, *types.BridgeEvidence, error) {
-	operationType, err := juno.FindAttributeByKey(event, operationTypeAttribute)
-	if err != nil && err.Error() != events.JunoAttributeNotFoundError(operationTypeAttribute, event) {
-		return nil, nil, err
+func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
+	operationType, found := eventsutil.FindAttributeByKey(event, operationTypeAttribute)
+	if found && operationType.Value != OperationTypeCoreumToXrplTransfer {
+		return nil
 	}
 
-	if operationType.Value != "" && operationType.Value != OperationTypeCoreumToXrplTransfer {
-		return nil, nil, nil
-	}
-
-	relayerAcc, err := juno.FindAttributeByKey(event, senderAttribute)
+	evt, err := eventsutil.FindEventMap(event, []string{
+		sdk.AttributeKeySender,
+		thresholdReachedAttribute,
+	}, []string{})
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	thresholdReached, err := juno.FindAttributeByKey(event, thresholdReachedAttribute)
+	thresholdReachedValue, err := strconv.ParseBool(evt[thresholdReachedAttribute])
 	if err != nil {
-		return nil, nil, err
-	}
-	thresholdReachedValue, err := strconv.ParseBool(thresholdReached.Value)
-	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
+	var transaction types.BridgeTransaction
 	evidence := types.NewBridgeEvidence(
 		h.height,
-		h.tx.TxHash,
-		relayerAcc.Value,
+		h.txHash,
+		h.msgIndex,
+		evt[sdk.AttributeKeySender],
 		thresholdReachedValue,
 	)
 
 	if operationType.Value == OperationTypeCoreumToXrplTransfer {
-		operationUniqueIdAttr, err := juno.FindAttributeByKey(event, operationUniqueIdAttribute)
-		if err != nil && err.Error() != events.JunoAttributeNotFoundError(operationUniqueIdAttribute, event) {
-			return nil, nil, err
-		}
-		operationUniqueId := operationUniqueIdAttr.Value
-		if operationUniqueId == "" {
-			operationIdAttr, err := juno.FindAttributeByKey(event, operationIdAttribute)
-			if err != nil {
-				return nil, nil, err
-			}
-			operationUniqueId = operationIdAttr.Value
+		toXrpl, err := eventsutil.FindEventMap(event, []string{
+			operationUniqueIDAttribute,
+			operationIdAttribute,
+		}, []string{})
+		if err != nil {
+			return err
 		}
 
-		transaction, err := h.db.GetBridgeTransaction(operationUniqueId)
+		operationUniqueID := toXrpl[operationUniqueIDAttribute]
+		if operationUniqueID == "" {
+			operationID, ok := toXrpl[operationIdAttribute]
+			if !ok {
+				return fmt.Errorf("nor operation id nor operation unique id found")
+			}
+			operationUniqueID = operationID
+		}
+
+		transaction, err = h.db.GetBridgeTransaction(operationUniqueID)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
 		if evidence.ThresholdReached {
-			transactionResult, err := juno.FindAttributeByKey(event, transactionResultAttribute)
+			parsedThresholdReachedEvent, err := eventsutil.FindEventMap(event, []string{
+				transactionResultAttribute,
+				hashAttribute,
+			}, []string{})
 			if err != nil {
-				return nil, nil, err
+				return err
 			}
 
-			// threshold reached, so the transaction hash of this evidence is the actual payment hash
-			xrplTxHash, err := juno.FindAttributeByKey(event, txHashAttribute)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			evidence.SetFinalProps(xrplTxHash.Value, types.BridgeTxResultToStr[transactionResult.Value])
+			transactionResult := parsedThresholdReachedEvent[transactionResultAttribute]
+			evidence.SetFinalProps(parsedThresholdReachedEvent[hashAttribute], types.BridgeTxResultToStr[transactionResult])
 		}
-		return &transaction, &evidence, nil
+
 	} else {
-		xrplTxHash, err := juno.FindAttributeByKey(event, txHashAttribute)
+		toCoreum, err := eventsutil.FindEventMap(event, []string{
+			hashAttribute,
+			recipientAttribute,
+			issuerAttribute,
+			currencyAttribute,
+			amountAttribute,
+		}, []string{})
 		if err != nil {
-			return nil, nil, err
-		}
-		recipient, err := juno.FindAttributeByKey(event, recipientAttribute)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		issuer, err := juno.FindAttributeByKey(event, issuerAttribute)
-		if err != nil {
-			return nil, nil, err
-		}
-		currency, err := juno.FindAttributeByKey(event, currencyAttribute)
-		if err != nil {
-			return nil, nil, err
-		}
-		amount, err := juno.FindAttributeByKey(event, amountAttribute)
-		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
 		// concat the issuer and currency to create the denom alias,
 		// this will store the issuer and currency in the denom field
-		denom := issuer.Value + "-" + currency.Value
+		denom := toCoreum[issuerAttribute] + "-" + toCoreum[currencyAttribute]
 
-		transaction := types.NewBridgeTransaction(
+		transaction = types.NewBridgeTransaction(
 			nil,
 			nil,
-			xrplTxHash.Value,
+			toCoreum[hashAttribute],
 			types.ChainXRPL,
 			types.ChainCoreum,
 			nil,
-			recipient.Value,
+			toCoreum[recipientAttribute],
 			denom,
-			amount.Value,
+			toCoreum[amountAttribute],
 		)
 
 		if evidence.ThresholdReached {
-			evidence.SetFinalProps(xrplTxHash.Value, types.BridgeTxResultAccepted)
+			evidence.SetFinalProps(toCoreum[hashAttribute], types.BridgeTxResultAccepted)
 		}
-
-		return &transaction, &evidence, nil
 	}
+
+	transactionId, err := h.db.SaveBridgeTransaction(&transaction)
+	if err != nil {
+		return fmt.Errorf("error while saving transaction: %s", err)
+	}
+
+	evidence.TransactionId = transactionId
+	_, err = h.db.SaveBridgeEvidence(&evidence)
+	if err != nil {
+		return fmt.Errorf("error while saving evidence: %s", err)
+	}
+
+	return nil
 }

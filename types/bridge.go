@@ -95,6 +95,8 @@ type BridgeEvidence struct {
 	Height int64 `json:"height"`
 	// Hash is the hash of the evidence transaction.
 	Hash string `json:"hash"`
+	// MsgIndex is the index of the message in the transaction.
+	MsgIndex int `json:"msg_index"`
 	// RelayerAddress is the address of the relayer.
 	RelayerAddress string `json:"relayer_address"`
 	// ThresholdReached is the flag indicating whether the threshold is reached which means transfer is finalized.
@@ -109,6 +111,7 @@ type BridgeEvidence struct {
 func NewBridgeEvidence(
 	height uint64,
 	hash string,
+	msgIndex int,
 	relayerAddress string,
 	thresholdReached bool,
 ) BridgeEvidence {

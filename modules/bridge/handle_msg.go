@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/forbole/callisto/v4/types"
 	"github.com/forbole/callisto/v4/utils"
+	eventutils "github.com/forbole/callisto/v4/utils/events"
 	juno "github.com/forbole/juno/v6/types"
 
 	"github.com/rs/zerolog/log"
@@ -23,7 +25,7 @@ type TxHandler interface {
 // database operations in the bridge module. It is used to interact with
 // the database and perform operations such as saving transactions and evidence.
 type DbHandler interface {
-	GetBridgeTransaction(operationUn3iqueID string) (types.BridgeTransaction, error)
+	GetBridgeTransaction(operationUniqueID string) (types.BridgeTransaction, error)
 	SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error)
 	SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error)
 }
@@ -39,7 +41,7 @@ func (m *Module) HandleMsgExec(index, _ int, executedMsg juno.Message, tx *juno.
 
 // HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(
-	_ int, msg juno.Message, tx *juno.Transaction,
+	index int, msg juno.Message, tx *juno.Transaction,
 ) error {
 	if _, ok := msgFilter[msg.GetType()]; !ok {
 		return nil
@@ -56,7 +58,7 @@ func (m *Module) HandleMsg(
 	// at the moment there is only one bridge contract which is the xrpl contract
 	switch {
 	case cosmosMsg.Contract == m.cfg.ContractAddress:
-		handler = NewXrplMsgHandler(m.cfg.ContractAddress, tx.Height, msg, tx, m.db, m.Source)
+		handler = NewXrplMsgHandler(m.cfg.ContractAddress, tx.Height, tx.TxHash, index, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index), m.db, m.Source)
 	default:
 		return nil
 	}

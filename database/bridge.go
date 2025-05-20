@@ -8,17 +8,19 @@ import (
 // It returns the ID of the transaction if it was inserted, or the existing ID if it was already present.
 func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) {
 	stmt := `
-	WITH selected_tx AS (
-		SELECT id
-		FROM bridge_transaction
-		WHERE user_initiated_hash = $3 AND ($1::TEXT IS NULL OR operation_unique_id = $1::TEXT)
-	), inserted_tx AS (
-		INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount)
-		SELECT $1::TEXT, $2::BIGINT, $3, $4, $5, $6::TEXT, $7, $8, $9
-		WHERE NOT EXISTS (SELECT 1 FROM selected_tx)
-		RETURNING id
-	)
-	SELECT id FROM inserted_tx UNION ALL SELECT id FROM selected_tx	
+	INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount)
+	VALUES ($1::TEXT, $2::BIGINT, $3, $4, $5, $6::TEXT, $7, $8, $9)
+	ON CONFLICT (user_initiated_hash) 
+	DO UPDATE SET 
+		operation_unique_id = EXCLUDED.operation_unique_id,
+		height = EXCLUDED.height,
+		source_chain = EXCLUDED.source_chain,
+		destination_chain = EXCLUDED.destination_chain,
+		sender = EXCLUDED.sender,
+		recipient = EXCLUDED.recipient,
+		denom = EXCLUDED.denom,
+		amount = EXCLUDED.amount
+	RETURNING id
 `
 	var id int64
 	err := db.SQL.QueryRow(
@@ -72,17 +74,15 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 // The evidence is identified by its hash and relayer address.
 func (db *Db) SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error) {
 	stmt := `
-	WITH selected_ev AS (
-		SELECT id
-		FROM bridge_evidence
-		WHERE transaction_id = $1 and relayer_address = $4
-    ), inserted_ev AS (
-		INSERT INTO bridge_evidence (transaction_id, height, hash, relayer_address, threshold_reached, settlement_hash, result) 
-		SELECT $1, $2, $3, $4, $5, $6::TEXT, $7
-		WHERE NOT EXISTS (SELECT 1 FROM selected_ev)
-		RETURNING id
-	)
-	SELECT id FROM inserted_ev UNION ALL SELECT id FROM selected_ev
+	INSERT INTO bridge_evidence (transaction_id, height, hash, msg_index, relayer_address, threshold_reached, settlement_hash, result)
+	VALUES ($1, $2, $3, $4, $5, $6, $7::TEXT, $8)
+	ON CONFLICT (hash, msg_index) DO UPDATE SET
+		transaction_id = EXCLUDED.transaction_id,
+		height = EXCLUDED.height,
+		threshold_reached = EXCLUDED.threshold_reached,
+		settlement_hash = EXCLUDED.settlement_hash,
+		result = EXCLUDED.result
+	RETURNING id
 `
 	var id int64
 	err := db.SQL.QueryRow(
@@ -90,6 +90,7 @@ func (db *Db) SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error) 
 		evidence.TransactionId,
 		evidence.Height,
 		evidence.Hash,
+		evidence.MsgIndex,
 		evidence.RelayerAddress,
 		evidence.ThresholdReached,
 		evidence.SettlementHash,
