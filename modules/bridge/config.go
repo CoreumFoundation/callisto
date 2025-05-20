@@ -6,13 +6,13 @@ import (
 
 // Config contains the configuration about the bridge module
 type Config struct {
-	XrplContractAddress string `yaml:"xrpl_contract_address"`
+	ContractAddress string `yaml:"contract_address"`
 }
 
 // NewConfig returns a new Config instance
-func NewConfig(xrplContractAddress string) *Config {
+func NewConfig(contractAddress string) *Config {
 	return &Config{
-		XrplContractAddress: xrplContractAddress,
+		ContractAddress: contractAddress,
 	}
 }
 

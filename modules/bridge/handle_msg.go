@@ -55,8 +55,8 @@ func (m *Module) HandleMsg(
 
 	// at the moment there is only one bridge contract which is the xrpl contract
 	switch {
-	case cosmosMsg.Contract == m.cfg.XrplContractAddress:
-		handler = NewXrplMsgHandler(m.cfg.XrplContractAddress, tx.Height, msg, tx, m.db, m.Source)
+	case cosmosMsg.Contract == m.cfg.ContractAddress:
+		handler = NewXrplMsgHandler(m.cfg.ContractAddress, tx.Height, msg, tx, m.db, m.Source)
 	default:
 		return nil
 	}
