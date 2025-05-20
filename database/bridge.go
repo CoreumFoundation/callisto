@@ -6,7 +6,7 @@ import (
 
 // SaveBridgeTransaction saves the bridge transaction to the database.
 // It returns the ID of the transaction if it was inserted, or the existing ID if it was already present.
-func (db *Db) SaveBridgeTransaction(tx types.BridgeTransaction) (int64, error) {
+func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) {
 	stmt := `
 	WITH selected_tx AS (
 		SELECT id
@@ -23,7 +23,7 @@ func (db *Db) SaveBridgeTransaction(tx types.BridgeTransaction) (int64, error) {
 	var id int64
 	err := db.SQL.QueryRow(
 		stmt,
-		tx.OperationID,
+		tx.OperationUniqueID,
 		tx.Height,
 		tx.UserInitiatedHash,
 		tx.SourceChain,
@@ -50,7 +50,7 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 
 	var bridgeTx types.BridgeTransaction
 	err := row.Scan(
-		&bridgeTx.OperationID,
+		&bridgeTx.OperationUniqueID,
 		&bridgeTx.Height,
 		&bridgeTx.UserInitiatedHash,
 		&bridgeTx.SourceChain,
@@ -72,7 +72,7 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 // SaveBridgeEvidence saves the bridge evidence to the database.
 // It returns the ID of the evidence if it was inserted, or the existing ID if it was already present.
 // The evidence is identified by its hash and relayer address.
-func (db *Db) SaveBridgeEvidence(evidence types.BridgeEvidence) (int64, error) {
+func (db *Db) SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error) {
 	stmt := `
 	WITH selected_ev AS (
 		SELECT id
