@@ -23,7 +23,7 @@ type TxHandler interface {
 // database operations in the bridge module. It is used to interact with
 // the database and perform operations such as saving transactions and evidence.
 type DbHandler interface {
-	GetBridgeTransaction(id string) (types.BridgeTransaction, error)
+	GetBridgeTransaction(operationUn3iqueID string) (types.BridgeTransaction, error)
 	SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error)
 	SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error)
 }
