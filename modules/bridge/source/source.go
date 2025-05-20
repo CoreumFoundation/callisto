@@ -1,7 +1,7 @@
 package source
 
 type Source interface {
-	GetOutgoingPendingOperationID(
+	GetOutgoingPendingOperationSequence(
 		contractAddress string,
 		recipient string,
 		height uint64,

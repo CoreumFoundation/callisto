@@ -44,8 +44,8 @@ var StrToChain = map[string]Chain{
 type BridgeTransaction struct {
 	// ID is the auto-generated serial ID of the transaction.
 	ID int64 `json:"id"`
-	// OperationID is the operation ID of the transaction (it might be null if there are no pending operations).
-	OperationID *string `json:"operation_id"`
+	// OperationUniqueID is the operation unique ID of the transaction (it might be null if there are no pending operations).
+	OperationUniqueID *string `json:"operation_unique_id"`
 	// Height is the height of the transaction when it is originated.
 	Height *int64 `json:"height"`
 	// UserInitiatedHash is the hash of the transaction when it is originated.
@@ -68,14 +68,14 @@ type BridgeTransaction struct {
 
 // NewBridgeTransaction creates a bridge transaction.
 func NewBridgeTransaction(
-	operationID *string,
+	operationUniqueID *string,
 	height *int64,
 	userInitiatedHash string,
 	sourceChain, destinationChain Chain,
 	issuer, sender *string, recipient, denom, amount string,
 ) BridgeTransaction {
 	return BridgeTransaction{
-		OperationID:       operationID,
+		OperationUniqueID: operationUniqueID,
 		Height:            height,
 		UserInitiatedHash: userInitiatedHash,
 		SourceChain:       sourceChain,
@@ -168,8 +168,8 @@ type Operation struct {
 	XRPLBaseFee     uint32        `json:"xrpl_base_fee"`
 }
 
-// GetOperationID returns operation ID.
-func (o Operation) GetOperationID() uint32 {
+// GetOperationSequence returns operation sequence.
+func (o Operation) GetOperationSequence() uint32 {
 	if o.TicketSequence != 0 {
 		return o.TicketSequence
 	}

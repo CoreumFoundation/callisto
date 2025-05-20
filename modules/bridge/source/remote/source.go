@@ -33,11 +33,11 @@ func (s Source) Name() string {
 	return "remote"
 }
 
-// GetOutgoingPendingOperationID returns the operation ID of the outgoing operations
+// GetOutgoingPendingOperationSequence returns the operation sequence of the outgoing operations
 // Implementation is based on the actual bridge relayer logic, for simple replication of the code in the future,
 // the same style of the reference code is used.
 // https://github.com/CoreumFoundation/coreumbridge-xrpl/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
-func (s *Source) GetOutgoingPendingOperationID(
+func (s Source) GetOutgoingPendingOperationSequence(
 	contractAddress string,
 	recipient string,
 	height uint64,
@@ -55,29 +55,29 @@ func (s *Source) GetOutgoingPendingOperationID(
 	}
 
 	operationsBeforeMap := lo.SliceToMap(operationsBefore, func(operation types.Operation) (uint32, types.Operation) {
-		return operation.GetOperationID(), operation
+		return operation.GetOperationSequence(), operation
 	})
 
-	operationIDs := make([]uint32, 0)
+	operationSequences := make([]uint32, 0)
 	for _, operation := range operationsAfter {
-		if _, ok := operationsBeforeMap[operation.GetOperationID()]; !ok {
+		if _, ok := operationsBeforeMap[operation.GetOperationSequence()]; !ok {
 			if operation.OperationType.CoreumToXRPLTransfer == nil {
 				continue
 			}
 			if operation.OperationType.CoreumToXRPLTransfer.Recipient != recipient {
 				continue
 			}
-			operationIDs = append(operationIDs, operation.GetOperationID())
+			operationSequences = append(operationSequences, operation.GetOperationSequence())
 		}
 	}
 
-	switch len(operationIDs) {
+	switch len(operationSequences) {
 	case 0:
 		return 0, fmt.Errorf("no operation ID found for recipient %s", recipient)
 	case 1:
-		return operationIDs[0], nil
+		return operationSequences[0], nil
 	default:
-		return 0, fmt.Errorf("multiple operation IDs found for recipient %s: %v", recipient, operationIDs)
+		return 0, fmt.Errorf("multiple operation IDs found for recipient %s: %v", recipient, operationSequences)
 	}
 }
 

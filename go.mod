@@ -27,7 +27,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/nft v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/CoreumFoundation/coreum/v5 v5.0.0
+	github.com/CoreumFoundation/coreum/v5 v5.0.0-20250414180032-219788281a9a
 	github.com/CosmWasm/wasmd v0.54.0
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.50.13

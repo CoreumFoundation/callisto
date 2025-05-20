@@ -19,13 +19,13 @@ type TxHandler interface {
 	HandleMsg() error
 }
 
-// DBHandler is an interface that defines the methods for handling
+// DbHandler is an interface that defines the methods for handling
 // database operations in the bridge module. It is used to interact with
 // the database and perform operations such as saving transactions and evidence.
 type DbHandler interface {
 	GetBridgeTransaction(id string) (types.BridgeTransaction, error)
-	SaveBridgeTransaction(tx types.BridgeTransaction) (int64, error)
-	SaveBridgeEvidence(evidence types.BridgeEvidence) (int64, error)
+	SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error)
+	SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error)
 }
 
 var msgFilter = map[string]bool{
