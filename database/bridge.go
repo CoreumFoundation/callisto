@@ -4,8 +4,7 @@ import (
 	"github.com/forbole/callisto/v4/types"
 )
 
-// SaveBridgeTransaction saves the bridge transaction to the database.
-// It returns the ID of the transaction if it was inserted, or the existing ID if it was already present.
+// SaveBridgeTransaction saves and overwrites the bridge transaction to the database.
 func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) {
 	stmt := `
 	INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount)
@@ -69,9 +68,7 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 	return bridgeTx, nil
 }
 
-// SaveBridgeEvidence saves the bridge evidence to the database.
-// It returns the ID of the evidence if it was inserted, or the existing ID if it was already present.
-// The evidence is identified by its hash and relayer address.
+// SaveBridgeEvidence saves and overwrites the bridge evidence to the database.
 func (db *Db) SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error) {
 	stmt := `
 	INSERT INTO bridge_evidence (transaction_id, height, hash, msg_index, relayer_address, threshold_reached, settlement_hash, result)
