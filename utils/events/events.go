@@ -50,10 +50,10 @@ func FindEventsByMsgIndex(events sdk.StringEvents, msgIndex int) sdk.StringEvent
 	return res
 }
 
-// FindEventMap returns a map of attributes from the event
+// BuildAttributesMap returns a map of attributes from the event
 // with the given required and optional attributes.
 // It returns an error if any of the required attributes are not found.
-func FindEventMap(event sdk.StringEvent, requiredAttributes []string, optionalAttributes []string) (map[string]string, error) {
+func BuildAttributesMap(event sdk.StringEvent, requiredAttributes []string, optionalAttributes []string) (map[string]string, error) {
 	result := make(map[string]string)
 
 	// Check for required attributes

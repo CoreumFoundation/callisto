@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/samber/lo"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -91,7 +93,7 @@ func (h *XrplMsgHandler) HandleMsg() error {
 
 // handleCoreumToXrplEvent extracts and saves a Coreum-to-XRPL transaction from the event.
 func (h *XrplMsgHandler) handleCoreumToXrplEvent(event sdk.StringEvent) error {
-	parsedEvent, err := eventsutil.FindEventMap(event,
+	parsedEvent, err := eventsutil.BuildAttributesMap(event,
 		[]string{sdk.AttributeKeySender, recipientAttribute, coinAttribute},
 		[]string{operationUniqueIDAttribute},
 	)
@@ -115,15 +117,13 @@ func (h *XrplMsgHandler) handleCoreumToXrplEvent(event sdk.StringEvent) error {
 		return fmt.Errorf("parsing coins: %w", err)
 	}
 
-	height := int64(h.height)
-	sender := parsedEvent[sdk.AttributeKeySender]
 	transaction := types.NewBridgeTransaction(
 		&operationUniqueID,
-		&height,
+		lo.ToPtr(int64(h.height)),
 		h.txHash,
 		types.ChainCoreum,
 		types.ChainXRPL,
-		&sender,
+		lo.ToPtr(parsedEvent[sdk.AttributeKeySender]),
 		parsedEvent[recipientAttribute],
 		parsedCoin.Denom,
 		parsedCoin.Amount.String(),
@@ -142,7 +142,7 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 		return nil
 	}
 
-	evt, err := eventsutil.FindEventMap(event,
+	evt, err := eventsutil.BuildAttributesMap(event,
 		[]string{sdk.AttributeKeySender, thresholdReachedAttribute},
 		nil,
 	)
@@ -166,7 +166,7 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 	var transaction types.BridgeTransaction
 
 	if operationType.Value == OperationTypeCoreumToXrplTransfer {
-		toXrpl, err := eventsutil.FindEventMap(event,
+		toXrpl, err := eventsutil.BuildAttributesMap(event,
 			nil,
 			[]string{operationUniqueIDAttribute, operationIdAttribute},
 		)
@@ -188,7 +188,7 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 		}
 
 		if evidence.ThresholdReached {
-			parsed, err := eventsutil.FindEventMap(event,
+			parsed, err := eventsutil.BuildAttributesMap(event,
 				[]string{transactionResultAttribute, txHashAttribute},
 				nil,
 			)
@@ -201,7 +201,7 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 			evidence.SetFinalProps(parsed[txHashAttribute], types.BridgeTxResultToStr[parsed[transactionResultAttribute]])
 		}
 	} else {
-		toCoreum, err := eventsutil.FindEventMap(event,
+		toCoreum, err := eventsutil.BuildAttributesMap(event,
 			[]string{hashAttribute, recipientAttribute, issuerAttribute, currencyAttribute, amountAttribute},
 			nil,
 		)
