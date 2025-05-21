@@ -3173,6 +3173,7 @@ type bridge_evidence {
   hash: String!
   height: bigint!
   id: Int!
+  msg_index: bigint!
   relayer_address: String!
   result: String
   settlement_hash: String
@@ -3209,6 +3210,7 @@ type bridge_evidence_aggregate_fields {
 type bridge_evidence_avg_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3222,6 +3224,7 @@ input bridge_evidence_bool_exp {
   hash: String_comparison_exp
   height: bigint_comparison_exp
   id: Int_comparison_exp
+  msg_index: bigint_comparison_exp
   relayer_address: String_comparison_exp
   result: String_comparison_exp
   settlement_hash: String_comparison_exp
@@ -3234,6 +3237,11 @@ unique or primary key constraints on table "bridge_evidence"
 """
 enum bridge_evidence_constraint {
   """
+  unique or primary key constraint on columns "msg_index", "hash"
+  """
+  bridge_evidence_hash_msg_index_idx
+
+  """
   unique or primary key constraint on columns "id"
   """
   bridge_evidence_pkey
@@ -3245,6 +3253,7 @@ input type for incrementing numeric columns in table "bridge_evidence"
 input bridge_evidence_inc_input {
   height: bigint
   id: Int
+  msg_index: bigint
   transaction_id: bigint
 }
 
@@ -3255,6 +3264,7 @@ input bridge_evidence_insert_input {
   hash: String
   height: bigint
   id: Int
+  msg_index: bigint
   relayer_address: String
   result: String
   settlement_hash: String
@@ -3267,6 +3277,7 @@ type bridge_evidence_max_fields {
   hash: String
   height: bigint
   id: Int
+  msg_index: bigint
   relayer_address: String
   result: String
   settlement_hash: String
@@ -3278,6 +3289,7 @@ type bridge_evidence_min_fields {
   hash: String
   height: bigint
   id: Int
+  msg_index: bigint
   relayer_address: String
   result: String
   settlement_hash: String
@@ -3309,6 +3321,7 @@ input bridge_evidence_order_by {
   hash: order_by
   height: order_by
   id: order_by
+  msg_index: order_by
   relayer_address: order_by
   result: order_by
   settlement_hash: order_by
@@ -3335,6 +3348,9 @@ enum bridge_evidence_select_column {
   id
 
   """column name"""
+  msg_index
+
+  """column name"""
   relayer_address
 
   """column name"""
@@ -3357,6 +3373,7 @@ input bridge_evidence_set_input {
   hash: String
   height: bigint
   id: Int
+  msg_index: bigint
   relayer_address: String
   result: String
   settlement_hash: String
@@ -3368,6 +3385,7 @@ input bridge_evidence_set_input {
 type bridge_evidence_stddev_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3375,6 +3393,7 @@ type bridge_evidence_stddev_fields {
 type bridge_evidence_stddev_pop_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3382,6 +3401,7 @@ type bridge_evidence_stddev_pop_fields {
 type bridge_evidence_stddev_samp_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3401,6 +3421,7 @@ input bridge_evidence_stream_cursor_value_input {
   hash: String
   height: bigint
   id: Int
+  msg_index: bigint
   relayer_address: String
   result: String
   settlement_hash: String
@@ -3412,6 +3433,7 @@ input bridge_evidence_stream_cursor_value_input {
 type bridge_evidence_sum_fields {
   height: bigint
   id: Int
+  msg_index: bigint
   transaction_id: bigint
 }
 
@@ -3427,6 +3449,9 @@ enum bridge_evidence_update_column {
 
   """column name"""
   id
+
+  """column name"""
+  msg_index
 
   """column name"""
   relayer_address
@@ -3459,6 +3484,7 @@ input bridge_evidence_updates {
 type bridge_evidence_var_pop_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3466,6 +3492,7 @@ type bridge_evidence_var_pop_fields {
 type bridge_evidence_var_samp_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3473,6 +3500,7 @@ type bridge_evidence_var_samp_fields {
 type bridge_evidence_variance_fields {
   height: Float
   id: Float
+  msg_index: Float
   transaction_id: Float
 }
 
@@ -3550,6 +3578,11 @@ enum bridge_transaction_constraint {
   unique or primary key constraint on columns "id"
   """
   bridge_transaction_pkey
+
+  """
+  unique or primary key constraint on columns "user_initiated_hash"
+  """
+  bridge_transaction_user_initiated_hash_idx
 }
 
 """
@@ -27947,4 +27980,3 @@ input vesting_period_variance_order_by {
   period_order: order_by
   vesting_account_id: order_by
 }
-

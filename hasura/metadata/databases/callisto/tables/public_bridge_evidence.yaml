@@ -10,6 +10,7 @@ select_permissions:
         - transaction_id
         - height
         - hash
+        - msg_index
         - relayer_address
         - threshold_reached
         - settlement_hash
