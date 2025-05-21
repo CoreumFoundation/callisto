@@ -208,7 +208,11 @@ func (m *Module) UpdateValidatorStatuses() error {
 		return fmt.Errorf("error while getting latest block height from db: %s", err)
 	}
 
-	validators, _, err := m.GetValidatorsWithStatus(block.Height, stakingtypes.Bonded.String())
+	// NOTE: in the original callisto code, this query was limited to bonded validators only
+	// but it can lead to a situation that a validator is unbonded on the node and is not updated
+	// and remainss as bonded in callisto database. We remove the status filter to fetch all validators
+	// as temporary fix, until this is fixed in the upstream.
+	validators, _, err := m.GetValidatorsWithStatus(block.Height, "")
 	if err != nil {
 		return fmt.Errorf("error while getting validators with bonded status: %s", err)
 	}
