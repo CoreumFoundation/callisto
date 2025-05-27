@@ -50,6 +50,8 @@ type BridgeTransaction struct {
 	Height *int64 `json:"height"`
 	// UserInitiatedHash is the hash of the transaction when it is originated.
 	UserInitiatedHash string `json:"user_initiated_hash"`
+	// MsgIndex is the index of the message in the transaction.
+	MsgIndex int `json:"msg_index"`
 	// SourceChain is the source chain of the transfer origin.
 	SourceChain Chain `json:"source_chain"`
 	// DestinationChain is the destination chain of the transfer.
@@ -69,6 +71,7 @@ func NewBridgeTransaction(
 	operationUniqueID *string,
 	height *int64,
 	userInitiatedHash string,
+	msgIndex int,
 	sourceChain, destinationChain Chain,
 	sender *string, recipient, denom, amount string,
 ) BridgeTransaction {
@@ -76,6 +79,7 @@ func NewBridgeTransaction(
 		OperationUniqueID: operationUniqueID,
 		Height:            height,
 		UserInitiatedHash: userInitiatedHash,
+		MsgIndex:          msgIndex,
 		SourceChain:       sourceChain,
 		DestinationChain:  destinationChain,
 		Sender:            sender,
@@ -118,6 +122,7 @@ func NewBridgeEvidence(
 	return BridgeEvidence{
 		Height:           int64(height),
 		Hash:             hash,
+		MsgIndex:         msgIndex,
 		RelayerAddress:   relayerAddress,
 		ThresholdReached: thresholdReached,
 		Result:           BridgeTxResultPending,

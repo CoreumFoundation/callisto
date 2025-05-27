@@ -5,6 +5,7 @@ CREATE TABLE
         operation_unique_id TEXT NULL DEFAULT NULL,
         height BIGINT NULL,
         user_initiated_hash TEXT NOT NULL,
+        msg_index BIGINT NOT NULL,
         source_chain TEXT NOT NULL,
         destination_chain TEXT NOT NULL,
         sender TEXT NULL DEFAULT NULL,
@@ -12,10 +13,10 @@ CREATE TABLE
         denom TEXT NOT NULL,
         amount TEXT NOT NULL
     );
-CREATE UNIQUE INDEX bridge_transaction_user_initiated_hash_idx ON bridge_transaction (user_initiated_hash);
 CREATE INDEX bridge_transaction_operation_unique_id_idx ON bridge_transaction (operation_unique_id); -- for GetBridgeTransaction
 CREATE INDEX bridge_transaction_sender_idx ON bridge_transaction (sender);
 CREATE INDEX bridge_transaction_recipient_idx ON bridge_transaction (recipient);
+CREATE UNIQUE INDEX bridge_transaction_user_initiated_hash_msg_index_idx ON bridge_transaction (user_initiated_hash, msg_index); -- for SaveBridgeTransaction
 
 
 /* ---- Evidence ---- */

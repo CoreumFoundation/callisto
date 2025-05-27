@@ -3513,6 +3513,7 @@ type bridge_transaction {
   destination_chain: String!
   height: bigint
   id: Int!
+  msg_index: bigint!
   operation_unique_id: String
   recipient: String!
   sender: String
@@ -3549,6 +3550,7 @@ type bridge_transaction_aggregate_fields {
 type bridge_transaction_avg_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """
@@ -3563,6 +3565,7 @@ input bridge_transaction_bool_exp {
   destination_chain: String_comparison_exp
   height: bigint_comparison_exp
   id: Int_comparison_exp
+  msg_index: bigint_comparison_exp
   operation_unique_id: String_comparison_exp
   recipient: String_comparison_exp
   sender: String_comparison_exp
@@ -3580,9 +3583,9 @@ enum bridge_transaction_constraint {
   bridge_transaction_pkey
 
   """
-  unique or primary key constraint on columns "user_initiated_hash"
+  unique or primary key constraint on columns "user_initiated_hash", "msg_index"
   """
-  bridge_transaction_user_initiated_hash_idx
+  bridge_transaction_user_initiated_hash_msg_index_idx
 }
 
 """
@@ -3591,6 +3594,7 @@ input type for incrementing numeric columns in table "bridge_transaction"
 input bridge_transaction_inc_input {
   height: bigint
   id: Int
+  msg_index: bigint
 }
 
 """
@@ -3602,6 +3606,7 @@ input bridge_transaction_insert_input {
   destination_chain: String
   height: bigint
   id: Int
+  msg_index: bigint
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3616,6 +3621,7 @@ type bridge_transaction_max_fields {
   destination_chain: String
   height: bigint
   id: Int
+  msg_index: bigint
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3630,6 +3636,7 @@ type bridge_transaction_min_fields {
   destination_chain: String
   height: bigint
   id: Int
+  msg_index: bigint
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3664,6 +3671,7 @@ input bridge_transaction_order_by {
   destination_chain: order_by
   height: order_by
   id: order_by
+  msg_index: order_by
   operation_unique_id: order_by
   recipient: order_by
   sender: order_by
@@ -3696,6 +3704,9 @@ enum bridge_transaction_select_column {
   id
 
   """column name"""
+  msg_index
+
+  """column name"""
   operation_unique_id
 
   """column name"""
@@ -3720,6 +3731,7 @@ input bridge_transaction_set_input {
   destination_chain: String
   height: bigint
   id: Int
+  msg_index: bigint
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3731,18 +3743,21 @@ input bridge_transaction_set_input {
 type bridge_transaction_stddev_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """aggregate stddev_pop on columns"""
 type bridge_transaction_stddev_pop_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """aggregate stddev_samp on columns"""
 type bridge_transaction_stddev_samp_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """
@@ -3763,6 +3778,7 @@ input bridge_transaction_stream_cursor_value_input {
   destination_chain: String
   height: bigint
   id: Int
+  msg_index: bigint
   operation_unique_id: String
   recipient: String
   sender: String
@@ -3774,6 +3790,7 @@ input bridge_transaction_stream_cursor_value_input {
 type bridge_transaction_sum_fields {
   height: bigint
   id: Int
+  msg_index: bigint
 }
 
 """
@@ -3794,6 +3811,9 @@ enum bridge_transaction_update_column {
 
   """column name"""
   id
+
+  """column name"""
+  msg_index
 
   """column name"""
   operation_unique_id
@@ -3826,18 +3846,21 @@ input bridge_transaction_updates {
 type bridge_transaction_var_pop_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """aggregate var_samp on columns"""
 type bridge_transaction_var_samp_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 """aggregate variance on columns"""
 type bridge_transaction_variance_fields {
   height: Float
   id: Float
+  msg_index: Float
 }
 
 scalar coin

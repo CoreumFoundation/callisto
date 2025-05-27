@@ -7,9 +7,9 @@ import (
 // SaveBridgeTransaction saves and overwrites the bridge transaction to the database.
 func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) {
 	stmt := `
-	INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount)
-	VALUES ($1::TEXT, $2::BIGINT, $3, $4, $5, $6::TEXT, $7, $8, $9)
-	ON CONFLICT (user_initiated_hash) 
+	INSERT INTO bridge_transaction (operation_unique_id, height, user_initiated_hash, msg_index, source_chain, destination_chain, sender, recipient, denom, amount)
+	VALUES ($1::TEXT, $2::BIGINT, $3, $4, $5, $6, $7::TEXT, $8, $9, $10)
+	ON CONFLICT (user_initiated_hash, msg_index) 
 	DO UPDATE SET 
 		operation_unique_id = EXCLUDED.operation_unique_id,
 		height = EXCLUDED.height,
@@ -27,6 +27,7 @@ func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) 
 		tx.OperationUniqueID,
 		tx.Height,
 		tx.UserInitiatedHash,
+		tx.MsgIndex,
 		tx.SourceChain,
 		tx.DestinationChain,
 		tx.Sender,

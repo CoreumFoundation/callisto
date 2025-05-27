@@ -10,6 +10,7 @@ select_permissions:
         - operation_unique_id
         - height
         - user_initiated_hash
+        - msg_index
         - source_chain
         - destination_chain
         - sender
