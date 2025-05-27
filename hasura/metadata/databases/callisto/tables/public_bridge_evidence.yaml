@@ -1,0 +1,18 @@
+table:
+  name: bridge_evidence
+  schema: public
+
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - id
+        - transaction_id
+        - height
+        - hash
+        - msg_index
+        - relayer_address
+        - threshold_reached
+        - settlement_hash
+        - result
+      filter: {}
