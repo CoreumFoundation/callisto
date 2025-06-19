@@ -42,7 +42,7 @@ func (db *Db) SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error) 
 // It returns the transaction if found, or an error if not found.
 func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransaction, error) {
 	stmt := `
-	SELECT operation_unique_id, height, user_initiated_hash, source_chain, destination_chain, sender, recipient, denom, amount
+	SELECT operation_unique_id, height, user_initiated_hash, msg_index, source_chain, destination_chain, sender, recipient, denom, amount
 	FROM bridge_transaction
 	WHERE operation_unique_id = $1::TEXT
 `
@@ -54,6 +54,7 @@ func (db *Db) GetBridgeTransaction(operationUniqueID string) (types.BridgeTransa
 		&bridgeTx.OperationUniqueID,
 		&bridgeTx.Height,
 		&bridgeTx.UserInitiatedHash,
+		&bridgeTx.MsgIndex,
 		&bridgeTx.SourceChain,
 		&bridgeTx.DestinationChain,
 		&bridgeTx.Sender,
