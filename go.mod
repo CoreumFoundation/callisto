@@ -1,6 +1,8 @@
 module github.com/forbole/callisto/v4
 
-go 1.24.2
+go 1.24
+
+toolchain go1.24.2
 
 replace (
 	// cosmos keyring
@@ -9,6 +11,11 @@ replace (
 	// github.com/coinbase/rosetta-sdk-go module in v0.7.9 but now it is standalone module.
 	// And this causes "ambiguous import" error. Note: it gets broken only when using go work.
 	github.com/coinbase/rosetta-sdk-go v0.7.9 => github.com/coinbase/rosetta-sdk-go v0.8.4
+	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
+	// TODO(v5): remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
+	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+	// Coreum verison of the juno
+	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250428094244-38b78185095b
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
 	// pin the version of goleveldb to v1.0.1-0.20210819022825-2ae1ddf74ef7 required by SDK v47 upgrade guide.
 	// replace broken goleveldb
@@ -23,8 +30,8 @@ require (
 	cosmossdk.io/x/nft v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
 	github.com/CoreumFoundation/coreum/v5 v5.0.0-20250526103302-5a3f05b11008
-	github.com/CoreumFoundation/coreumbridge-xrpl/relayer v0.0.0-20250617110423-6a78efdf6295
-	github.com/CosmWasm/wasmd v0.54.1
+	github.com/CoreumFoundation/coreumbridge-xrpl/relayer v0.0.0-20250526113311-5229bda4c986
+	github.com/CosmWasm/wasmd v0.54.0
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.50.13
 	github.com/cosmos/gogoproto v1.7.0
@@ -54,8 +61,8 @@ require (
 	github.com/Antonboom/errname v0.1.9 // indirect
 	github.com/Antonboom/nilnil v0.1.3 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
-	github.com/CoreumFoundation/coreum-tools v0.4.1-0.20250605161222-1d26ddd79ec6 // indirect
-	github.com/CosmWasm/wasmvm/v2 v2.2.4 // indirect
+	github.com/CoreumFoundation/coreum-tools v0.4.1-0.20241202115740-dbc6962a4d0a // indirect
+	github.com/CosmWasm/wasmvm/v2 v2.2.2 // indirect
 	github.com/DataDog/datadog-go v4.8.3+incompatible // indirect
 	github.com/DataDog/zstd v1.5.6 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
@@ -227,7 +234,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20230307190834-24139beb5833 // indirect
 	golang.org/x/mod v0.23.0 // indirect

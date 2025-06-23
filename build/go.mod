@@ -8,8 +8,8 @@ toolchain go1.24.2
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 require (
-	github.com/CoreumFoundation/crust v0.0.0-20250530123432-a2daec21dfc1
-	github.com/CoreumFoundation/crust/znet v0.0.0-20250530123432-a2daec21dfc1
+	github.com/CoreumFoundation/crust v0.0.0-20250520105836-acfaa86aafd7
+	github.com/CoreumFoundation/crust/znet v0.0.0-20250520105836-acfaa86aafd7
 )
 
 require (

@@ -67,7 +67,7 @@ func (m *Module) HandleMsg(
 
 	err := handler.HandleMsg()
 	if err != nil {
-		fmt.Printf("Error when handling bridge transaction message, error: %s", err)
+		return fmt.Errorf("Error when handling bridge transaction message, error: %s", err)
 	}
 
 	return nil
