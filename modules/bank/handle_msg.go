@@ -6,30 +6,28 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	juno "github.com/forbole/juno/v6/types"
+
+	eventutils "github.com/forbole/callisto/v4/utils/events"
 )
 
-// HandleMsg implements modules.MessageModule
 func (m *Module) HandleMsg(index int, _ juno.Message, tx *juno.Transaction) error {
-	if err := m.UpdateAccountsBalances(index, tx); err != nil {
-		return err
-	}
-
-	return nil
+	return m.UpdateAccountsBalances(index, tx)
 }
 
-func (m *Module) UpdateAccountsBalances(index int, tx *juno.Transaction) error {
-	if len(tx.Logs) == 0 {
+func (m *Module) UpdateAccountsBalances(msgIndex int, tx *juno.Transaction) error {
+	if len(tx.Events) == 0 {
 		return nil
 	}
 
-	if err := m.updateBalanceForEventType(index, tx, banktypes.EventTypeCoinReceived); err != nil {
-		return err
+	for _, eventType := range []string{banktypes.EventTypeCoinReceived, banktypes.EventTypeCoinSpent} {
+		if err := m.updateBalanceForEventType(msgIndex, tx, eventType); err != nil {
+			return err
+		}
 	}
-
-	return m.updateBalanceForEventType(index, tx, banktypes.EventTypeCoinSpent)
+	return nil
 }
 
-func (m *Module) updateBalanceForEventType(index int, tx *juno.Transaction, eventType string) error {
+func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, eventType string) error {
 	accountAttribute := banktypes.AttributeKeySpender
 	if eventType == banktypes.EventTypeCoinReceived {
 		accountAttribute = banktypes.AttributeKeyReceiver
@@ -40,13 +38,18 @@ func (m *Module) updateBalanceForEventType(index int, tx *juno.Transaction, even
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
 
-	events := FindAllEventsByType(index, tx, eventType)
+	msgEvents := eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), msgIndex)
+
 	type addressDenom struct {
 		address string
 		denom   string
 	}
-	addressDenomMap := make(map[addressDenom]interface{})
-	for _, event := range events {
+	addressDenomSet := make(map[addressDenom]interface{})
+
+	for _, event := range msgEvents {
+		if event.Type != eventType {
+			continue
+		}
 		account, err := tx.FindAttributeByKey(event, accountAttribute)
 		if err != nil {
 			return err
@@ -68,10 +71,10 @@ func (m *Module) updateBalanceForEventType(index int, tx *juno.Transaction, even
 			continue
 		}
 
-		addressDenomMap[addressDenom{address: account, denom: coin.Denom}] = true
+		addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = true
 	}
 
-	for ad := range addressDenomMap {
+	for ad := range addressDenomSet {
 		storedBalance, found, err := m.db.GetAccountDenomBalance(ad.address, ad.denom)
 		if err != nil {
 			return err
@@ -80,29 +83,18 @@ func (m *Module) updateBalanceForEventType(index int, tx *juno.Transaction, even
 			continue
 		}
 
-		quriedBalance, err := m.keeper.GetAccountDenomBalance(ad.address, ad.denom, block.Height)
+		queriedBalance, err := m.keeper.GetAccountDenomBalance(ad.address, ad.denom, block.Height)
 		if err != nil {
 			return err
 		}
-
-		if quriedBalance == nil {
+		if queriedBalance == nil {
 			return fmt.Errorf("query balance return nil, account: %s, denom:%s", ad.address, ad.denom)
 		}
 
-		if err := m.db.SaveAccountDenomBalance(ad.address, *quriedBalance, block.Height); err != nil {
+		if err := m.db.SaveAccountDenomBalance(ad.address, *queriedBalance, block.Height); err != nil {
 			return err
 		}
 	}
 
 	return nil
-}
-
-func FindAllEventsByType(index int, tx *juno.Transaction, eventType string) []sdk.StringEvent {
-	var list []sdk.StringEvent
-	for _, ev := range tx.Logs[index].Events {
-		if ev.Type == eventType {
-			list = append(list, ev)
-		}
-	}
-	return list
 }
