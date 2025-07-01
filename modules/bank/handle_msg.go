@@ -44,7 +44,7 @@ func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, e
 		address string
 		denom   string
 	}
-	addressDenomSet := make(map[addressDenom]interface{})
+	addressDenomSet := make(map[addressDenom]struct{})
 
 	for _, event := range msgEvents {
 		if event.Type != eventType {
@@ -71,7 +71,7 @@ func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, e
 			continue
 		}
 
-		addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = true
+		addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = struct{}{}
 	}
 
 	for ad := range addressDenomSet {
