@@ -5,15 +5,6 @@ go 1.24
 toolchain go1.24.2
 
 replace (
-	// cosmos keyring
-	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-	// We need this replacement because github.com/coinbase/rosetta-sdk-go/types was part of
-	// github.com/coinbase/rosetta-sdk-go module in v0.7.9 but now it is standalone module.
-	// And this causes "ambiguous import" error. Note: it gets broken only when using go work.
-	github.com/coinbase/rosetta-sdk-go v0.7.9 => github.com/coinbase/rosetta-sdk-go v0.8.4
-	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
-	// TODO(v5): remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
-	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// Coreum verison of the juno
 	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250428094244-38b78185095b
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
