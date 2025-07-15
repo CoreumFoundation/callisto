@@ -120,7 +120,7 @@ func buildLocalSources(cfg *local.Details, cdc codec.Codec) (*Sources, error) {
 }
 
 func buildRemoteSources(cfg *remote.Details, cdc codec.Codec) (*Sources, error) {
-	source, err := remote.NewSource(cfg.GRPC)
+	source, err := remote.NewSource(cfg.GRPC, cdc)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating remote source: %s", err)
 	}
