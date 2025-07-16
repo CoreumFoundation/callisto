@@ -5,7 +5,6 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"testing"
 	"time"
 
@@ -72,11 +71,8 @@ func (suite *DbTestSuite) SetupTest() {
 		suite.Require().NoError(err)
 
 		commentsRegExp := regexp.MustCompile(`/\*.*\*/`)
-		requests := strings.Split(string(file), ";")
-		for _, request := range requests {
-			_, err := bigDipperDb.SQL.Exec(commentsRegExp.ReplaceAllString(request, ""))
-			suite.Require().NoError(err)
-		}
+		_, err = bigDipperDb.SQL.Exec(commentsRegExp.ReplaceAllString(string(file), ""))
+		suite.Require().NoError(err)
 	}
 
 	suite.database = bigDipperDb
