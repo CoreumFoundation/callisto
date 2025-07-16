@@ -3170,6 +3170,11 @@ input block_variance_order_by {
 columns and relationships of "bridge_evidence"
 """
 type bridge_evidence {
+  """An object relationship"""
+  block: block!
+
+  """An object relationship"""
+  bridge_transaction: bridge_transaction!
   hash: String!
   height: bigint!
   id: Int!
@@ -3189,6 +3194,33 @@ type bridge_evidence_aggregate {
   nodes: [bridge_evidence!]!
 }
 
+input bridge_evidence_aggregate_bool_exp {
+  bool_and: bridge_evidence_aggregate_bool_exp_bool_and
+  bool_or: bridge_evidence_aggregate_bool_exp_bool_or
+  count: bridge_evidence_aggregate_bool_exp_count
+}
+
+input bridge_evidence_aggregate_bool_exp_bool_and {
+  arguments: bridge_evidence_select_column_bridge_evidence_aggregate_bool_exp_bool_and_arguments_columns!
+  distinct: Boolean
+  filter: bridge_evidence_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input bridge_evidence_aggregate_bool_exp_bool_or {
+  arguments: bridge_evidence_select_column_bridge_evidence_aggregate_bool_exp_bool_or_arguments_columns!
+  distinct: Boolean
+  filter: bridge_evidence_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input bridge_evidence_aggregate_bool_exp_count {
+  arguments: [bridge_evidence_select_column!]
+  distinct: Boolean
+  filter: bridge_evidence_bool_exp
+  predicate: Int_comparison_exp!
+}
+
 """
 aggregate fields of "bridge_evidence"
 """
@@ -3206,6 +3238,33 @@ type bridge_evidence_aggregate_fields {
   variance: bridge_evidence_variance_fields
 }
 
+"""
+order by aggregate values of table "bridge_evidence"
+"""
+input bridge_evidence_aggregate_order_by {
+  avg: bridge_evidence_avg_order_by
+  count: order_by
+  max: bridge_evidence_max_order_by
+  min: bridge_evidence_min_order_by
+  stddev: bridge_evidence_stddev_order_by
+  stddev_pop: bridge_evidence_stddev_pop_order_by
+  stddev_samp: bridge_evidence_stddev_samp_order_by
+  sum: bridge_evidence_sum_order_by
+  var_pop: bridge_evidence_var_pop_order_by
+  var_samp: bridge_evidence_var_samp_order_by
+  variance: bridge_evidence_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "bridge_evidence"
+"""
+input bridge_evidence_arr_rel_insert_input {
+  data: [bridge_evidence_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: bridge_evidence_on_conflict
+}
+
 """aggregate avg on columns"""
 type bridge_evidence_avg_fields {
   height: Float
@@ -3215,12 +3274,24 @@ type bridge_evidence_avg_fields {
 }
 
 """
+order by avg() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_avg_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
+}
+
+"""
 Boolean expression to filter rows from the table "bridge_evidence". All fields are combined with a logical 'AND'.
 """
 input bridge_evidence_bool_exp {
   _and: [bridge_evidence_bool_exp!]
   _not: bridge_evidence_bool_exp
   _or: [bridge_evidence_bool_exp!]
+  block: block_bool_exp
+  bridge_transaction: bridge_transaction_bool_exp
   hash: String_comparison_exp
   height: bigint_comparison_exp
   id: Int_comparison_exp
@@ -3261,6 +3332,8 @@ input bridge_evidence_inc_input {
 input type for inserting data into table "bridge_evidence"
 """
 input bridge_evidence_insert_input {
+  block: block_obj_rel_insert_input
+  bridge_transaction: bridge_transaction_obj_rel_insert_input
   hash: String
   height: bigint
   id: Int
@@ -3284,6 +3357,20 @@ type bridge_evidence_max_fields {
   transaction_id: bigint
 }
 
+"""
+order by max() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_max_order_by {
+  hash: order_by
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  relayer_address: order_by
+  result: order_by
+  settlement_hash: order_by
+  transaction_id: order_by
+}
+
 """aggregate min on columns"""
 type bridge_evidence_min_fields {
   hash: String
@@ -3294,6 +3381,20 @@ type bridge_evidence_min_fields {
   result: String
   settlement_hash: String
   transaction_id: bigint
+}
+
+"""
+order by min() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_min_order_by {
+  hash: order_by
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  relayer_address: order_by
+  result: order_by
+  settlement_hash: order_by
+  transaction_id: order_by
 }
 
 """
@@ -3318,6 +3419,8 @@ input bridge_evidence_on_conflict {
 
 """Ordering options when selecting data from "bridge_evidence"."""
 input bridge_evidence_order_by {
+  block: block_order_by
+  bridge_transaction: bridge_transaction_order_by
   hash: order_by
   height: order_by
   id: order_by
@@ -3367,6 +3470,22 @@ enum bridge_evidence_select_column {
 }
 
 """
+select "bridge_evidence_aggregate_bool_exp_bool_and_arguments_columns" columns of table "bridge_evidence"
+"""
+enum bridge_evidence_select_column_bridge_evidence_aggregate_bool_exp_bool_and_arguments_columns {
+  """column name"""
+  threshold_reached
+}
+
+"""
+select "bridge_evidence_aggregate_bool_exp_bool_or_arguments_columns" columns of table "bridge_evidence"
+"""
+enum bridge_evidence_select_column_bridge_evidence_aggregate_bool_exp_bool_or_arguments_columns {
+  """column name"""
+  threshold_reached
+}
+
+"""
 input type for updating data in table "bridge_evidence"
 """
 input bridge_evidence_set_input {
@@ -3389,6 +3508,16 @@ type bridge_evidence_stddev_fields {
   transaction_id: Float
 }
 
+"""
+order by stddev() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_stddev_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
+}
+
 """aggregate stddev_pop on columns"""
 type bridge_evidence_stddev_pop_fields {
   height: Float
@@ -3397,12 +3526,32 @@ type bridge_evidence_stddev_pop_fields {
   transaction_id: Float
 }
 
+"""
+order by stddev_pop() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_stddev_pop_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
+}
+
 """aggregate stddev_samp on columns"""
 type bridge_evidence_stddev_samp_fields {
   height: Float
   id: Float
   msg_index: Float
   transaction_id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_stddev_samp_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
 }
 
 """
@@ -3435,6 +3584,16 @@ type bridge_evidence_sum_fields {
   id: Int
   msg_index: bigint
   transaction_id: bigint
+}
+
+"""
+order by sum() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_sum_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
 }
 
 """
@@ -3488,12 +3647,32 @@ type bridge_evidence_var_pop_fields {
   transaction_id: Float
 }
 
+"""
+order by var_pop() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_var_pop_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
+}
+
 """aggregate var_samp on columns"""
 type bridge_evidence_var_samp_fields {
   height: Float
   id: Float
   msg_index: Float
   transaction_id: Float
+}
+
+"""
+order by var_samp() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_var_samp_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
 }
 
 """aggregate variance on columns"""
@@ -3505,10 +3684,56 @@ type bridge_evidence_variance_fields {
 }
 
 """
+order by variance() on columns of table "bridge_evidence"
+"""
+input bridge_evidence_variance_order_by {
+  height: order_by
+  id: order_by
+  msg_index: order_by
+  transaction_id: order_by
+}
+
+"""
 columns and relationships of "bridge_transaction"
 """
 type bridge_transaction {
   amount: String!
+
+  """An array relationship"""
+  bridge_evidences(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """An aggregate relationship"""
+  bridge_evidences_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): bridge_evidence_aggregate!
   denom: String!
   destination_chain: String!
   height: bigint
@@ -3561,6 +3786,8 @@ input bridge_transaction_bool_exp {
   _not: bridge_transaction_bool_exp
   _or: [bridge_transaction_bool_exp!]
   amount: String_comparison_exp
+  bridge_evidences: bridge_evidence_bool_exp
+  bridge_evidences_aggregate: bridge_evidence_aggregate_bool_exp
   denom: String_comparison_exp
   destination_chain: String_comparison_exp
   height: bigint_comparison_exp
@@ -3602,6 +3829,7 @@ input type for inserting data into table "bridge_transaction"
 """
 input bridge_transaction_insert_input {
   amount: String
+  bridge_evidences: bridge_evidence_arr_rel_insert_input
   denom: String
   destination_chain: String
   height: bigint
@@ -3656,6 +3884,16 @@ type bridge_transaction_mutation_response {
 }
 
 """
+input type for inserting object relation for remote table "bridge_transaction"
+"""
+input bridge_transaction_obj_rel_insert_input {
+  data: bridge_transaction_insert_input!
+
+  """upsert condition"""
+  on_conflict: bridge_transaction_on_conflict
+}
+
+"""
 on_conflict condition type for table "bridge_transaction"
 """
 input bridge_transaction_on_conflict {
@@ -3667,6 +3905,7 @@ input bridge_transaction_on_conflict {
 """Ordering options when selecting data from "bridge_transaction"."""
 input bridge_transaction_order_by {
   amount: order_by
+  bridge_evidences_aggregate: bridge_evidence_aggregate_order_by
   denom: order_by
   destination_chain: order_by
   height: order_by
