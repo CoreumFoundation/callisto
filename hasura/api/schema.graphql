@@ -15484,6 +15484,7 @@ type query_root {
   action_validator_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionDelegationResponse
   action_validator_redelegations_from(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionRedelegationResponse
   action_validator_unbonding_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionUnbondingDelegationResponse
+  action_asset_ft_dex_settings(denom: String!, height: Int): ActionDexSettings
 
   """
   fetch data from the table: "assetft_params"

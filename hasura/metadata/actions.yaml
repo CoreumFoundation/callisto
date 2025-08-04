@@ -236,6 +236,23 @@ actions:
   permissions:
   - role: anonymous
 
+- name: action_asset_ft_dex_settings
+  definition:
+    kind: synchronous
+    handler: "{{ACTION_BASE_URL}}/asset_ft_dex_settings"
+    output_type: ActionDexSettings
+    arguments:
+    - name: denom
+      type: String!
+    - name: height
+      type: Int
+    type: query
+    headers:
+    - value: application/json
+      name: Content-Type
+  permissions:
+  - role: anonymous
+
 ############### CUSTOM TYPES ###############
 custom_types:
   scalars:

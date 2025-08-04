@@ -13,6 +13,11 @@ func (p *Payload) GetAddress() string {
 	return p.Input.Address
 }
 
+// GetDenom returns the denom associated with this payload, if any
+func (p *Payload) GetDenom() string {
+	return p.Input.Denom
+}
+
 // GetPagination returns the pagination asasociated with this payload, if any
 func (p *Payload) GetPagination() *query.PageRequest {
 	return &query.PageRequest{
@@ -24,6 +29,7 @@ func (p *Payload) GetPagination() *query.PageRequest {
 
 type PayloadArgs struct {
 	Address    string `json:"address"`
+	Denom      string `json:"denom"`
 	Height     int64  `json:"height"`
 	Offset     uint64 `json:"offset"`
 	Limit      uint64 `json:"limit"`

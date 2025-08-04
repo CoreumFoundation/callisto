@@ -39,6 +39,9 @@ func (m *Module) RunAdditionalOperations() error {
 	worker.RegisterHandler("/validator_redelegations_from", handlers.ValidatorRedelegationsFromHandler)
 	worker.RegisterHandler("/validator_unbonding_delegations", handlers.ValidatorUnbondingDelegationsHandler)
 
+	// -- Asset FT --
+	worker.RegisterHandler("/asset_ft_dex_settings", handlers.AssetFTDexSettingsHandler)
+
 	// Listen for and trap any OS signal to gracefully shutdown and exit
 	m.trapSignal()
 
