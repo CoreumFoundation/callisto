@@ -32,3 +32,16 @@ func (s Source) GetParams(height int64) (assetfttypes.Params, error) {
 
 	return res.Params, nil
 }
+
+// GetDexSettings implements assetftsource.Source
+// GetDexSettings retrieves the DEX settings for the asset FT module at a specific height
+func (s Source) GetDexSettings(height int64, denom string) (assetfttypes.DEXSettings, error) {
+	res, err := s.assetftClient.DEXSettings(remote.GetHeightRequestContext(s.Ctx, height), &assetfttypes.QueryDEXSettingsRequest{
+		Denom: denom,
+	})
+	if err != nil {
+		return assetfttypes.DEXSettings{}, err
+	}
+
+	return res.DEXSettings, nil
+}

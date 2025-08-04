@@ -8,7 +8,7 @@ type Query {
         address: String!
         height: Int
     ): [ActionDelegationReward]
-
+    
     action_delegator_withdraw_address(
         address: String!
     ): ActionAddress!
@@ -72,6 +72,11 @@ type Query {
         limit: Int
         count_total: Boolean
     ): ActionUnbondingDelegationResponse
+
+    action_asset_ft_dex_settings(
+        denom: String!
+        height: Int
+    ): ActionDexSettings
 }
 
 type ActionBalance {
@@ -104,6 +109,11 @@ type ActionUnbondingDelegationResponse {
 
 type ActionValidatorCommissionAmount {
     coins: [ActionCoin]
+}
+
+type ActionDexSettings {
+    unified_ref_amount: Float!
+    whitelisted_denoms: [String]
 }
 
 scalar ActionCoin
