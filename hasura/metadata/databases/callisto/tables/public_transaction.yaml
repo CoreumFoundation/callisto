@@ -5,6 +5,17 @@ object_relationships:
   - name: block
     using:
       foreign_key_constraint_on: height
+array_relationships:
+  - name: messagesByPartitionIdTransactionHash
+    using:
+      manual_configuration:
+        column_mapping:
+          hash: transaction_hash
+          partition_id: partition_id
+        insertion_order: null
+        remote_table:
+          name: message
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

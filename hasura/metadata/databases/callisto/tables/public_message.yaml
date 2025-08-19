@@ -11,6 +11,16 @@ object_relationships:
         remote_table:
           name: transaction
           schema: public
+  - name: transactionByPartitionIdTransactionHash
+    using:
+      manual_configuration:
+        column_mapping:
+          partition_id: partition_id
+          transaction_hash: hash
+        insertion_order: null
+        remote_table:
+          name: transaction
+          schema: public
 select_permissions:
   - role: anonymous
     permission:

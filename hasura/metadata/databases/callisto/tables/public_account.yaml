@@ -12,6 +12,20 @@ object_relationships:
           name: vesting_account
           schema: public
 array_relationships:
+  - name: feeGrantAllowancesByGranterAddress
+    using:
+      foreign_key_constraint_on:
+        column: granter_address
+        table:
+          name: fee_grant_allowance
+          schema: public
+  - name: fee_grant_allowances
+    using:
+      foreign_key_constraint_on:
+        column: grantee_address
+        table:
+          name: fee_grant_allowance
+          schema: public
   - name: proposal_deposits
     using:
       foreign_key_constraint_on:
