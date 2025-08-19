@@ -2,10 +2,9 @@ table:
   name: token_holder_count
   schema: public
 select_permissions:
-- permission:
-    allow_aggregations: false
-    columns:
-    - denom
-    - holders
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - denom
+        - holders
+      filter: {}

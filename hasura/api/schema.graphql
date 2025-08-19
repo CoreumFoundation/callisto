@@ -35,6 +35,11 @@ type ActionDelegationReward {
   validator_address: String!
 }
 
+type ActionDexSettings {
+  unified_ref_amount: Float!
+  whitelisted_denoms: [String]
+}
+
 scalar ActionPagination
 
 scalar ActionRedelegation
@@ -456,7 +461,7 @@ unique or primary key constraints on table "account_denom_balance"
 """
 enum account_denom_balance_constraint {
   """
-  unique or primary key constraint on columns "address", "denom"
+  unique or primary key constraint on columns "denom", "address"
   """
   account_denom_balance_pkey
 }
@@ -2531,6 +2536,41 @@ input bigint_comparison_exp {
 columns and relationships of "block"
 """
 type block {
+  """An array relationship"""
+  bridge_evidences(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """An aggregate relationship"""
+  bridge_evidences_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): bridge_evidence_aggregate!
   hash: String!
   height: bigint!
   num_txs: Int
@@ -2808,6 +2848,8 @@ input block_bool_exp {
   _and: [block_bool_exp!]
   _not: block_bool_exp
   _or: [block_bool_exp!]
+  bridge_evidences: bridge_evidence_bool_exp
+  bridge_evidences_aggregate: bridge_evidence_aggregate_bool_exp
   hash: String_comparison_exp
   height: bigint_comparison_exp
   num_txs: Int_comparison_exp
@@ -2855,6 +2897,7 @@ input block_inc_input {
 input type for inserting data into table "block"
 """
 input block_insert_input {
+  bridge_evidences: bridge_evidence_arr_rel_insert_input
   hash: String
   height: bigint
   num_txs: Int
@@ -2945,6 +2988,7 @@ input block_on_conflict {
 
 """Ordering options when selecting data from "block"."""
 input block_order_by {
+  bridge_evidences_aggregate: bridge_evidence_aggregate_order_by
   hash: order_by
   height: order_by
   num_txs: order_by
@@ -3308,7 +3352,7 @@ unique or primary key constraints on table "bridge_evidence"
 """
 enum bridge_evidence_constraint {
   """
-  unique or primary key constraint on columns "msg_index", "hash"
+  unique or primary key constraint on columns "hash", "msg_index"
   """
   bridge_evidence_hash_msg_index_idx
 
@@ -5741,7 +5785,7 @@ unique or primary key constraints on table "double_sign_vote"
 """
 enum double_sign_vote_constraint {
   """
-  unique or primary key constraint on columns "validator_address", "block_id"
+  unique or primary key constraint on columns "block_id", "validator_address"
   """
   double_sign_vote_block_id_validator_address_key
 
@@ -7602,7 +7646,7 @@ unique or primary key constraints on table "message"
 """
 enum message_constraint {
   """
-  unique or primary key constraint on columns "index", "partition_id", "transaction_hash"
+  unique or primary key constraint on columns "index", "transaction_hash", "partition_id"
   """
   unique_message_per_tx
 }
@@ -12355,7 +12399,7 @@ unique or primary key constraints on table "pre_commit"
 """
 enum pre_commit_constraint {
   """
-  unique or primary key constraint on columns "validator_address", "timestamp"
+  unique or primary key constraint on columns "timestamp", "validator_address"
   """
   pre_commit_validator_address_timestamp_key
 }
@@ -13081,7 +13125,7 @@ unique or primary key constraints on table "proposal_deposit"
 """
 enum proposal_deposit_constraint {
   """
-  unique or primary key constraint on columns "transaction_hash", "proposal_id", "depositor_address"
+  unique or primary key constraint on columns "depositor_address", "transaction_hash", "proposal_id"
   """
   unique_deposit
 }
@@ -14554,7 +14598,7 @@ enum proposal_validator_status_snapshot_constraint {
   proposal_validator_status_snapshot_pkey
 
   """
-  unique or primary key constraint on columns "validator_address", "proposal_id"
+  unique or primary key constraint on columns "proposal_id", "validator_address"
   """
   unique_validator_status_snapshot
 }
@@ -15091,7 +15135,7 @@ unique or primary key constraints on table "proposal_vote"
 """
 enum proposal_vote_constraint {
   """
-  unique or primary key constraint on columns "voter_address", "option", "proposal_id"
+  unique or primary key constraint on columns "voter_address", "proposal_id", "option"
   """
   unique_vote
 }
@@ -15473,6 +15517,7 @@ type query_root {
   """
   account_denom_balance_by_pk(address: String!, denom: String!): account_denom_balance
   action_account_balance(address: String!, height: Int): ActionBalance
+  action_asset_ft_dex_settings(denom: String!, height: Int): ActionDexSettings
   action_delegation(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionDelegationResponse
   action_delegation_reward(address: String!, height: Int): [ActionDelegationReward]
   action_delegation_total(address: String!, height: Int): ActionBalance
@@ -15484,7 +15529,6 @@ type query_root {
   action_validator_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionDelegationResponse
   action_validator_redelegations_from(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionRedelegationResponse
   action_validator_unbonding_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionUnbondingDelegationResponse
-  action_asset_ft_dex_settings(denom: String!, height: Int): ActionDexSettings
 
   """
   fetch data from the table: "assetft_params"
@@ -23931,7 +23975,7 @@ unique or primary key constraints on table "transaction"
 """
 enum transaction_constraint {
   """
-  unique or primary key constraint on columns "partition_id", "hash"
+  unique or primary key constraint on columns "hash", "partition_id"
   """
   unique_tx
 }
@@ -28243,3 +28287,4 @@ input vesting_period_variance_order_by {
   period_order: order_by
   vesting_account_id: order_by
 }
+

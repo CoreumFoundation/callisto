@@ -2,12 +2,12 @@ table:
   name: account_denom_balance
   schema: public
 select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - address
-    - denom
-    - amount
-    - height
-    filter: {}
-  role: anonymous
+  - role: anonymous
+    permission:
+      columns:
+        - address
+        - denom
+        - amount
+        - height
+      filter: {}
+      allow_aggregations: true
