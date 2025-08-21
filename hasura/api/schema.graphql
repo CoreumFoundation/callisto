@@ -35,6 +35,11 @@ type ActionDelegationReward {
   validator_address: String!
 }
 
+type ActionDexSettings {
+  unified_ref_amount: Float!
+  whitelisted_denoms: [String]
+}
+
 scalar ActionPagination
 
 scalar ActionRedelegation
@@ -165,6 +170,78 @@ columns and relationships of "account"
 """
 type account {
   address: String!
+
+  """An array relationship"""
+  feeGrantAllowancesByGranterAddress(
+    """distinct select on columns"""
+    distinct_on: [fee_grant_allowance_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [fee_grant_allowance_order_by!]
+
+    """filter the rows returned"""
+    where: fee_grant_allowance_bool_exp
+  ): [fee_grant_allowance!]!
+
+  """An aggregate relationship"""
+  feeGrantAllowancesByGranterAddress_aggregate(
+    """distinct select on columns"""
+    distinct_on: [fee_grant_allowance_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [fee_grant_allowance_order_by!]
+
+    """filter the rows returned"""
+    where: fee_grant_allowance_bool_exp
+  ): fee_grant_allowance_aggregate!
+
+  """An array relationship"""
+  fee_grant_allowances(
+    """distinct select on columns"""
+    distinct_on: [fee_grant_allowance_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [fee_grant_allowance_order_by!]
+
+    """filter the rows returned"""
+    where: fee_grant_allowance_bool_exp
+  ): [fee_grant_allowance!]!
+
+  """An aggregate relationship"""
+  fee_grant_allowances_aggregate(
+    """distinct select on columns"""
+    distinct_on: [fee_grant_allowance_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [fee_grant_allowance_order_by!]
+
+    """filter the rows returned"""
+    where: fee_grant_allowance_bool_exp
+  ): fee_grant_allowance_aggregate!
 
   """An array relationship"""
   proposal_deposits(
@@ -375,6 +452,10 @@ input account_bool_exp {
   _not: account_bool_exp
   _or: [account_bool_exp!]
   address: String_comparison_exp
+  feeGrantAllowancesByGranterAddress: fee_grant_allowance_bool_exp
+  feeGrantAllowancesByGranterAddress_aggregate: fee_grant_allowance_aggregate_bool_exp
+  fee_grant_allowances: fee_grant_allowance_bool_exp
+  fee_grant_allowances_aggregate: fee_grant_allowance_aggregate_bool_exp
   proposal_deposits: proposal_deposit_bool_exp
   proposal_deposits_aggregate: proposal_deposit_aggregate_bool_exp
   proposal_votes: proposal_vote_bool_exp
@@ -456,7 +537,7 @@ unique or primary key constraints on table "account_denom_balance"
 """
 enum account_denom_balance_constraint {
   """
-  unique or primary key constraint on columns "address", "denom"
+  unique or primary key constraint on columns "denom", "address"
   """
   account_denom_balance_pkey
 }
@@ -642,6 +723,8 @@ input type for inserting data into table "account"
 """
 input account_insert_input {
   address: String
+  feeGrantAllowancesByGranterAddress: fee_grant_allowance_arr_rel_insert_input
+  fee_grant_allowances: fee_grant_allowance_arr_rel_insert_input
   proposal_deposits: proposal_deposit_arr_rel_insert_input
   proposal_votes: proposal_vote_arr_rel_insert_input
   proposals: proposal_arr_rel_insert_input
@@ -693,6 +776,8 @@ input account_on_conflict {
 """Ordering options when selecting data from "account"."""
 input account_order_by {
   address: order_by
+  feeGrantAllowancesByGranterAddress_aggregate: fee_grant_allowance_aggregate_order_by
+  fee_grant_allowances_aggregate: fee_grant_allowance_aggregate_order_by
   proposal_deposits_aggregate: proposal_deposit_aggregate_order_by
   proposal_votes_aggregate: proposal_vote_aggregate_order_by
   proposals_aggregate: proposal_aggregate_order_by
@@ -2531,6 +2616,41 @@ input bigint_comparison_exp {
 columns and relationships of "block"
 """
 type block {
+  """An array relationship"""
+  bridge_evidences(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): [bridge_evidence!]!
+
+  """An aggregate relationship"""
+  bridge_evidences_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bridge_evidence_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bridge_evidence_order_by!]
+
+    """filter the rows returned"""
+    where: bridge_evidence_bool_exp
+  ): bridge_evidence_aggregate!
   hash: String!
   height: bigint!
   num_txs: Int
@@ -2808,6 +2928,8 @@ input block_bool_exp {
   _and: [block_bool_exp!]
   _not: block_bool_exp
   _or: [block_bool_exp!]
+  bridge_evidences: bridge_evidence_bool_exp
+  bridge_evidences_aggregate: bridge_evidence_aggregate_bool_exp
   hash: String_comparison_exp
   height: bigint_comparison_exp
   num_txs: Int_comparison_exp
@@ -2855,6 +2977,7 @@ input block_inc_input {
 input type for inserting data into table "block"
 """
 input block_insert_input {
+  bridge_evidences: bridge_evidence_arr_rel_insert_input
   hash: String
   height: bigint
   num_txs: Int
@@ -2945,6 +3068,7 @@ input block_on_conflict {
 
 """Ordering options when selecting data from "block"."""
 input block_order_by {
+  bridge_evidences_aggregate: bridge_evidence_aggregate_order_by
   hash: order_by
   height: order_by
   num_txs: order_by
@@ -3308,7 +3432,7 @@ unique or primary key constraints on table "bridge_evidence"
 """
 enum bridge_evidence_constraint {
   """
-  unique or primary key constraint on columns "msg_index", "hash"
+  unique or primary key constraint on columns "hash", "msg_index"
   """
   bridge_evidence_hash_msg_index_idx
 
@@ -5741,7 +5865,7 @@ unique or primary key constraints on table "double_sign_vote"
 """
 enum double_sign_vote_constraint {
   """
-  unique or primary key constraint on columns "validator_address", "block_id"
+  unique or primary key constraint on columns "block_id", "validator_address"
   """
   double_sign_vote_block_id_validator_address_key
 
@@ -6155,6 +6279,17 @@ type fee_grant_allowance_aggregate {
   nodes: [fee_grant_allowance!]!
 }
 
+input fee_grant_allowance_aggregate_bool_exp {
+  count: fee_grant_allowance_aggregate_bool_exp_count
+}
+
+input fee_grant_allowance_aggregate_bool_exp_count {
+  arguments: [fee_grant_allowance_select_column!]
+  distinct: Boolean
+  filter: fee_grant_allowance_bool_exp
+  predicate: Int_comparison_exp!
+}
+
 """
 aggregate fields of "fee_grant_allowance"
 """
@@ -6172,15 +6307,50 @@ type fee_grant_allowance_aggregate_fields {
   variance: fee_grant_allowance_variance_fields
 }
 
+"""
+order by aggregate values of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_aggregate_order_by {
+  avg: fee_grant_allowance_avg_order_by
+  count: order_by
+  max: fee_grant_allowance_max_order_by
+  min: fee_grant_allowance_min_order_by
+  stddev: fee_grant_allowance_stddev_order_by
+  stddev_pop: fee_grant_allowance_stddev_pop_order_by
+  stddev_samp: fee_grant_allowance_stddev_samp_order_by
+  sum: fee_grant_allowance_sum_order_by
+  var_pop: fee_grant_allowance_var_pop_order_by
+  var_samp: fee_grant_allowance_var_samp_order_by
+  variance: fee_grant_allowance_variance_order_by
+}
+
 """append existing jsonb value of filtered columns with new jsonb value"""
 input fee_grant_allowance_append_input {
   allowance: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "fee_grant_allowance"
+"""
+input fee_grant_allowance_arr_rel_insert_input {
+  data: [fee_grant_allowance_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: fee_grant_allowance_on_conflict
 }
 
 """aggregate avg on columns"""
 type fee_grant_allowance_avg_fields {
   height: Float
   id: Float
+}
+
+"""
+order by avg() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_avg_order_by {
+  height: order_by
+  id: order_by
 }
 
 """
@@ -6264,12 +6434,32 @@ type fee_grant_allowance_max_fields {
   id: Int
 }
 
+"""
+order by max() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_max_order_by {
+  grantee_address: order_by
+  granter_address: order_by
+  height: order_by
+  id: order_by
+}
+
 """aggregate min on columns"""
 type fee_grant_allowance_min_fields {
   grantee_address: String
   granter_address: String
   height: bigint
   id: Int
+}
+
+"""
+order by min() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_min_order_by {
+  grantee_address: order_by
+  granter_address: order_by
+  height: order_by
+  id: order_by
 }
 
 """
@@ -6350,16 +6540,40 @@ type fee_grant_allowance_stddev_fields {
   id: Float
 }
 
+"""
+order by stddev() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_stddev_order_by {
+  height: order_by
+  id: order_by
+}
+
 """aggregate stddev_pop on columns"""
 type fee_grant_allowance_stddev_pop_fields {
   height: Float
   id: Float
 }
 
+"""
+order by stddev_pop() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_stddev_pop_order_by {
+  height: order_by
+  id: order_by
+}
+
 """aggregate stddev_samp on columns"""
 type fee_grant_allowance_stddev_samp_fields {
   height: Float
   id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_stddev_samp_order_by {
+  height: order_by
+  id: order_by
 }
 
 """
@@ -6386,6 +6600,14 @@ input fee_grant_allowance_stream_cursor_value_input {
 type fee_grant_allowance_sum_fields {
   height: bigint
   id: Int
+}
+
+"""
+order by sum() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_sum_order_by {
+  height: order_by
+  id: order_by
 }
 
 """
@@ -6446,16 +6668,40 @@ type fee_grant_allowance_var_pop_fields {
   id: Float
 }
 
+"""
+order by var_pop() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_var_pop_order_by {
+  height: order_by
+  id: order_by
+}
+
 """aggregate var_samp on columns"""
 type fee_grant_allowance_var_samp_fields {
   height: Float
   id: Float
 }
 
+"""
+order by var_samp() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_var_samp_order_by {
+  height: order_by
+  id: order_by
+}
+
 """aggregate variance on columns"""
 type fee_grant_allowance_variance_fields {
   height: Float
   id: Float
+}
+
+"""
+order by variance() on columns of table "fee_grant_allowance"
+"""
+input fee_grant_allowance_variance_order_by {
+  height: order_by
+  id: order_by
 }
 
 """
@@ -7540,6 +7786,9 @@ type message {
 
   """An object relationship"""
   transaction: transaction
+
+  """An object relationship"""
+  transactionByPartitionIdTransactionHash: transaction
   transaction_hash: String!
   type: String!
   value(
@@ -7554,6 +7803,17 @@ aggregated selection of "message"
 type message_aggregate {
   aggregate: message_aggregate_fields
   nodes: [message!]!
+}
+
+input message_aggregate_bool_exp {
+  count: message_aggregate_bool_exp_count
+}
+
+input message_aggregate_bool_exp_count {
+  arguments: [message_select_column!]
+  distinct: Boolean
+  filter: message_bool_exp
+  predicate: Int_comparison_exp!
 }
 
 """
@@ -7573,11 +7833,47 @@ type message_aggregate_fields {
   variance: message_variance_fields
 }
 
+"""
+order by aggregate values of table "message"
+"""
+input message_aggregate_order_by {
+  avg: message_avg_order_by
+  count: order_by
+  max: message_max_order_by
+  min: message_min_order_by
+  stddev: message_stddev_order_by
+  stddev_pop: message_stddev_pop_order_by
+  stddev_samp: message_stddev_samp_order_by
+  sum: message_sum_order_by
+  var_pop: message_var_pop_order_by
+  var_samp: message_var_samp_order_by
+  variance: message_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "message"
+"""
+input message_arr_rel_insert_input {
+  data: [message_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: message_on_conflict
+}
+
 """aggregate avg on columns"""
 type message_avg_fields {
   height: Float
   index: Float
   partition_id: Float
+}
+
+"""
+order by avg() on columns of table "message"
+"""
+input message_avg_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
 }
 
 """
@@ -7592,6 +7888,7 @@ input message_bool_exp {
   involved_accounts_addresses: String_array_comparison_exp
   partition_id: bigint_comparison_exp
   transaction: transaction_bool_exp
+  transactionByPartitionIdTransactionHash: transaction_bool_exp
   transaction_hash: String_comparison_exp
   type: String_comparison_exp
   value: json_comparison_exp
@@ -7602,7 +7899,7 @@ unique or primary key constraints on table "message"
 """
 enum message_constraint {
   """
-  unique or primary key constraint on columns "index", "partition_id", "transaction_hash"
+  unique or primary key constraint on columns "index", "transaction_hash", "partition_id"
   """
   unique_message_per_tx
 }
@@ -7625,6 +7922,7 @@ input message_insert_input {
   involved_accounts_addresses: [String!]
   partition_id: bigint
   transaction: transaction_obj_rel_insert_input
+  transactionByPartitionIdTransactionHash: transaction_obj_rel_insert_input
   transaction_hash: String
   type: String
   value: json
@@ -7640,6 +7938,18 @@ type message_max_fields {
   type: String
 }
 
+"""
+order by max() on columns of table "message"
+"""
+input message_max_order_by {
+  height: order_by
+  index: order_by
+  involved_accounts_addresses: order_by
+  partition_id: order_by
+  transaction_hash: order_by
+  type: order_by
+}
+
 """aggregate min on columns"""
 type message_min_fields {
   height: bigint
@@ -7648,6 +7958,18 @@ type message_min_fields {
   partition_id: bigint
   transaction_hash: String
   type: String
+}
+
+"""
+order by min() on columns of table "message"
+"""
+input message_min_order_by {
+  height: order_by
+  index: order_by
+  involved_accounts_addresses: order_by
+  partition_id: order_by
+  transaction_hash: order_by
+  type: order_by
 }
 
 """
@@ -7677,6 +7999,7 @@ input message_order_by {
   involved_accounts_addresses: order_by
   partition_id: order_by
   transaction: transaction_order_by
+  transactionByPartitionIdTransactionHash: transaction_order_by
   transaction_hash: order_by
   type: order_by
   value: order_by
@@ -7728,6 +8051,15 @@ type message_stddev_fields {
   partition_id: Float
 }
 
+"""
+order by stddev() on columns of table "message"
+"""
+input message_stddev_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
+}
+
 """aggregate stddev_pop on columns"""
 type message_stddev_pop_fields {
   height: Float
@@ -7735,11 +8067,29 @@ type message_stddev_pop_fields {
   partition_id: Float
 }
 
+"""
+order by stddev_pop() on columns of table "message"
+"""
+input message_stddev_pop_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
+}
+
 """aggregate stddev_samp on columns"""
 type message_stddev_samp_fields {
   height: Float
   index: Float
   partition_id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "message"
+"""
+input message_stddev_samp_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
 }
 
 """
@@ -7769,6 +8119,248 @@ type message_sum_fields {
   height: bigint
   index: bigint
   partition_id: bigint
+}
+
+"""
+order by sum() on columns of table "message"
+"""
+input message_sum_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
+}
+
+"""
+columns and relationships of "message_type"
+"""
+type message_type {
+  height: bigint!
+  label: String!
+  module: String!
+  type: String!
+}
+
+"""
+aggregated selection of "message_type"
+"""
+type message_type_aggregate {
+  aggregate: message_type_aggregate_fields
+  nodes: [message_type!]!
+}
+
+"""
+aggregate fields of "message_type"
+"""
+type message_type_aggregate_fields {
+  avg: message_type_avg_fields
+  count(columns: [message_type_select_column!], distinct: Boolean): Int!
+  max: message_type_max_fields
+  min: message_type_min_fields
+  stddev: message_type_stddev_fields
+  stddev_pop: message_type_stddev_pop_fields
+  stddev_samp: message_type_stddev_samp_fields
+  sum: message_type_sum_fields
+  var_pop: message_type_var_pop_fields
+  var_samp: message_type_var_samp_fields
+  variance: message_type_variance_fields
+}
+
+"""aggregate avg on columns"""
+type message_type_avg_fields {
+  height: Float
+}
+
+"""
+Boolean expression to filter rows from the table "message_type". All fields are combined with a logical 'AND'.
+"""
+input message_type_bool_exp {
+  _and: [message_type_bool_exp!]
+  _not: message_type_bool_exp
+  _or: [message_type_bool_exp!]
+  height: bigint_comparison_exp
+  label: String_comparison_exp
+  module: String_comparison_exp
+  type: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "message_type"
+"""
+enum message_type_constraint {
+  """
+  unique or primary key constraint on columns "type"
+  """
+  message_type_type_key
+}
+
+"""
+input type for incrementing numeric columns in table "message_type"
+"""
+input message_type_inc_input {
+  height: bigint
+}
+
+"""
+input type for inserting data into table "message_type"
+"""
+input message_type_insert_input {
+  height: bigint
+  label: String
+  module: String
+  type: String
+}
+
+"""aggregate max on columns"""
+type message_type_max_fields {
+  height: bigint
+  label: String
+  module: String
+  type: String
+}
+
+"""aggregate min on columns"""
+type message_type_min_fields {
+  height: bigint
+  label: String
+  module: String
+  type: String
+}
+
+"""
+response of any mutation on the table "message_type"
+"""
+type message_type_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [message_type!]!
+}
+
+"""
+on_conflict condition type for table "message_type"
+"""
+input message_type_on_conflict {
+  constraint: message_type_constraint!
+  update_columns: [message_type_update_column!]! = []
+  where: message_type_bool_exp
+}
+
+"""Ordering options when selecting data from "message_type"."""
+input message_type_order_by {
+  height: order_by
+  label: order_by
+  module: order_by
+  type: order_by
+}
+
+"""
+select columns of table "message_type"
+"""
+enum message_type_select_column {
+  """column name"""
+  height
+
+  """column name"""
+  label
+
+  """column name"""
+  module
+
+  """column name"""
+  type
+}
+
+"""
+input type for updating data in table "message_type"
+"""
+input message_type_set_input {
+  height: bigint
+  label: String
+  module: String
+  type: String
+}
+
+"""aggregate stddev on columns"""
+type message_type_stddev_fields {
+  height: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type message_type_stddev_pop_fields {
+  height: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type message_type_stddev_samp_fields {
+  height: Float
+}
+
+"""
+Streaming cursor of the table "message_type"
+"""
+input message_type_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: message_type_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input message_type_stream_cursor_value_input {
+  height: bigint
+  label: String
+  module: String
+  type: String
+}
+
+"""aggregate sum on columns"""
+type message_type_sum_fields {
+  height: bigint
+}
+
+"""
+update columns of table "message_type"
+"""
+enum message_type_update_column {
+  """column name"""
+  height
+
+  """column name"""
+  label
+
+  """column name"""
+  module
+
+  """column name"""
+  type
+}
+
+input message_type_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: message_type_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: message_type_set_input
+
+  """filter the rows which have to be updated"""
+  where: message_type_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type message_type_var_pop_fields {
+  height: Float
+}
+
+"""aggregate var_samp on columns"""
+type message_type_var_samp_fields {
+  height: Float
+}
+
+"""aggregate variance on columns"""
+type message_type_variance_fields {
+  height: Float
 }
 
 """
@@ -7815,6 +8407,15 @@ type message_var_pop_fields {
   partition_id: Float
 }
 
+"""
+order by var_pop() on columns of table "message"
+"""
+input message_var_pop_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
+}
+
 """aggregate var_samp on columns"""
 type message_var_samp_fields {
   height: Float
@@ -7822,11 +8423,29 @@ type message_var_samp_fields {
   partition_id: Float
 }
 
+"""
+order by var_samp() on columns of table "message"
+"""
+input message_var_samp_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
+}
+
 """aggregate variance on columns"""
 type message_variance_fields {
   height: Float
   index: Float
   partition_id: Float
+}
+
+"""
+order by variance() on columns of table "message"
+"""
+input message_variance_order_by {
+  height: order_by
+  index: order_by
+  partition_id: order_by
 }
 
 input messages_by_address_args {
@@ -8554,6 +9173,14 @@ type mutation_root {
   ): message_mutation_response
 
   """
+  delete data from the table: "message_type"
+  """
+  delete_message_type(
+    """filter the rows which have to be deleted"""
+    where: message_type_bool_exp!
+  ): message_type_mutation_response
+
+  """
   delete data from the table: "mint_params"
   """
   delete_mint_params(
@@ -8654,6 +9281,14 @@ type mutation_root {
     """filter the rows which have to be deleted"""
     where: proposal_vote_bool_exp!
   ): proposal_vote_mutation_response
+
+  """
+  delete data from the table: "pruning"
+  """
+  delete_pruning(
+    """filter the rows which have to be deleted"""
+    where: pruning_bool_exp!
+  ): pruning_mutation_response
 
   """
   delete data from the table: "slashing_params"
@@ -9400,6 +10035,28 @@ type mutation_root {
   ): message
 
   """
+  insert data into the table: "message_type"
+  """
+  insert_message_type(
+    """the rows to be inserted"""
+    objects: [message_type_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: message_type_on_conflict
+  ): message_type_mutation_response
+
+  """
+  insert a single row into the table: "message_type"
+  """
+  insert_message_type_one(
+    """the row to be inserted"""
+    object: message_type_insert_input!
+
+    """upsert condition"""
+    on_conflict: message_type_on_conflict
+  ): message_type
+
+  """
   insert data into the table: "mint_params"
   """
   insert_mint_params(
@@ -9596,6 +10253,22 @@ type mutation_root {
     """upsert condition"""
     on_conflict: proposal_vote_on_conflict
   ): proposal_vote
+
+  """
+  insert data into the table: "pruning"
+  """
+  insert_pruning(
+    """the rows to be inserted"""
+    objects: [pruning_insert_input!]!
+  ): pruning_mutation_response
+
+  """
+  insert a single row into the table: "pruning"
+  """
+  insert_pruning_one(
+    """the row to be inserted"""
+    object: pruning_insert_input!
+  ): pruning
 
   """
   insert data into the table: "slashing_params"
@@ -11174,6 +11847,28 @@ type mutation_root {
   ): [message_mutation_response]
 
   """
+  update data of the table: "message_type"
+  """
+  update_message_type(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: message_type_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_type_set_input
+
+    """filter the rows which have to be updated"""
+    where: message_type_bool_exp!
+  ): message_type_mutation_response
+
+  """
+  update multiples rows of table: "message_type"
+  """
+  update_message_type_many(
+    """updates to execute, in order"""
+    updates: [message_type_updates!]!
+  ): [message_type_mutation_response]
+
+  """
   update data of the table: "mint_params"
   """
   update_mint_params(
@@ -11520,6 +12215,28 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [proposal_vote_updates!]!
   ): [proposal_vote_mutation_response]
+
+  """
+  update data of the table: "pruning"
+  """
+  update_pruning(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: pruning_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: pruning_set_input
+
+    """filter the rows which have to be updated"""
+    where: pruning_bool_exp!
+  ): pruning_mutation_response
+
+  """
+  update multiples rows of table: "pruning"
+  """
+  update_pruning_many(
+    """updates to execute, in order"""
+    updates: [pruning_updates!]!
+  ): [pruning_mutation_response]
 
   """
   update data of the table: "slashing_params"
@@ -12355,7 +13072,7 @@ unique or primary key constraints on table "pre_commit"
 """
 enum pre_commit_constraint {
   """
-  unique or primary key constraint on columns "validator_address", "timestamp"
+  unique or primary key constraint on columns "timestamp", "validator_address"
   """
   pre_commit_validator_address_timestamp_key
 }
@@ -13081,7 +13798,7 @@ unique or primary key constraints on table "proposal_deposit"
 """
 enum proposal_deposit_constraint {
   """
-  unique or primary key constraint on columns "transaction_hash", "proposal_id", "depositor_address"
+  unique or primary key constraint on columns "depositor_address", "transaction_hash", "proposal_id"
   """
   unique_deposit
 }
@@ -14554,7 +15271,7 @@ enum proposal_validator_status_snapshot_constraint {
   proposal_validator_status_snapshot_pkey
 
   """
-  unique or primary key constraint on columns "validator_address", "proposal_id"
+  unique or primary key constraint on columns "proposal_id", "validator_address"
   """
   unique_validator_status_snapshot
 }
@@ -15091,7 +15808,7 @@ unique or primary key constraints on table "proposal_vote"
 """
 enum proposal_vote_constraint {
   """
-  unique or primary key constraint on columns "voter_address", "option", "proposal_id"
+  unique or primary key constraint on columns "voter_address", "proposal_id", "option"
   """
   unique_vote
 }
@@ -15384,6 +16101,170 @@ input proposal_vote_variance_order_by {
   proposal_id: order_by
 }
 
+"""
+columns and relationships of "pruning"
+"""
+type pruning {
+  last_pruned_height: bigint!
+}
+
+"""
+aggregated selection of "pruning"
+"""
+type pruning_aggregate {
+  aggregate: pruning_aggregate_fields
+  nodes: [pruning!]!
+}
+
+"""
+aggregate fields of "pruning"
+"""
+type pruning_aggregate_fields {
+  avg: pruning_avg_fields
+  count(columns: [pruning_select_column!], distinct: Boolean): Int!
+  max: pruning_max_fields
+  min: pruning_min_fields
+  stddev: pruning_stddev_fields
+  stddev_pop: pruning_stddev_pop_fields
+  stddev_samp: pruning_stddev_samp_fields
+  sum: pruning_sum_fields
+  var_pop: pruning_var_pop_fields
+  var_samp: pruning_var_samp_fields
+  variance: pruning_variance_fields
+}
+
+"""aggregate avg on columns"""
+type pruning_avg_fields {
+  last_pruned_height: Float
+}
+
+"""
+Boolean expression to filter rows from the table "pruning". All fields are combined with a logical 'AND'.
+"""
+input pruning_bool_exp {
+  _and: [pruning_bool_exp!]
+  _not: pruning_bool_exp
+  _or: [pruning_bool_exp!]
+  last_pruned_height: bigint_comparison_exp
+}
+
+"""
+input type for incrementing numeric columns in table "pruning"
+"""
+input pruning_inc_input {
+  last_pruned_height: bigint
+}
+
+"""
+input type for inserting data into table "pruning"
+"""
+input pruning_insert_input {
+  last_pruned_height: bigint
+}
+
+"""aggregate max on columns"""
+type pruning_max_fields {
+  last_pruned_height: bigint
+}
+
+"""aggregate min on columns"""
+type pruning_min_fields {
+  last_pruned_height: bigint
+}
+
+"""
+response of any mutation on the table "pruning"
+"""
+type pruning_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [pruning!]!
+}
+
+"""Ordering options when selecting data from "pruning"."""
+input pruning_order_by {
+  last_pruned_height: order_by
+}
+
+"""
+select columns of table "pruning"
+"""
+enum pruning_select_column {
+  """column name"""
+  last_pruned_height
+}
+
+"""
+input type for updating data in table "pruning"
+"""
+input pruning_set_input {
+  last_pruned_height: bigint
+}
+
+"""aggregate stddev on columns"""
+type pruning_stddev_fields {
+  last_pruned_height: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type pruning_stddev_pop_fields {
+  last_pruned_height: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type pruning_stddev_samp_fields {
+  last_pruned_height: Float
+}
+
+"""
+Streaming cursor of the table "pruning"
+"""
+input pruning_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: pruning_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input pruning_stream_cursor_value_input {
+  last_pruned_height: bigint
+}
+
+"""aggregate sum on columns"""
+type pruning_sum_fields {
+  last_pruned_height: bigint
+}
+
+input pruning_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: pruning_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: pruning_set_input
+
+  """filter the rows which have to be updated"""
+  where: pruning_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type pruning_var_pop_fields {
+  last_pruned_height: Float
+}
+
+"""aggregate var_samp on columns"""
+type pruning_var_samp_fields {
+  last_pruned_height: Float
+}
+
+"""aggregate variance on columns"""
+type pruning_variance_fields {
+  last_pruned_height: Float
+}
+
 type query_root {
   """
   fetch data from the table: "account"
@@ -15473,6 +16354,7 @@ type query_root {
   """
   account_denom_balance_by_pk(address: String!, denom: String!): account_denom_balance
   action_account_balance(address: String!, height: Int): ActionBalance
+  action_asset_ft_dex_settings(denom: String!, height: Int): ActionDexSettings
   action_delegation(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionDelegationResponse
   action_delegation_reward(address: String!, height: Int): [ActionDelegationReward]
   action_delegation_total(address: String!, height: Int): ActionBalance
@@ -15484,7 +16366,6 @@ type query_root {
   action_validator_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionDelegationResponse
   action_validator_redelegations_from(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionRedelegationResponse
   action_validator_unbonding_delegations(address: String!, count_total: Boolean, limit: Int, offset: Int): ActionUnbondingDelegationResponse
-  action_asset_ft_dex_settings(denom: String!, height: Int): ActionDexSettings
 
   """
   fetch data from the table: "assetft_params"
@@ -16445,6 +17326,46 @@ type query_root {
   ): message_aggregate!
 
   """
+  fetch data from the table: "message_type"
+  """
+  message_type(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): [message_type!]!
+
+  """
+  fetch aggregated fields from the table: "message_type"
+  """
+  message_type_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): message_type_aggregate!
+
+  """
   execute function "messages_by_address" which returns "message"
   """
   messages_by_address(
@@ -16877,6 +17798,46 @@ type query_root {
     """filter the rows returned"""
     where: proposal_vote_bool_exp
   ): proposal_vote_aggregate!
+
+  """
+  fetch data from the table: "pruning"
+  """
+  pruning(
+    """distinct select on columns"""
+    distinct_on: [pruning_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pruning_order_by!]
+
+    """filter the rows returned"""
+    where: pruning_bool_exp
+  ): [pruning!]!
+
+  """
+  fetch aggregated fields from the table: "pruning"
+  """
+  pruning_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pruning_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pruning_order_by!]
+
+    """filter the rows returned"""
+    where: pruning_bool_exp
+  ): pruning_aggregate!
 
   """
   fetch data from the table: "slashing_params"
@@ -20219,6 +21180,60 @@ type subscription_root {
   ): [message!]!
 
   """
+  fetch data from the table: "message_type"
+  """
+  message_type(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): [message_type!]!
+
+  """
+  fetch aggregated fields from the table: "message_type"
+  """
+  message_type_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): message_type_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "message_type"
+  """
+  message_type_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [message_type_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): [message_type!]!
+
+  """
   execute function "messages_by_address" which returns "message"
   """
   messages_by_address(
@@ -20777,6 +21792,60 @@ type subscription_root {
     """filter the rows returned"""
     where: proposal_vote_bool_exp
   ): [proposal_vote!]!
+
+  """
+  fetch data from the table: "pruning"
+  """
+  pruning(
+    """distinct select on columns"""
+    distinct_on: [pruning_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pruning_order_by!]
+
+    """filter the rows returned"""
+    where: pruning_bool_exp
+  ): [pruning!]!
+
+  """
+  fetch aggregated fields from the table: "pruning"
+  """
+  pruning_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pruning_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pruning_order_by!]
+
+    """filter the rows returned"""
+    where: pruning_bool_exp
+  ): pruning_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "pruning"
+  """
+  pruning_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [pruning_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: pruning_bool_exp
+  ): [pruning!]!
 
   """
   fetch data from the table: "slashing_params"
@@ -23789,6 +24858,42 @@ type transaction {
     """JSON select path"""
     path: String
   ): json!
+
+  """An array relationship"""
+  messagesByPartitionIdTransactionHash(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): [message!]!
+
+  """An aggregate relationship"""
+  messagesByPartitionIdTransactionHash_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): message_aggregate!
   partition_id: bigint!
   raw_log: String
   signatures: [String!]!
@@ -23919,6 +25024,8 @@ input transaction_bool_exp {
   logs: jsonb_comparison_exp
   memo: String_comparison_exp
   messages: json_comparison_exp
+  messagesByPartitionIdTransactionHash: message_bool_exp
+  messagesByPartitionIdTransactionHash_aggregate: message_aggregate_bool_exp
   partition_id: bigint_comparison_exp
   raw_log: String_comparison_exp
   signatures: String_array_comparison_exp
@@ -23931,7 +25038,7 @@ unique or primary key constraints on table "transaction"
 """
 enum transaction_constraint {
   """
-  unique or primary key constraint on columns "partition_id", "hash"
+  unique or primary key constraint on columns "hash", "partition_id"
   """
   unique_tx
 }
@@ -23986,6 +25093,7 @@ input transaction_insert_input {
   logs: jsonb
   memo: String
   messages: json
+  messagesByPartitionIdTransactionHash: message_arr_rel_insert_input
   partition_id: bigint
   raw_log: String
   signatures: [String!]
@@ -24086,6 +25194,7 @@ input transaction_order_by {
   logs: order_by
   memo: order_by
   messages: order_by
+  messagesByPartitionIdTransactionHash_aggregate: message_aggregate_order_by
   partition_id: order_by
   raw_log: order_by
   signatures: order_by
@@ -28243,3 +29352,4 @@ input vesting_period_variance_order_by {
   period_order: order_by
   vesting_account_id: order_by
 }
+
