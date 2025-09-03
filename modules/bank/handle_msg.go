@@ -2,6 +2,7 @@ package bank
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -60,18 +61,20 @@ func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, e
 			return err
 		}
 
-		coin, err := sdk.ParseCoinNormalized(coinString)
-		if err != nil {
-			return err
-		}
+		coins := strings.Split(coinString, ",")
+		for _, coin := range coins {
+			coin, err := sdk.ParseCoinNormalized(coin)
+			if err != nil {
+				return err
+			}
+			// since the main governance token exists in every transaction, we have decided to skip processing
+			// that token.
+			if coin.Denom == m.baseDenom {
+				continue
+			}
 
-		// since the main governance token exists in every transaction, we have decided to skip processing
-		// that token.
-		if coin.Denom == m.baseDenom {
-			continue
+			addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = struct{}{}
 		}
-
-		addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = struct{}{}
 	}
 
 	for ad := range addressDenomSet {
