@@ -46,8 +46,10 @@ type BridgeTransaction struct {
 	ID int64 `json:"id"`
 	// OperationUniqueID is the operation unique ID of the transaction (it might be null if there are no pending operations).
 	OperationUniqueID *string `json:"operation_unique_id"`
-	// UniqueKey is the a unique key matching the transaction with evidence.
-	UniqueKey string `json:"unique_key"`
+	// OnChainUniqueKey is the unique key present onchain matching a transaction with evidences.
+	// It is equal to operation_id (number) for Coreum -> XRPL transfers.
+	// It is equal to XRPL transaction hash (string) for XRPL -> Coreum transfers.
+	OnChainUniqueKey string `json:"on_chain_unique_key"`
 	// Height is the height of the transaction when it is originated.
 	Height *int64 `json:"height"`
 	// UserInitiatedHash is the hash of the transaction when it is originated.
@@ -71,7 +73,7 @@ type BridgeTransaction struct {
 // NewBridgeTransaction creates a bridge transaction.
 func NewBridgeTransaction(
 	operationUniqueID *string,
-	uniqueKey string,
+	onChainUniqueKey string,
 	height *int64,
 	userInitiatedHash string,
 	msgIndex int,
@@ -80,7 +82,7 @@ func NewBridgeTransaction(
 ) BridgeTransaction {
 	return BridgeTransaction{
 		OperationUniqueID: operationUniqueID,
-		UniqueKey:         uniqueKey,
+		OnChainUniqueKey:  onChainUniqueKey,
 		Height:            height,
 		UserInitiatedHash: userInitiatedHash,
 		MsgIndex:          msgIndex,
@@ -97,8 +99,8 @@ func NewBridgeTransaction(
 type BridgeEvidence struct {
 	// ID is the auto-generated serial ID of the evidence.
 	ID int64 `json:"id"`
-	// TxUniqueKey is the a unique key matching the evidence with transaction.
-	TxUniqueKey string `json:"tx_unique_key"`
+	// TxOnChainUniqueKey is the a unique key matching the evidence with transaction.
+	TxOnChainUniqueKey string `json:"tx_on_chain_unique_key"`
 	// Height is the height of the evidence transaction.
 	Height int64 `json:"height"`
 	// Hash is the hash of the evidence transaction.

@@ -6,7 +6,7 @@ array_relationships:
     using:
       manual_configuration:
         column_mapping:
-          unique_key: tx_unique_key
+          on_chain_unique_key: tx_on_chain_unique_key
         insertion_order: null
         remote_table:
           name: bridge_evidence

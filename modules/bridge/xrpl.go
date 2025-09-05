@@ -117,13 +117,13 @@ func (h *XrplMsgHandler) handleCoreumToXrplEvent(event sdk.StringEvent) error {
 		return fmt.Errorf("parsing coins: %w", err)
 	}
 
-	// the unique key between evidence and transaction is the operation unique id
+	// the on-chain unique key between evidence and transaction is the operation unique id
 	// it will be stored to match the evidence with the transaction
-	uniqueKey := operationUniqueID
+	onChainUniqueKey := operationUniqueID
 
 	transaction := types.NewBridgeTransaction(
 		&operationUniqueID,
-		uniqueKey,
+		onChainUniqueKey,
 		lo.ToPtr(int64(h.height)),
 		h.txHash,
 		h.msgIndex,
@@ -188,7 +188,7 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 
 		// the unique key between evidence and transaction is the operation unique id
 		// it will be stored to match the evidence with the transaction
-		evidence.TxUniqueKey = operationUniqueID
+		evidence.TxOnChainUniqueKey = operationUniqueID
 
 		if evidence.ThresholdReached {
 			parsed, err := eventsutil.BuildAttributesMap(event,
@@ -213,11 +213,11 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 		}
 
 		// the user initiated hash is the xrpl tx hash
-		user_initiated_hash := toCoreum[hashAttribute]
+		userInitiatedHash := toCoreum[hashAttribute]
 
 		// the unique key between evidence and transaction is the user initiated hash (xrpl tx hash)
 		// it will be stored to match the evidence with the transaction
-		evidence.TxUniqueKey = user_initiated_hash
+		evidence.TxOnChainUniqueKey = userInitiatedHash
 
 		if evidence.ThresholdReached {
 			// the actual payment happens when the transaction threshold is reached
@@ -229,9 +229,9 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 		denom := fmt.Sprintf("%s-%s", toCoreum[issuerAttribute], toCoreum[currencyAttribute])
 		transaction := types.NewBridgeTransaction(
 			nil,
-			evidence.TxUniqueKey,
+			evidence.TxOnChainUniqueKey,
 			nil,
-			user_initiated_hash,
+			userInitiatedHash,
 			h.msgIndex,
 			types.ChainXRPL,
 			types.ChainCoreum,

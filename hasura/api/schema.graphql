@@ -3307,7 +3307,7 @@ type bridge_evidence {
   result: String
   settlement_hash: String
   threshold_reached: Boolean!
-  tx_unique_key: String!
+  tx_on_chain_unique_key: String!
 }
 
 """
@@ -3422,7 +3422,7 @@ input bridge_evidence_bool_exp {
   result: String_comparison_exp
   settlement_hash: String_comparison_exp
   threshold_reached: Boolean_comparison_exp
-  tx_unique_key: String_comparison_exp
+  tx_on_chain_unique_key: String_comparison_exp
 }
 
 """
@@ -3463,7 +3463,7 @@ input bridge_evidence_insert_input {
   result: String
   settlement_hash: String
   threshold_reached: Boolean
-  tx_unique_key: String
+  tx_on_chain_unique_key: String
 }
 
 """aggregate max on columns"""
@@ -3475,7 +3475,7 @@ type bridge_evidence_max_fields {
   relayer_address: String
   result: String
   settlement_hash: String
-  tx_unique_key: String
+  tx_on_chain_unique_key: String
 }
 
 """
@@ -3489,7 +3489,7 @@ input bridge_evidence_max_order_by {
   relayer_address: order_by
   result: order_by
   settlement_hash: order_by
-  tx_unique_key: order_by
+  tx_on_chain_unique_key: order_by
 }
 
 """aggregate min on columns"""
@@ -3501,7 +3501,7 @@ type bridge_evidence_min_fields {
   relayer_address: String
   result: String
   settlement_hash: String
-  tx_unique_key: String
+  tx_on_chain_unique_key: String
 }
 
 """
@@ -3515,7 +3515,7 @@ input bridge_evidence_min_order_by {
   relayer_address: order_by
   result: order_by
   settlement_hash: order_by
-  tx_unique_key: order_by
+  tx_on_chain_unique_key: order_by
 }
 
 """
@@ -3550,7 +3550,7 @@ input bridge_evidence_order_by {
   result: order_by
   settlement_hash: order_by
   threshold_reached: order_by
-  tx_unique_key: order_by
+  tx_on_chain_unique_key: order_by
 }
 
 """primary key columns input for table: bridge_evidence"""
@@ -3587,7 +3587,7 @@ enum bridge_evidence_select_column {
   threshold_reached
 
   """column name"""
-  tx_unique_key
+  tx_on_chain_unique_key
 }
 
 """
@@ -3618,7 +3618,7 @@ input bridge_evidence_set_input {
   result: String
   settlement_hash: String
   threshold_reached: Boolean
-  tx_unique_key: String
+  tx_on_chain_unique_key: String
 }
 
 """aggregate stddev on columns"""
@@ -3690,7 +3690,7 @@ input bridge_evidence_stream_cursor_value_input {
   result: String
   settlement_hash: String
   threshold_reached: Boolean
-  tx_unique_key: String
+  tx_on_chain_unique_key: String
 }
 
 """aggregate sum on columns"""
@@ -3738,7 +3738,7 @@ enum bridge_evidence_update_column {
   threshold_reached
 
   """column name"""
-  tx_unique_key
+  tx_on_chain_unique_key
 }
 
 input bridge_evidence_updates {
@@ -3850,7 +3850,7 @@ type bridge_transaction {
   recipient: String!
   sender: String
   source_chain: String!
-  unique_key: String!
+  on_chain_unique_key: String!
   user_initiated_hash: String!
 }
 
@@ -3905,7 +3905,7 @@ input bridge_transaction_bool_exp {
   recipient: String_comparison_exp
   sender: String_comparison_exp
   source_chain: String_comparison_exp
-  unique_key: String_comparison_exp
+  on_chain_unique_key: String_comparison_exp
   user_initiated_hash: String_comparison_exp
 }
 
@@ -3919,7 +3919,7 @@ enum bridge_transaction_constraint {
   bridge_transaction_pkey
 
   """
-  unique or primary key constraint on columns "unique_key"
+  unique or primary key constraint on columns "on_chain_unique_key"
   """
   bridge_transaction_unique_key_key
 
@@ -3953,7 +3953,7 @@ input bridge_transaction_insert_input {
   recipient: String
   sender: String
   source_chain: String
-  unique_key: String
+  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -3969,7 +3969,7 @@ type bridge_transaction_max_fields {
   recipient: String
   sender: String
   source_chain: String
-  unique_key: String
+  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -3985,7 +3985,7 @@ type bridge_transaction_min_fields {
   recipient: String
   sender: String
   source_chain: String
-  unique_key: String
+  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4032,7 +4032,7 @@ input bridge_transaction_order_by {
   recipient: order_by
   sender: order_by
   source_chain: order_by
-  unique_key: order_by
+  on_chain_unique_key: order_by
   user_initiated_hash: order_by
 }
 
@@ -4076,7 +4076,7 @@ enum bridge_transaction_select_column {
   source_chain
 
   """column name"""
-  unique_key
+  on_chain_unique_key
 
   """column name"""
   user_initiated_hash
@@ -4096,7 +4096,7 @@ input bridge_transaction_set_input {
   recipient: String
   sender: String
   source_chain: String
-  unique_key: String
+  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4144,7 +4144,7 @@ input bridge_transaction_stream_cursor_value_input {
   recipient: String
   sender: String
   source_chain: String
-  unique_key: String
+  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4190,7 +4190,7 @@ enum bridge_transaction_update_column {
   source_chain
 
   """column name"""
-  unique_key
+  on_chain_unique_key
 
   """column name"""
   user_initiated_hash
