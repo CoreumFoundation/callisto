@@ -1,5 +1,19 @@
 /* ---- Transaction ---- */
-CREATE TABLE
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'bridge_transaction'
+    ) AND NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'bridge_transaction' AND column_name = 'on_chain_unique_key'
+    ) THEN
+        DROP TABLE bridge_transaction;
+    END IF;
+END $$;
+CREATE TABLE IF NOT EXISTS
     bridge_transaction (
         id SERIAL NOT NULL PRIMARY KEY,
         on_chain_unique_key TEXT NOT NULL UNIQUE,
@@ -14,14 +28,28 @@ CREATE TABLE
         denom TEXT NOT NULL,
         amount TEXT NOT NULL
     );
-CREATE INDEX bridge_transaction_on_chain_unique_key_idx ON bridge_transaction (on_chain_unique_key);
-CREATE INDEX bridge_transaction_sender_idx ON bridge_transaction (sender);
-CREATE INDEX bridge_transaction_recipient_idx ON bridge_transaction (recipient);
-CREATE UNIQUE INDEX bridge_transaction_user_initiated_hash_msg_index_idx ON bridge_transaction (user_initiated_hash, msg_index); -- for SaveBridgeTransaction
+CREATE INDEX IF NOT EXISTS bridge_transaction_on_chain_unique_key_idx ON bridge_transaction (on_chain_unique_key);
+CREATE INDEX IF NOT EXISTS bridge_transaction_sender_idx ON bridge_transaction (sender);
+CREATE INDEX IF NOT EXISTS bridge_transaction_recipient_idx ON bridge_transaction (recipient);
+CREATE UNIQUE INDEX IF NOT EXISTS bridge_transaction_user_initiated_hash_msg_index_idx ON bridge_transaction (user_initiated_hash, msg_index); -- for SaveBridgeTransaction
 
 
 /* ---- Evidence ---- */
-CREATE TABLE
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'bridge_evidence'
+    ) AND NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'bridge_evidence' AND column_name = 'tx_on_chain_unique_key'
+    ) THEN
+        DROP TABLE bridge_evidence;
+    END IF;
+END $$;
+CREATE TABLE IF NOT EXISTS
     bridge_evidence (
         id SERIAL NOT NULL PRIMARY KEY,
         tx_on_chain_unique_key TEXT NOT NULL,
@@ -34,7 +62,7 @@ CREATE TABLE
         result TEXT NULL DEFAULT NULL
     );
 
-CREATE INDEX bridge_evidence_tx_on_chain_unique_key_idx ON bridge_evidence (tx_on_chain_unique_key);
-CREATE INDEX bridge_evidence_hash_idx ON bridge_evidence (hash);
-CREATE INDEX bridge_evidence_relayer_address_idx ON bridge_evidence (relayer_address);
-CREATE UNIQUE INDEX bridge_evidence_hash_msg_index_idx ON bridge_evidence (hash, msg_index); -- for SaveBridgeEvidence
+CREATE INDEX IF NOT EXISTS bridge_evidence_tx_on_chain_unique_key_idx ON bridge_evidence (tx_on_chain_unique_key);
+CREATE INDEX IF NOT EXISTS bridge_evidence_hash_idx ON bridge_evidence (hash);
+CREATE INDEX IF NOT EXISTS bridge_evidence_relayer_address_idx ON bridge_evidence (relayer_address);
+CREATE UNIQUE INDEX IF NOT EXISTS bridge_evidence_hash_msg_index_idx ON bridge_evidence (hash, msg_index); -- for SaveBridgeEvidence
