@@ -60,18 +60,20 @@ func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, e
 			return err
 		}
 
-		coin, err := sdk.ParseCoinNormalized(coinString)
+		coins, err := sdk.ParseCoinsNormalized(coinString)
 		if err != nil {
 			return err
 		}
 
-		// since the main governance token exists in every transaction, we have decided to skip processing
-		// that token.
-		if coin.Denom == m.baseDenom {
-			continue
-		}
+		for _, coin := range coins {
+			// since the main governance token exists in every transaction, we have decided to skip processing
+			// that token.
+			if coin.Denom == m.baseDenom {
+				continue
+			}
 
-		addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = struct{}{}
+			addressDenomSet[addressDenom{address: account, denom: coin.Denom}] = struct{}{}
+		}
 	}
 
 	for ad := range addressDenomSet {
