@@ -117,8 +117,13 @@ func (h *XrplMsgHandler) handleCoreumToXrplEvent(event sdk.StringEvent) error {
 		return fmt.Errorf("parsing coins: %w", err)
 	}
 
+	// the on-chain unique key between evidence and transaction is the operation unique id
+	// it will be stored to match the evidence with the transaction
+	onChainUniqueKey := operationUniqueID
+
 	transaction := types.NewBridgeTransaction(
 		&operationUniqueID,
+		onChainUniqueKey,
 		lo.ToPtr(int64(h.height)),
 		h.txHash,
 		h.msgIndex,
@@ -164,8 +169,6 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 		thresholdReached,
 	)
 
-	var transaction types.BridgeTransaction
-
 	if operationType.Value == OperationTypeCoreumToXrplTransfer {
 		toXrpl, err := eventsutil.BuildAttributesMap(event,
 			nil,
@@ -183,10 +186,9 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 			}
 		}
 
-		transaction, err = h.db.GetBridgeTransaction(operationUniqueID)
-		if err != nil {
-			return err
-		}
+		// the unique key between evidence and transaction is the operation unique id
+		// it will be stored to match the evidence with the transaction
+		evidence.TxOnChainUniqueKey = operationUniqueID
 
 		if evidence.ThresholdReached {
 			parsed, err := eventsutil.BuildAttributesMap(event,
@@ -210,11 +212,26 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 			return err
 		}
 
+		// the user initiated hash is the xrpl tx hash
+		userInitiatedHash := toCoreum[hashAttribute]
+
+		// the unique key between evidence and transaction is the user initiated hash (xrpl tx hash)
+		// it will be stored to match the evidence with the transaction
+		evidence.TxOnChainUniqueKey = userInitiatedHash
+
+		if evidence.ThresholdReached {
+			// the actual payment happens when the transaction threshold is reached
+			// this happens if the contract minted or sent the token to the recipient.
+			// this hash is coreum transaction hash
+			evidence.SetFinalProps(h.txHash, types.BridgeTxResultAccepted)
+		}
+
 		denom := fmt.Sprintf("%s-%s", toCoreum[issuerAttribute], toCoreum[currencyAttribute])
-		transaction = types.NewBridgeTransaction(
+		transaction := types.NewBridgeTransaction(
 			nil,
+			evidence.TxOnChainUniqueKey,
 			nil,
-			toCoreum[hashAttribute],
+			userInitiatedHash,
 			h.msgIndex,
 			types.ChainXRPL,
 			types.ChainCoreum,
@@ -224,20 +241,12 @@ func (h *XrplMsgHandler) handleSaveEvidenceEvent(event sdk.StringEvent) error {
 			toCoreum[amountAttribute],
 		)
 
-		if evidence.ThresholdReached {
-			// the actual payment happens when the transaction threshold is reached
-			// this happens if the contract minted or sent the token to the recipient.
-			// this hash is coreum transaction hash
-			evidence.SetFinalProps(h.txHash, types.BridgeTxResultAccepted)
+		_, err = h.db.SaveBridgeTransaction(&transaction)
+		if err != nil {
+			return fmt.Errorf("saving transaction: %w", err)
 		}
 	}
 
-	transactionID, err := h.db.SaveBridgeTransaction(&transaction)
-	if err != nil {
-		return fmt.Errorf("saving transaction: %w", err)
-	}
-
-	evidence.TransactionId = transactionID
 	if _, err := h.db.SaveBridgeEvidence(&evidence); err != nil {
 		return fmt.Errorf("saving evidence: %w", err)
 	}

@@ -34,19 +34,40 @@ func FindAttributeByKey(event sdk.StringEvent, key string) (sdk.Attribute, bool)
 	return sdk.Attribute{}, false
 }
 
-// FindEventsByMsgIndex returns all events with the given msg index
-func FindEventsByMsgIndex(events sdk.StringEvents, msgIndex int) sdk.StringEvents {
+// FindEventsByMsgIndex returns all events with the given msg index.
+// It first searches for events with msg_index attributes (cosmos-sdk v0.50.x+),
+// then falls back to legacy logs-based search for older versions.
+func FindEventsByMsgIndex(events sdk.StringEvents, logs sdk.ABCIMessageLogs, msgIndex int) sdk.StringEvents {
+	const msgIndexKey = "msg_index"
+	msgIndexStr := strconv.Itoa(msgIndex)
+
+	// Search for events with msg_index attributes (cosmos-sdk v0.50.x+)
 	var res sdk.StringEvents
 	for _, event := range events {
-		attribute, exist := FindAttributeByKey(event, "msg_index")
+		attribute, exist := FindAttributeByKey(event, msgIndexKey)
 		if !exist {
 			continue
 		}
 
-		if strconv.Itoa(msgIndex) == attribute.Value {
+		if attribute.Value == msgIndexStr {
 			res = append(res, event)
 		}
 	}
+
+	// Early return if we found events
+	if len(res) > 0 {
+		return res
+	}
+
+	// Fallback for events generated before upgrading to cosmos-sdk v0.50.x
+	// where msg_index was in logs instead of events
+	for _, log := range logs {
+		if int(log.MsgIndex) == msgIndex {
+			res = log.Events
+			continue
+		}
+	}
+
 	return res
 }
 

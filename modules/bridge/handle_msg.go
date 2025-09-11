@@ -25,7 +25,6 @@ type TxHandler interface {
 // database operations in the bridge module. It is used to interact with
 // the database and perform operations such as saving transactions and evidence.
 type DbHandler interface {
-	GetBridgeTransaction(operationUniqueID string) (types.BridgeTransaction, error)
 	SaveBridgeTransaction(tx *types.BridgeTransaction) (int64, error)
 	SaveBridgeEvidence(evidence *types.BridgeEvidence) (int64, error)
 }
@@ -58,7 +57,7 @@ func (m *Module) HandleMsg(
 	// at the moment there is only one bridge contract which is the xrpl contract
 	switch {
 	case cosmosMsg.Contract == m.cfg.ContractAddress:
-		handler = NewXrplMsgHandler(m.cfg.ContractAddress, tx.Height, tx.TxHash, index, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index), m.db, m.Source)
+		handler = NewXrplMsgHandler(m.cfg.ContractAddress, tx.Height, tx.TxHash, index, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), tx.Logs, index), m.db, m.Source)
 	default:
 		return nil
 	}
@@ -67,7 +66,7 @@ func (m *Module) HandleMsg(
 
 	err := handler.HandleMsg()
 	if err != nil {
-		return fmt.Errorf("Error when handling bridge transaction message, error: %s", err)
+		return fmt.Errorf("error when handling bridge transaction message, error: %s", err)
 	}
 
 	return nil

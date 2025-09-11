@@ -38,7 +38,7 @@ func (m *Module) updateBalanceForEventType(msgIndex int, tx *juno.Transaction, e
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
 
-	msgEvents := eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), msgIndex)
+	msgEvents := eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), tx.Logs, msgIndex)
 
 	type addressDenom struct {
 		address string

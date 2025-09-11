@@ -7,13 +7,19 @@ object_relationships:
       foreign_key_constraint_on: height
   - name: bridge_transaction
     using:
-      foreign_key_constraint_on: transaction_id
+      manual_configuration:
+        column_mapping:
+          tx_on_chain_unique_key: on_chain_unique_key
+        insertion_order: null
+        remote_table:
+          name: bridge_transaction
+          schema: public
 select_permissions:
   - role: anonymous
     permission:
       columns:
         - id
-        - transaction_id
+        - tx_on_chain_unique_key
         - height
         - hash
         - msg_index
