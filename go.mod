@@ -6,7 +6,7 @@ toolchain go1.24.2
 
 replace (
 	// Coreum verison of the juno module
-	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250926122726-22d4a6b1085f
+	github.com/forbole/juno/v6 => github.com/CoreumFoundation/juno/v6 v6.0.0-20250925134141-d664933a619c
 	// https://github.com/cosmos/cosmos-sdk/issues/14949
 	// pin the version of goleveldb to v1.0.1-0.20210819022825-2ae1ddf74ef7 required by SDK v47 upgrade guide.
 	// replace broken goleveldb
