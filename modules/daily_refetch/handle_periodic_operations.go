@@ -52,13 +52,13 @@ func (m *Module) refetchMissingBlocks() error {
 		return err
 	}
 
-	workerCtx := parser.NewContext(parseCtx.Node, parseCtx.Database, parseCtx.Logger, parseCtx.Modules)
+	workerCtx := parser.NewContext(parseCtx.Node, parseCtx.Database, parseCtx.Logger, parseCtx.Modules, parseCtx.ModulesToOverwrite)
 	worker := parser.NewWorker(workerCtx, nil, 0)
 
 	log.Info().Int64("start height", startHeight).Int64("end height", latestBlock).
 		Msg("getting missing blocks and transactions from a day ago")
 	for _, block := range missingBlocks {
-		err = worker.Process(block)
+		err = worker.Process(block, false)
 		if err != nil {
 			return fmt.Errorf("error while re-fetching block %d: %s", block, err)
 		}

@@ -106,8 +106,8 @@ github.com/CoreumFoundation/coreum/v5 v5.0.0-20250526103302-5a3f05b11008 h1:zuNt
 github.com/CoreumFoundation/coreum/v5 v5.0.0-20250526103302-5a3f05b11008/go.mod h1:LQbK4qqr0E1icUCcQT464isJfMeW2mybvX6XXkTpeGI=
 github.com/CoreumFoundation/coreumbridge-xrpl/relayer v0.0.0-20250526113311-5229bda4c986 h1:80MHeVs1eJ5NWSeMpfXZOVXkfbOfPlATbeu6FPNI/OY=
 github.com/CoreumFoundation/coreumbridge-xrpl/relayer v0.0.0-20250526113311-5229bda4c986/go.mod h1:2l9vGnucwn0hTIOWX2j91Aevykac8CowIhgMTJhp/N4=
-github.com/CoreumFoundation/juno/v6 v6.0.0-20250925134141-d664933a619c h1:5s3FBH1uwwoPZhAqayTev4/ubjNAN1YmkLUAz0DQoGg=
-github.com/CoreumFoundation/juno/v6 v6.0.0-20250925134141-d664933a619c/go.mod h1:j6HuUZvZJHPYpkMY7s+tGDE1xnYRzkvgQSgpMF2ZCTw=
+github.com/CoreumFoundation/juno/v6 v6.0.0-20251001165459-6c6142c7501d h1://M2yBPEy1+4kmy/7YMwMEewDmQJNPaUxJCZ9szLDr8=
+github.com/CoreumFoundation/juno/v6 v6.0.0-20251001165459-6c6142c7501d/go.mod h1:j6HuUZvZJHPYpkMY7s+tGDE1xnYRzkvgQSgpMF2ZCTw=
 github.com/CosmWasm/wasmd v0.54.0 h1:/txsBehV1xnAi46H1xwuuY6D4NySujBy+wa5+ryItS8=
 github.com/CosmWasm/wasmd v0.54.0/go.mod h1:8Zu/rj6RHbJ8Gx0WdqsGeHvgnEQb0rqchpqhgMxASRU=
 github.com/CosmWasm/wasmvm/v2 v2.2.2 h1:MaQMtaZN8L08N0uAlBlOICP+GWolibJsajHGo3fQ03w=
