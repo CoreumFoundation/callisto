@@ -3,7 +3,6 @@ package bridge
 import (
 	"encoding/hex"
 	"fmt"
-	"os"
 	"sort"
 	"time"
 
@@ -48,35 +47,9 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				splitHeight = 1000 // Default split height
 			}
 
-			// Create error log file
-			timestamp := time.Now().Format("2006-01-02_15-04-05")
-			errorLogFileName := fmt.Sprintf("bridge_errors_%d_%d_%s.log", startHeight, endHeight, timestamp)
-			errorLogFile, err := os.OpenFile(errorLogFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				return fmt.Errorf("failed to create error log file: %s", err)
-			}
-			defer errorLogFile.Close()
-
-			// Create summary log file
-			summaryLogFileName := fmt.Sprintf("bridge_summary_%d_%d_%s.log", startHeight, endHeight, timestamp)
-			summaryLogFile, err := os.OpenFile(summaryLogFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				return fmt.Errorf("failed to create summary log file: %s", err)
-			}
-			defer summaryLogFile.Close()
-
-			// Write header to summary log
-			headerMsg := "=== Bridge Transaction Processing Summary ===\n"
-			headerMsg += fmt.Sprintf("Start Height: %d\n", startHeight)
-			headerMsg += fmt.Sprintf("End Height: %d\n", endHeight)
-			headerMsg += fmt.Sprintf("Split Height: %d\n", splitHeight)
-			headerMsg += fmt.Sprintf("Started at: %s\n", time.Now().Format("2006-01-02 15:04:05"))
-			headerMsg += "============================================\n\n"
-			if _, err := summaryLogFile.WriteString(headerMsg); err != nil {
-				log.Error().Err(err).Msg("failed to write header to summary log file")
-			}
-
-			log.Info().Str("error_log", errorLogFileName).Str("summary_log", summaryLogFileName).Msg("log files created")
+			// Log processing summary header
+			log.Info().Msg("=== Bridge Transaction Processing Summary ===")
+			log.Info().Int64("start_height", startHeight).Int64("end_height", endHeight).Int64("split_height", splitHeight).Msg("starting bridge transaction processing")
 
 			bz, err := config.Cfg.GetBytes()
 			if err != nil {
@@ -171,18 +144,6 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 						if err != nil {
 							rangeErrorCount++
 							txHash := hex.EncodeToString(tx.Tx.Hash())
-							errorMsg := fmt.Sprintf("[%s] Height: %d | TxHash: %s | MsgIndex: %d | Error: %v\n",
-								time.Now().Format("2006-01-02 15:04:05"),
-								tx.Height,
-								txHash,
-								index,
-								err,
-							)
-
-							// Write to error log file
-							if _, writeErr := errorLogFile.WriteString(errorMsg); writeErr != nil {
-								log.Error().Err(writeErr).Msg("failed to write to error log file")
-							}
 
 							log.Error().Int64("height", tx.Height).Int("msg_index", index).
 								Str("tx_hash", txHash).
@@ -200,54 +161,38 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				totalErrorsEncountered += rangeErrorCount
 				totalBlocksInserted += rangeBlocksInserted
 
-				// Write summary for this range
-				summaryMsg := fmt.Sprintf("--- Range: %d to %d ---\n", rangeStart, rangeEnd)
-				summaryMsg += fmt.Sprintf("Timestamp: %s\n", time.Now().Format("2006-01-02 15:04:05"))
-				summaryMsg += fmt.Sprintf("Duration: %s\n", rangeDuration.String())
-				summaryMsg += fmt.Sprintf("Transactions Found: %d\n", len(txs))
-				summaryMsg += fmt.Sprintf("Messages Processed: %d\n", rangeMessagesProcessed)
-				summaryMsg += fmt.Sprintf("Blocks Inserted: %d\n", rangeBlocksInserted)
-				summaryMsg += fmt.Sprintf("Errors Encountered: %d\n", rangeErrorCount)
+				// Log summary for this range
+				log.Info().Msg("--- Range Summary ---")
 				if rangeMessagesProcessed > 0 {
 					successRate := float64(rangeMessagesProcessed-rangeErrorCount) / float64(rangeMessagesProcessed) * 100
-					summaryMsg += fmt.Sprintf("Success Rate: %.2f%%\n", successRate)
+					log.Info().Int64("range_start", rangeStart).Int64("range_end", rangeEnd).
+						Int("txs_found", len(txs)).Int("messages_processed", rangeMessagesProcessed).
+						Int("blocks_inserted", rangeBlocksInserted).Int("errors", rangeErrorCount).
+						Float64("success_rate", successRate).
+						Str("duration", rangeDuration.String()).
+						Msg("finished processing height range")
 				} else {
-					summaryMsg += "Success Rate: N/A (no messages processed)\n"
+					log.Info().Int64("range_start", rangeStart).Int64("range_end", rangeEnd).
+						Int("txs_found", len(txs)).Int("messages_processed", rangeMessagesProcessed).
+						Int("blocks_inserted", rangeBlocksInserted).Int("errors", rangeErrorCount).
+						Str("success_rate", "N/A").
+						Str("duration", rangeDuration.String()).
+						Msg("finished processing height range")
 				}
-				summaryMsg += "\n"
-
-				if _, err := summaryLogFile.WriteString(summaryMsg); err != nil {
-					log.Error().Err(err).Msg("failed to write to summary log file")
-				}
-
-				log.Info().Int64("range_start", rangeStart).Int64("range_end", rangeEnd).
-					Int("txs", len(txs)).Int("errors", rangeErrorCount).
-					Str("duration", rangeDuration.String()).
-					Msg("finished processing height range")
 			}
 
-			// Write final summary
+			// Log final summary
 			rangeCount := (endHeight - startHeight + splitHeight - 1) / splitHeight
 
-			finalSummary := "============================================\n"
-			finalSummary += "=== Final Summary ===\n"
-			finalSummary += fmt.Sprintf("Completed at: %s\n", time.Now().Format("2006-01-02 15:04:05"))
-			finalSummary += fmt.Sprintf("Total Ranges Processed: %d\n", rangeCount)
-			finalSummary += fmt.Sprintf("Total Transactions Processed: %d\n", totalTxsProcessed)
-			finalSummary += fmt.Sprintf("Total Blocks Inserted: %d\n", totalBlocksInserted)
-			finalSummary += fmt.Sprintf("Total Errors Encountered: %d\n", totalErrorsEncountered)
-			finalSummary += "============================================\n"
-
-			if _, err := summaryLogFile.WriteString(finalSummary); err != nil {
-				log.Error().Err(err).Msg("failed to write final summary to log file")
-			}
-
+			log.Info().Msg("============================================")
+			log.Info().Msg("=== Final Summary ===")
 			log.Info().
-				Str("error_log", errorLogFileName).
-				Str("summary_log", summaryLogFileName).
-				Int("total_txs", totalTxsProcessed).
-				Int("total_errors", totalErrorsEncountered).
+				Int64("total_ranges_processed", rangeCount).
+				Int("total_txs_processed", totalTxsProcessed).
+				Int("total_blocks_inserted", totalBlocksInserted).
+				Int("total_errors_encountered", totalErrorsEncountered).
 				Msg("processing complete")
+			log.Info().Msg("============================================")
 
 			return nil
 		},
