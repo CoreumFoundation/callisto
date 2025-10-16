@@ -38,18 +38,18 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				return err
 			}
 
-			splitHeight, err := cmd.Flags().GetInt64("split-height")
+			checkSize, err := cmd.Flags().GetInt64("check-size")
 			if err != nil {
 				return err
 			}
 
-			if splitHeight <= 0 {
-				splitHeight = 1000 // Default split height
+			if checkSize <= 0 {
+				checkSize = 1000 // Default check size
 			}
 
 			// Log processing summary header
 			log.Info().Msg("=== Bridge Transaction Processing Summary ===")
-			log.Info().Int64("start_height", startHeight).Int64("end_height", endHeight).Int64("split_height", splitHeight).Msg("starting bridge transaction processing")
+			log.Info().Int64("start_height", startHeight).Int64("end_height", endHeight).Int64("check_size", checkSize).Msg("starting bridge transaction processing")
 
 			bz, err := config.Cfg.GetBytes()
 			if err != nil {
@@ -77,8 +77,8 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			totalBlocksInserted := 0
 
 			// Split the height range into chunks
-			for rangeStart := startHeight; rangeStart < endHeight; rangeStart += splitHeight {
-				rangeEnd := rangeStart + splitHeight
+			for rangeStart := startHeight; rangeStart < endHeight; rangeStart += checkSize {
+				rangeEnd := rangeStart + checkSize
 				if rangeEnd > endHeight {
 					rangeEnd = endHeight
 				}
@@ -182,7 +182,7 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Log final summary
-			rangeCount := (endHeight - startHeight + splitHeight - 1) / splitHeight
+			rangeCount := (endHeight - startHeight + checkSize - 1) / checkSize
 
 			log.Info().Msg("============================================")
 			log.Info().Msg("=== Final Summary ===")
@@ -200,7 +200,7 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 
 	cmd.Flags().Int64("start-height", 0, "Start height for filtering transactions (inclusive, 0 means no lower limit)")
 	cmd.Flags().Int64("end-height", 0, "End height for filtering transactions (exclusive, 0 means no upper limit)")
-	cmd.Flags().Int64("split-height", 100000, "Height range to split processing into chunks (default: 1000)")
+	cmd.Flags().Int64("check-size", 100000, "Size of the height range to check (default: 100000)")
 
 	return cmd
 }
