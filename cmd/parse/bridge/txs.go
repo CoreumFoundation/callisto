@@ -48,7 +48,6 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			}
 
 			// Log processing summary header
-			log.Info().Msg("=== Bridge Transaction Processing Summary ===")
 			log.Info().Int64("start_height", startHeight).Int64("end_height", endHeight).Int64("check_size", checkSize).Msg("starting bridge transaction processing")
 
 			bz, err := config.Cfg.GetBytes()
@@ -162,7 +161,6 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 				totalBlocksInserted += rangeBlocksInserted
 
 				// Log summary for this range
-				log.Info().Msg("--- Range Summary ---")
 				if rangeMessagesProcessed > 0 {
 					successRate := float64(rangeMessagesProcessed-rangeErrorCount) / float64(rangeMessagesProcessed) * 100
 					log.Info().Int64("range_start", rangeStart).Int64("range_end", rangeEnd).
@@ -184,15 +182,12 @@ func txsCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			// Log final summary
 			rangeCount := (endHeight - startHeight + checkSize - 1) / checkSize
 
-			log.Info().Msg("============================================")
-			log.Info().Msg("=== Final Summary ===")
 			log.Info().
 				Int64("total_ranges_processed", rangeCount).
 				Int("total_txs_processed", totalTxsProcessed).
 				Int("total_blocks_inserted", totalBlocksInserted).
 				Int("total_errors_encountered", totalErrorsEncountered).
 				Msg("processing complete")
-			log.Info().Msg("============================================")
 
 			return nil
 		},
