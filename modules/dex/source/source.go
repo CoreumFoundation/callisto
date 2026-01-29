@@ -1,7 +1,7 @@
 package source
 
 import (
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
 )
 
 type Source interface {

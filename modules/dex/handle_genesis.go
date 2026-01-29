@@ -8,7 +8,7 @@ import (
 	"github.com/forbole/callisto/v4/types"
 	"github.com/rs/zerolog/log"
 
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
 )
 
 // HandleGenesis implements GenesisModule

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/CoreumFoundation/crust/znet/pkg/znet"
+	"github.com/tokenize-x/tx-crust/znet/pkg/znet"
 )
 
 func main() {

@@ -22,6 +22,7 @@ import (
 	"github.com/forbole/callisto/v4/modules/mint"
 	"github.com/forbole/callisto/v4/modules/modules"
 	"github.com/forbole/callisto/v4/modules/pricefeed"
+	"github.com/forbole/callisto/v4/modules/pse"
 	"github.com/forbole/callisto/v4/modules/slashing"
 	"github.com/forbole/callisto/v4/modules/staking"
 	"github.com/forbole/callisto/v4/modules/types"
@@ -82,6 +83,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	dailyRefetchModule := dailyrefetch.NewModule(ctx.Proxy, db)
 	distrModule := distribution.NewModule(sources.DistrSource, r.cdc, db)
 	feegrantModule := feegrant.NewModule(r.cdc, db)
+	pseModule := pse.NewModule(r.cdc, db, ctx.JunoConfig.Chain.Bech32Prefix)
 	mintModule := mint.NewModule(sources.MintSource, r.cdc, db)
 	slashingModule := slashing.NewModule(sources.SlashingSource, r.cdc, db)
 	stakingModule := staking.NewModule(sources.StakingSource, r.cdc, db)
@@ -121,6 +123,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		dailyRefetchModule,
 		distrModule,
 		feegrantModule,
+		pseModule,
 		govModule,
 		mintModule,
 		modules.NewModule(ctx.JunoConfig.Chain, db),

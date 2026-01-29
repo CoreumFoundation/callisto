@@ -4,11 +4,11 @@ import (
 	"context"
 	"path/filepath"
 
-	"github.com/CoreumFoundation/callisto/build/callisto/image"
-	"github.com/CoreumFoundation/crust/build/config"
-	"github.com/CoreumFoundation/crust/build/docker"
-	"github.com/CoreumFoundation/crust/build/tools"
-	"github.com/CoreumFoundation/crust/build/types"
+	"github.com/tokenize-x/tx-callisto/build/callisto/image"
+	"github.com/tokenize-x/tx-crust/build/config"
+	"github.com/tokenize-x/tx-crust/build/docker"
+	"github.com/tokenize-x/tx-crust/build/tools"
+	"github.com/tokenize-x/tx-crust/build/types"
 )
 
 // BuildDockerImage builds docker image.
@@ -43,7 +43,7 @@ func buildDockerImage(ctx context.Context, deps types.DepsFunc, push bool) error
 
 	return docker.BuildImage(ctx, docker.BuildImageConfig{
 		ContextDir:      ".",
-		ImageName:       config.DockerHubUsername + "/" + binaryName,
+		ImageName:       config.ContainerRegistryOrgName + "/" + binaryName,
 		TargetPlatforms: []tools.TargetPlatform{tools.TargetPlatformLinuxLocalArchInDocker},
 		Dockerfile:      dockerfile,
 		Action:          action,

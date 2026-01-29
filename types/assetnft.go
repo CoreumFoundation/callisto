@@ -1,7 +1,7 @@
 package types
 
 import (
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
 )
 
 // AssetNFTParams represents the parameters of the x/asset/nft module

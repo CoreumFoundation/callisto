@@ -8,7 +8,7 @@ import (
 	"github.com/forbole/callisto/v4/types"
 	"github.com/rs/zerolog/log"
 
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
 )
 
 // HandleGenesis implements GenesisModule

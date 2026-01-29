@@ -8,7 +8,7 @@ import (
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/forbole/juno/v6/node"
 
-	"github.com/CoreumFoundation/coreum-tools/pkg/retry"
+	"github.com/tokenize-x/tx-tools/pkg/retry"
 )
 
 // QueryTxs queries all the transactions from the given node corresponding to the given query

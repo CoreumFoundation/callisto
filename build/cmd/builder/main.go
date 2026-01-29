@@ -1,8 +1,8 @@
 package main
 
 import (
-	selfBuild "github.com/CoreumFoundation/callisto/build"
-	"github.com/CoreumFoundation/crust/build"
+	selfBuild "github.com/tokenize-x/tx-callisto/build"
+	"github.com/tokenize-x/tx-crust/build"
 )
 
 func main() {

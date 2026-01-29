@@ -4,7 +4,7 @@ import (
 	customparamssource "github.com/forbole/callisto/v4/modules/customparams/source"
 	"github.com/forbole/juno/v6/node/remote"
 
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
 )
 
 var _ customparamssource.Source = &Source{}

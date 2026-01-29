@@ -1,7 +1,7 @@
 package source
 
 import (
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
 )
 
 type Source interface {

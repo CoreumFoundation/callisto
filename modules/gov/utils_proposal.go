@@ -20,11 +20,11 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 
-	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
+	assetfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/ft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
+	feemodeltypes "github.com/tokenize-x/tx-chain/v6/x/feemodel/types"
 )
 
 // UpdateProposalStatus queries the latest details of given proposal ID, updates it's status

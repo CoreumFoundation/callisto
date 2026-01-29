@@ -7,7 +7,7 @@ import (
 	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/types"
 
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
+	feemodeltypes "github.com/tokenize-x/tx-chain/v6/x/feemodel/types"
 )
 
 // SaveFeeModelParams allows to store the given params into the database.

@@ -1,7 +1,7 @@
 package source
 
 import (
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
 )
 
 type Source interface {

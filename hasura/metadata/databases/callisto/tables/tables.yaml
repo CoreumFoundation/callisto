@@ -33,6 +33,8 @@
 - "!include public_proposal_validator_status_snapshot.yaml"
 - "!include public_proposal_vote.yaml"
 - "!include public_pruning.yaml"
+- "!include public_pse_distribution_allocation.yaml"
+- "!include public_pse_transfer.yaml"
 - "!include public_slashing_params.yaml"
 - "!include public_software_upgrade_plan.yaml"
 - "!include public_staking_params.yaml"

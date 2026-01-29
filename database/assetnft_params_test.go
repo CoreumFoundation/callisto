@@ -6,7 +6,7 @@ import (
 	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/types"
 
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
 )
 
 func (suite *DbTestSuite) TestSaveAssetNFTParams() {

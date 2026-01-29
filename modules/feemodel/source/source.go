@@ -1,7 +1,7 @@
 package source
 
 import (
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
+	feemodeltypes "github.com/tokenize-x/tx-chain/v6/x/feemodel/types"
 )
 
 type Source interface {

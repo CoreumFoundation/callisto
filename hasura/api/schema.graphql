@@ -40,6 +40,35 @@ type ActionDexSettings {
   whitelisted_denoms: [String]
 }
 
+type ActionPSEAllocation {
+  amount: String!
+  clearing_account: String!
+}
+
+type ActionPSEBalance {
+  balance: String!
+  clearing_account: String!
+}
+
+type ActionPSEClearingAccountBalances {
+  balances: [ActionPSEBalance]
+}
+
+type ActionPSEScheduledDistribution {
+  allocations: [ActionPSEAllocation]
+  timestamp: String!
+}
+
+type ActionPSEScheduledDistributions {
+  scheduled_distributions: [ActionPSEScheduledDistribution]
+}
+
+type ActionPSEScore {
+  address: String!
+  height: Int!
+  score: String
+}
+
 scalar ActionPagination
 
 scalar ActionRedelegation
@@ -3846,11 +3875,11 @@ type bridge_transaction {
   height: bigint
   id: Int!
   msg_index: bigint!
+  on_chain_unique_key: String!
   operation_unique_id: String
   recipient: String!
   sender: String
   source_chain: String!
-  on_chain_unique_key: String!
   user_initiated_hash: String!
 }
 
@@ -3901,11 +3930,11 @@ input bridge_transaction_bool_exp {
   height: bigint_comparison_exp
   id: Int_comparison_exp
   msg_index: bigint_comparison_exp
+  on_chain_unique_key: String_comparison_exp
   operation_unique_id: String_comparison_exp
   recipient: String_comparison_exp
   sender: String_comparison_exp
   source_chain: String_comparison_exp
-  on_chain_unique_key: String_comparison_exp
   user_initiated_hash: String_comparison_exp
 }
 
@@ -3914,14 +3943,14 @@ unique or primary key constraints on table "bridge_transaction"
 """
 enum bridge_transaction_constraint {
   """
+  unique or primary key constraint on columns "on_chain_unique_key"
+  """
+  bridge_transaction_on_chain_unique_key_key
+
+  """
   unique or primary key constraint on columns "id"
   """
   bridge_transaction_pkey
-
-  """
-  unique or primary key constraint on columns "on_chain_unique_key"
-  """
-  bridge_transaction_unique_key_key
 
   """
   unique or primary key constraint on columns "user_initiated_hash", "msg_index"
@@ -3949,11 +3978,11 @@ input bridge_transaction_insert_input {
   height: bigint
   id: Int
   msg_index: bigint
+  on_chain_unique_key: String
   operation_unique_id: String
   recipient: String
   sender: String
   source_chain: String
-  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -3965,11 +3994,11 @@ type bridge_transaction_max_fields {
   height: bigint
   id: Int
   msg_index: bigint
+  on_chain_unique_key: String
   operation_unique_id: String
   recipient: String
   sender: String
   source_chain: String
-  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -3981,11 +4010,11 @@ type bridge_transaction_min_fields {
   height: bigint
   id: Int
   msg_index: bigint
+  on_chain_unique_key: String
   operation_unique_id: String
   recipient: String
   sender: String
   source_chain: String
-  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4028,11 +4057,11 @@ input bridge_transaction_order_by {
   height: order_by
   id: order_by
   msg_index: order_by
+  on_chain_unique_key: order_by
   operation_unique_id: order_by
   recipient: order_by
   sender: order_by
   source_chain: order_by
-  on_chain_unique_key: order_by
   user_initiated_hash: order_by
 }
 
@@ -4064,6 +4093,9 @@ enum bridge_transaction_select_column {
   msg_index
 
   """column name"""
+  on_chain_unique_key
+
+  """column name"""
   operation_unique_id
 
   """column name"""
@@ -4074,9 +4106,6 @@ enum bridge_transaction_select_column {
 
   """column name"""
   source_chain
-
-  """column name"""
-  on_chain_unique_key
 
   """column name"""
   user_initiated_hash
@@ -4092,11 +4121,11 @@ input bridge_transaction_set_input {
   height: bigint
   id: Int
   msg_index: bigint
+  on_chain_unique_key: String
   operation_unique_id: String
   recipient: String
   sender: String
   source_chain: String
-  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4140,11 +4169,11 @@ input bridge_transaction_stream_cursor_value_input {
   height: bigint
   id: Int
   msg_index: bigint
+  on_chain_unique_key: String
   operation_unique_id: String
   recipient: String
   sender: String
   source_chain: String
-  on_chain_unique_key: String
   user_initiated_hash: String
 }
 
@@ -4178,6 +4207,9 @@ enum bridge_transaction_update_column {
   msg_index
 
   """column name"""
+  on_chain_unique_key
+
+  """column name"""
   operation_unique_id
 
   """column name"""
@@ -4188,9 +4220,6 @@ enum bridge_transaction_update_column {
 
   """column name"""
   source_chain
-
-  """column name"""
-  on_chain_unique_key
 
   """column name"""
   user_initiated_hash
@@ -9293,6 +9322,32 @@ type mutation_root {
   ): pruning_mutation_response
 
   """
+  delete data from the table: "pse_distribution_allocation"
+  """
+  delete_pse_distribution_allocation(
+    """filter the rows which have to be deleted"""
+    where: pse_distribution_allocation_bool_exp!
+  ): pse_distribution_allocation_mutation_response
+
+  """
+  delete single row from the table: "pse_distribution_allocation"
+  """
+  delete_pse_distribution_allocation_by_pk(allocation_type: String!, distribution_id: bigint!): pse_distribution_allocation
+
+  """
+  delete data from the table: "pse_transfer"
+  """
+  delete_pse_transfer(
+    """filter the rows which have to be deleted"""
+    where: pse_transfer_bool_exp!
+  ): pse_transfer_mutation_response
+
+  """
+  delete single row from the table: "pse_transfer"
+  """
+  delete_pse_transfer_by_pk(allocation_type: String!, distribution_id: bigint!, recipient_address: String!): pse_transfer
+
+  """
   delete data from the table: "slashing_params"
   """
   delete_slashing_params(
@@ -10271,6 +10326,50 @@ type mutation_root {
     """the row to be inserted"""
     object: pruning_insert_input!
   ): pruning
+
+  """
+  insert data into the table: "pse_distribution_allocation"
+  """
+  insert_pse_distribution_allocation(
+    """the rows to be inserted"""
+    objects: [pse_distribution_allocation_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: pse_distribution_allocation_on_conflict
+  ): pse_distribution_allocation_mutation_response
+
+  """
+  insert a single row into the table: "pse_distribution_allocation"
+  """
+  insert_pse_distribution_allocation_one(
+    """the row to be inserted"""
+    object: pse_distribution_allocation_insert_input!
+
+    """upsert condition"""
+    on_conflict: pse_distribution_allocation_on_conflict
+  ): pse_distribution_allocation
+
+  """
+  insert data into the table: "pse_transfer"
+  """
+  insert_pse_transfer(
+    """the rows to be inserted"""
+    objects: [pse_transfer_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: pse_transfer_on_conflict
+  ): pse_transfer_mutation_response
+
+  """
+  insert a single row into the table: "pse_transfer"
+  """
+  insert_pse_transfer_one(
+    """the row to be inserted"""
+    object: pse_transfer_insert_input!
+
+    """upsert condition"""
+    on_conflict: pse_transfer_on_conflict
+  ): pse_transfer
 
   """
   insert data into the table: "slashing_params"
@@ -12239,6 +12338,74 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [pruning_updates!]!
   ): [pruning_mutation_response]
+
+  """
+  update data of the table: "pse_distribution_allocation"
+  """
+  update_pse_distribution_allocation(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: pse_distribution_allocation_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: pse_distribution_allocation_set_input
+
+    """filter the rows which have to be updated"""
+    where: pse_distribution_allocation_bool_exp!
+  ): pse_distribution_allocation_mutation_response
+
+  """
+  update single row of the table: "pse_distribution_allocation"
+  """
+  update_pse_distribution_allocation_by_pk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: pse_distribution_allocation_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: pse_distribution_allocation_set_input
+    pk_columns: pse_distribution_allocation_pk_columns_input!
+  ): pse_distribution_allocation
+
+  """
+  update multiples rows of table: "pse_distribution_allocation"
+  """
+  update_pse_distribution_allocation_many(
+    """updates to execute, in order"""
+    updates: [pse_distribution_allocation_updates!]!
+  ): [pse_distribution_allocation_mutation_response]
+
+  """
+  update data of the table: "pse_transfer"
+  """
+  update_pse_transfer(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: pse_transfer_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: pse_transfer_set_input
+
+    """filter the rows which have to be updated"""
+    where: pse_transfer_bool_exp!
+  ): pse_transfer_mutation_response
+
+  """
+  update single row of the table: "pse_transfer"
+  """
+  update_pse_transfer_by_pk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: pse_transfer_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: pse_transfer_set_input
+    pk_columns: pse_transfer_pk_columns_input!
+  ): pse_transfer
+
+  """
+  update multiples rows of table: "pse_transfer"
+  """
+  update_pse_transfer_many(
+    """updates to execute, in order"""
+    updates: [pse_transfer_updates!]!
+  ): [pse_transfer_mutation_response]
 
   """
   update data of the table: "slashing_params"
@@ -16267,6 +16434,841 @@ type pruning_variance_fields {
   last_pruned_height: Float
 }
 
+"""
+columns and relationships of "pse_distribution_allocation"
+"""
+type pse_distribution_allocation {
+  allocation_type: String!
+  clearing_account_address: String!
+  community_pool_amount: numeric!
+  distribution_id: bigint!
+
+  """An array relationship"""
+  pse_transfers(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): [pse_transfer!]!
+
+  """An aggregate relationship"""
+  pse_transfers_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): pse_transfer_aggregate!
+  scheduled_at: bigint!
+  start_at_height: bigint!
+  total_amount: numeric!
+  total_score: numeric!
+}
+
+"""
+aggregated selection of "pse_distribution_allocation"
+"""
+type pse_distribution_allocation_aggregate {
+  aggregate: pse_distribution_allocation_aggregate_fields
+  nodes: [pse_distribution_allocation!]!
+}
+
+"""
+aggregate fields of "pse_distribution_allocation"
+"""
+type pse_distribution_allocation_aggregate_fields {
+  avg: pse_distribution_allocation_avg_fields
+  count(columns: [pse_distribution_allocation_select_column!], distinct: Boolean): Int!
+  max: pse_distribution_allocation_max_fields
+  min: pse_distribution_allocation_min_fields
+  stddev: pse_distribution_allocation_stddev_fields
+  stddev_pop: pse_distribution_allocation_stddev_pop_fields
+  stddev_samp: pse_distribution_allocation_stddev_samp_fields
+  sum: pse_distribution_allocation_sum_fields
+  var_pop: pse_distribution_allocation_var_pop_fields
+  var_samp: pse_distribution_allocation_var_samp_fields
+  variance: pse_distribution_allocation_variance_fields
+}
+
+"""aggregate avg on columns"""
+type pse_distribution_allocation_avg_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""
+Boolean expression to filter rows from the table "pse_distribution_allocation". All fields are combined with a logical 'AND'.
+"""
+input pse_distribution_allocation_bool_exp {
+  _and: [pse_distribution_allocation_bool_exp!]
+  _not: pse_distribution_allocation_bool_exp
+  _or: [pse_distribution_allocation_bool_exp!]
+  allocation_type: String_comparison_exp
+  clearing_account_address: String_comparison_exp
+  community_pool_amount: numeric_comparison_exp
+  distribution_id: bigint_comparison_exp
+  pse_transfers: pse_transfer_bool_exp
+  pse_transfers_aggregate: pse_transfer_aggregate_bool_exp
+  scheduled_at: bigint_comparison_exp
+  start_at_height: bigint_comparison_exp
+  total_amount: numeric_comparison_exp
+  total_score: numeric_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "pse_distribution_allocation"
+"""
+enum pse_distribution_allocation_constraint {
+  """
+  unique or primary key constraint on columns "distribution_id", "allocation_type"
+  """
+  pse_distribution_allocation_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_inc_input {
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""
+input type for inserting data into table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_insert_input {
+  allocation_type: String
+  clearing_account_address: String
+  community_pool_amount: numeric
+  distribution_id: bigint
+  pse_transfers: pse_transfer_arr_rel_insert_input
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""aggregate max on columns"""
+type pse_distribution_allocation_max_fields {
+  allocation_type: String
+  clearing_account_address: String
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""aggregate min on columns"""
+type pse_distribution_allocation_min_fields {
+  allocation_type: String
+  clearing_account_address: String
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""
+response of any mutation on the table "pse_distribution_allocation"
+"""
+type pse_distribution_allocation_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [pse_distribution_allocation!]!
+}
+
+"""
+input type for inserting object relation for remote table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_obj_rel_insert_input {
+  data: pse_distribution_allocation_insert_input!
+
+  """upsert condition"""
+  on_conflict: pse_distribution_allocation_on_conflict
+}
+
+"""
+on_conflict condition type for table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_on_conflict {
+  constraint: pse_distribution_allocation_constraint!
+  update_columns: [pse_distribution_allocation_update_column!]! = []
+  where: pse_distribution_allocation_bool_exp
+}
+
+"""
+Ordering options when selecting data from "pse_distribution_allocation".
+"""
+input pse_distribution_allocation_order_by {
+  allocation_type: order_by
+  clearing_account_address: order_by
+  community_pool_amount: order_by
+  distribution_id: order_by
+  pse_transfers_aggregate: pse_transfer_aggregate_order_by
+  scheduled_at: order_by
+  start_at_height: order_by
+  total_amount: order_by
+  total_score: order_by
+}
+
+"""primary key columns input for table: pse_distribution_allocation"""
+input pse_distribution_allocation_pk_columns_input {
+  allocation_type: String!
+  distribution_id: bigint!
+}
+
+"""
+select columns of table "pse_distribution_allocation"
+"""
+enum pse_distribution_allocation_select_column {
+  """column name"""
+  allocation_type
+
+  """column name"""
+  clearing_account_address
+
+  """column name"""
+  community_pool_amount
+
+  """column name"""
+  distribution_id
+
+  """column name"""
+  scheduled_at
+
+  """column name"""
+  start_at_height
+
+  """column name"""
+  total_amount
+
+  """column name"""
+  total_score
+}
+
+"""
+input type for updating data in table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_set_input {
+  allocation_type: String
+  clearing_account_address: String
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""aggregate stddev on columns"""
+type pse_distribution_allocation_stddev_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type pse_distribution_allocation_stddev_pop_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type pse_distribution_allocation_stddev_samp_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""
+Streaming cursor of the table "pse_distribution_allocation"
+"""
+input pse_distribution_allocation_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: pse_distribution_allocation_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input pse_distribution_allocation_stream_cursor_value_input {
+  allocation_type: String
+  clearing_account_address: String
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""aggregate sum on columns"""
+type pse_distribution_allocation_sum_fields {
+  community_pool_amount: numeric
+  distribution_id: bigint
+  scheduled_at: bigint
+  start_at_height: bigint
+  total_amount: numeric
+  total_score: numeric
+}
+
+"""
+update columns of table "pse_distribution_allocation"
+"""
+enum pse_distribution_allocation_update_column {
+  """column name"""
+  allocation_type
+
+  """column name"""
+  clearing_account_address
+
+  """column name"""
+  community_pool_amount
+
+  """column name"""
+  distribution_id
+
+  """column name"""
+  scheduled_at
+
+  """column name"""
+  start_at_height
+
+  """column name"""
+  total_amount
+
+  """column name"""
+  total_score
+}
+
+input pse_distribution_allocation_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: pse_distribution_allocation_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: pse_distribution_allocation_set_input
+
+  """filter the rows which have to be updated"""
+  where: pse_distribution_allocation_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type pse_distribution_allocation_var_pop_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""aggregate var_samp on columns"""
+type pse_distribution_allocation_var_samp_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""aggregate variance on columns"""
+type pse_distribution_allocation_variance_fields {
+  community_pool_amount: Float
+  distribution_id: Float
+  scheduled_at: Float
+  start_at_height: Float
+  total_amount: Float
+  total_score: Float
+}
+
+"""
+columns and relationships of "pse_transfer"
+"""
+type pse_transfer {
+  allocation_type: String!
+  amount: numeric!
+  distribution_id: bigint!
+  height: bigint!
+
+  """An object relationship"""
+  pse_distribution_allocation: pse_distribution_allocation
+  recipient_address: String!
+  score: numeric!
+}
+
+"""
+aggregated selection of "pse_transfer"
+"""
+type pse_transfer_aggregate {
+  aggregate: pse_transfer_aggregate_fields
+  nodes: [pse_transfer!]!
+}
+
+input pse_transfer_aggregate_bool_exp {
+  count: pse_transfer_aggregate_bool_exp_count
+}
+
+input pse_transfer_aggregate_bool_exp_count {
+  arguments: [pse_transfer_select_column!]
+  distinct: Boolean
+  filter: pse_transfer_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "pse_transfer"
+"""
+type pse_transfer_aggregate_fields {
+  avg: pse_transfer_avg_fields
+  count(columns: [pse_transfer_select_column!], distinct: Boolean): Int!
+  max: pse_transfer_max_fields
+  min: pse_transfer_min_fields
+  stddev: pse_transfer_stddev_fields
+  stddev_pop: pse_transfer_stddev_pop_fields
+  stddev_samp: pse_transfer_stddev_samp_fields
+  sum: pse_transfer_sum_fields
+  var_pop: pse_transfer_var_pop_fields
+  var_samp: pse_transfer_var_samp_fields
+  variance: pse_transfer_variance_fields
+}
+
+"""
+order by aggregate values of table "pse_transfer"
+"""
+input pse_transfer_aggregate_order_by {
+  avg: pse_transfer_avg_order_by
+  count: order_by
+  max: pse_transfer_max_order_by
+  min: pse_transfer_min_order_by
+  stddev: pse_transfer_stddev_order_by
+  stddev_pop: pse_transfer_stddev_pop_order_by
+  stddev_samp: pse_transfer_stddev_samp_order_by
+  sum: pse_transfer_sum_order_by
+  var_pop: pse_transfer_var_pop_order_by
+  var_samp: pse_transfer_var_samp_order_by
+  variance: pse_transfer_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "pse_transfer"
+"""
+input pse_transfer_arr_rel_insert_input {
+  data: [pse_transfer_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: pse_transfer_on_conflict
+}
+
+"""aggregate avg on columns"""
+type pse_transfer_avg_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by avg() on columns of table "pse_transfer"
+"""
+input pse_transfer_avg_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "pse_transfer". All fields are combined with a logical 'AND'.
+"""
+input pse_transfer_bool_exp {
+  _and: [pse_transfer_bool_exp!]
+  _not: pse_transfer_bool_exp
+  _or: [pse_transfer_bool_exp!]
+  allocation_type: String_comparison_exp
+  amount: numeric_comparison_exp
+  distribution_id: bigint_comparison_exp
+  height: bigint_comparison_exp
+  pse_distribution_allocation: pse_distribution_allocation_bool_exp
+  recipient_address: String_comparison_exp
+  score: numeric_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "pse_transfer"
+"""
+enum pse_transfer_constraint {
+  """
+  unique or primary key constraint on columns "distribution_id", "recipient_address", "allocation_type"
+  """
+  pse_transfer_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "pse_transfer"
+"""
+input pse_transfer_inc_input {
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  score: numeric
+}
+
+"""
+input type for inserting data into table "pse_transfer"
+"""
+input pse_transfer_insert_input {
+  allocation_type: String
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  pse_distribution_allocation: pse_distribution_allocation_obj_rel_insert_input
+  recipient_address: String
+  score: numeric
+}
+
+"""aggregate max on columns"""
+type pse_transfer_max_fields {
+  allocation_type: String
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  recipient_address: String
+  score: numeric
+}
+
+"""
+order by max() on columns of table "pse_transfer"
+"""
+input pse_transfer_max_order_by {
+  allocation_type: order_by
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  recipient_address: order_by
+  score: order_by
+}
+
+"""aggregate min on columns"""
+type pse_transfer_min_fields {
+  allocation_type: String
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  recipient_address: String
+  score: numeric
+}
+
+"""
+order by min() on columns of table "pse_transfer"
+"""
+input pse_transfer_min_order_by {
+  allocation_type: order_by
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  recipient_address: order_by
+  score: order_by
+}
+
+"""
+response of any mutation on the table "pse_transfer"
+"""
+type pse_transfer_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [pse_transfer!]!
+}
+
+"""
+on_conflict condition type for table "pse_transfer"
+"""
+input pse_transfer_on_conflict {
+  constraint: pse_transfer_constraint!
+  update_columns: [pse_transfer_update_column!]! = []
+  where: pse_transfer_bool_exp
+}
+
+"""Ordering options when selecting data from "pse_transfer"."""
+input pse_transfer_order_by {
+  allocation_type: order_by
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  pse_distribution_allocation: pse_distribution_allocation_order_by
+  recipient_address: order_by
+  score: order_by
+}
+
+"""primary key columns input for table: pse_transfer"""
+input pse_transfer_pk_columns_input {
+  allocation_type: String!
+  distribution_id: bigint!
+  recipient_address: String!
+}
+
+"""
+select columns of table "pse_transfer"
+"""
+enum pse_transfer_select_column {
+  """column name"""
+  allocation_type
+
+  """column name"""
+  amount
+
+  """column name"""
+  distribution_id
+
+  """column name"""
+  height
+
+  """column name"""
+  recipient_address
+
+  """column name"""
+  score
+}
+
+"""
+input type for updating data in table "pse_transfer"
+"""
+input pse_transfer_set_input {
+  allocation_type: String
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  recipient_address: String
+  score: numeric
+}
+
+"""aggregate stddev on columns"""
+type pse_transfer_stddev_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by stddev() on columns of table "pse_transfer"
+"""
+input pse_transfer_stddev_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type pse_transfer_stddev_pop_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by stddev_pop() on columns of table "pse_transfer"
+"""
+input pse_transfer_stddev_pop_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type pse_transfer_stddev_samp_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by stddev_samp() on columns of table "pse_transfer"
+"""
+input pse_transfer_stddev_samp_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""
+Streaming cursor of the table "pse_transfer"
+"""
+input pse_transfer_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: pse_transfer_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input pse_transfer_stream_cursor_value_input {
+  allocation_type: String
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  recipient_address: String
+  score: numeric
+}
+
+"""aggregate sum on columns"""
+type pse_transfer_sum_fields {
+  amount: numeric
+  distribution_id: bigint
+  height: bigint
+  score: numeric
+}
+
+"""
+order by sum() on columns of table "pse_transfer"
+"""
+input pse_transfer_sum_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""
+update columns of table "pse_transfer"
+"""
+enum pse_transfer_update_column {
+  """column name"""
+  allocation_type
+
+  """column name"""
+  amount
+
+  """column name"""
+  distribution_id
+
+  """column name"""
+  height
+
+  """column name"""
+  recipient_address
+
+  """column name"""
+  score
+}
+
+input pse_transfer_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: pse_transfer_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: pse_transfer_set_input
+
+  """filter the rows which have to be updated"""
+  where: pse_transfer_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type pse_transfer_var_pop_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by var_pop() on columns of table "pse_transfer"
+"""
+input pse_transfer_var_pop_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""aggregate var_samp on columns"""
+type pse_transfer_var_samp_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by var_samp() on columns of table "pse_transfer"
+"""
+input pse_transfer_var_samp_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
+"""aggregate variance on columns"""
+type pse_transfer_variance_fields {
+  amount: Float
+  distribution_id: Float
+  height: Float
+  score: Float
+}
+
+"""
+order by variance() on columns of table "pse_transfer"
+"""
+input pse_transfer_variance_order_by {
+  amount: order_by
+  distribution_id: order_by
+  height: order_by
+  score: order_by
+}
+
 type query_root {
   """
   fetch data from the table: "account"
@@ -16361,6 +17363,9 @@ type query_root {
   action_delegation_reward(address: String!, height: Int): [ActionDelegationReward]
   action_delegation_total(address: String!, height: Int): ActionBalance
   action_delegator_withdraw_address(address: String!): ActionAddress!
+  action_pse_clearing_account_balances(height: Int): ActionPSEClearingAccountBalances
+  action_pse_scheduled_distributions(height: Int): ActionPSEScheduledDistributions
+  action_pse_score(address: String!, height: Int): ActionPSEScore
   action_redelegation(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionRedelegationResponse
   action_unbonding_delegation(address: String!, count_total: Boolean, height: Int, limit: Int, offset: Int): ActionUnbondingDelegationResponse
   action_unbonding_delegation_total(address: String!, height: Int): ActionBalance
@@ -17840,6 +18845,94 @@ type query_root {
     """filter the rows returned"""
     where: pruning_bool_exp
   ): pruning_aggregate!
+
+  """
+  fetch data from the table: "pse_distribution_allocation"
+  """
+  pse_distribution_allocation(
+    """distinct select on columns"""
+    distinct_on: [pse_distribution_allocation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_distribution_allocation_order_by!]
+
+    """filter the rows returned"""
+    where: pse_distribution_allocation_bool_exp
+  ): [pse_distribution_allocation!]!
+
+  """
+  fetch aggregated fields from the table: "pse_distribution_allocation"
+  """
+  pse_distribution_allocation_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pse_distribution_allocation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_distribution_allocation_order_by!]
+
+    """filter the rows returned"""
+    where: pse_distribution_allocation_bool_exp
+  ): pse_distribution_allocation_aggregate!
+
+  """
+  fetch data from the table: "pse_distribution_allocation" using primary key columns
+  """
+  pse_distribution_allocation_by_pk(allocation_type: String!, distribution_id: bigint!): pse_distribution_allocation
+
+  """
+  fetch data from the table: "pse_transfer"
+  """
+  pse_transfer(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): [pse_transfer!]!
+
+  """
+  fetch aggregated fields from the table: "pse_transfer"
+  """
+  pse_transfer_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): pse_transfer_aggregate!
+
+  """fetch data from the table: "pse_transfer" using primary key columns"""
+  pse_transfer_by_pk(allocation_type: String!, distribution_id: bigint!, recipient_address: String!): pse_transfer
 
   """
   fetch data from the table: "slashing_params"
@@ -21848,6 +22941,122 @@ type subscription_root {
     """filter the rows returned"""
     where: pruning_bool_exp
   ): [pruning!]!
+
+  """
+  fetch data from the table: "pse_distribution_allocation"
+  """
+  pse_distribution_allocation(
+    """distinct select on columns"""
+    distinct_on: [pse_distribution_allocation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_distribution_allocation_order_by!]
+
+    """filter the rows returned"""
+    where: pse_distribution_allocation_bool_exp
+  ): [pse_distribution_allocation!]!
+
+  """
+  fetch aggregated fields from the table: "pse_distribution_allocation"
+  """
+  pse_distribution_allocation_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pse_distribution_allocation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_distribution_allocation_order_by!]
+
+    """filter the rows returned"""
+    where: pse_distribution_allocation_bool_exp
+  ): pse_distribution_allocation_aggregate!
+
+  """
+  fetch data from the table: "pse_distribution_allocation" using primary key columns
+  """
+  pse_distribution_allocation_by_pk(allocation_type: String!, distribution_id: bigint!): pse_distribution_allocation
+
+  """
+  fetch data from the table in a streaming manner: "pse_distribution_allocation"
+  """
+  pse_distribution_allocation_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [pse_distribution_allocation_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: pse_distribution_allocation_bool_exp
+  ): [pse_distribution_allocation!]!
+
+  """
+  fetch data from the table: "pse_transfer"
+  """
+  pse_transfer(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): [pse_transfer!]!
+
+  """
+  fetch aggregated fields from the table: "pse_transfer"
+  """
+  pse_transfer_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pse_transfer_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pse_transfer_order_by!]
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): pse_transfer_aggregate!
+
+  """fetch data from the table: "pse_transfer" using primary key columns"""
+  pse_transfer_by_pk(allocation_type: String!, distribution_id: bigint!, recipient_address: String!): pse_transfer
+
+  """
+  fetch data from the table in a streaming manner: "pse_transfer"
+  """
+  pse_transfer_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [pse_transfer_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: pse_transfer_bool_exp
+  ): [pse_transfer!]!
 
   """
   fetch data from the table: "slashing_params"

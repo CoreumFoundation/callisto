@@ -4,7 +4,7 @@ import (
 	feemodelsource "github.com/forbole/callisto/v4/modules/feemodel/source"
 	"github.com/forbole/juno/v6/node/remote"
 
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
+	feemodeltypes "github.com/tokenize-x/tx-chain/v6/x/feemodel/types"
 )
 
 var _ feemodelsource.Source = &Source{}

@@ -1,0 +1,14 @@
+table:
+  name: pse_distribution_allocation
+  schema: public
+array_relationships:
+  - name: pse_transfers
+    using:
+      manual_configuration:
+        column_mapping:
+          allocation_type: allocation_type
+          distribution_id: distribution_id
+        insertion_order: null
+        remote_table:
+          name: pse_transfer
+          schema: public

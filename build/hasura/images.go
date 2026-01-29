@@ -4,10 +4,10 @@ import (
 	"context"
 	_ "embed"
 
-	"github.com/CoreumFoundation/crust/build/config"
-	"github.com/CoreumFoundation/crust/build/docker"
-	"github.com/CoreumFoundation/crust/build/tools"
-	"github.com/CoreumFoundation/crust/build/types"
+	"github.com/tokenize-x/tx-crust/build/config"
+	"github.com/tokenize-x/tx-crust/build/docker"
+	"github.com/tokenize-x/tx-crust/build/tools"
+	"github.com/tokenize-x/tx-crust/build/types"
 )
 
 //go:embed Dockerfile
@@ -32,7 +32,7 @@ func buildDockerImage(ctx context.Context, push bool) error {
 	}
 	return docker.BuildImage(ctx, docker.BuildImageConfig{
 		ContextDir:      ".", // TODO (wojciech): Later on, move `hasura` dir here
-		ImageName:       config.DockerHubUsername + "/hasura",
+		ImageName:       config.ContainerRegistryOrgName + "/hasura",
 		TargetPlatforms: []tools.TargetPlatform{tools.TargetPlatformLinuxLocalArchInDocker},
 		Dockerfile:      dockerfile,
 		Action:          action,

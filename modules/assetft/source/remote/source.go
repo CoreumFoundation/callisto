@@ -4,7 +4,7 @@ import (
 	assetftsource "github.com/forbole/callisto/v4/modules/assetft/source"
 	"github.com/forbole/juno/v6/node/remote"
 
-	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
+	assetfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/ft/types"
 )
 
 var _ assetftsource.Source = &Source{}

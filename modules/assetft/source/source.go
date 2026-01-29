@@ -1,7 +1,7 @@
 package source
 
 import (
-	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
+	assetfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/ft/types"
 )
 
 type Source interface {

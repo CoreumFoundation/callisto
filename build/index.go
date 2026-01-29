@@ -3,11 +3,11 @@ package build
 import (
 	"context"
 
-	"github.com/CoreumFoundation/callisto/build/callisto"
-	"github.com/CoreumFoundation/callisto/build/hasura"
-	"github.com/CoreumFoundation/crust/build/crust"
-	"github.com/CoreumFoundation/crust/build/golang"
-	"github.com/CoreumFoundation/crust/build/types"
+	"github.com/tokenize-x/tx-callisto/build/callisto"
+	"github.com/tokenize-x/tx-callisto/build/hasura"
+	"github.com/tokenize-x/tx-crust/build/golang"
+	crust "github.com/tokenize-x/tx-crust/build/tx-crust"
+	"github.com/tokenize-x/tx-crust/build/types"
 )
 
 // Commands is a definition of commands available in build system.

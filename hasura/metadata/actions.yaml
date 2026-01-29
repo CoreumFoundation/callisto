@@ -53,6 +53,42 @@ actions:
           value: application/json
     permissions:
       - role: anonymous
+  - name: action_pse_clearing_account_balances
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_URL}}/pse_clearing_account_balances'
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: anonymous
+  - name: action_pse_params
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_URL}}/pse_params'
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: anonymous
+  - name: action_pse_scheduled_distributions
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_URL}}/pse_scheduled_distributions'
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: anonymous
+  - name: action_pse_score
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_URL}}/pse_score'
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: anonymous
   - name: action_redelegation
     definition:
       kind: ""
@@ -128,6 +164,15 @@ custom_types:
     - name: ActionUnbondingDelegationResponse
     - name: ActionValidatorCommissionAmount
     - name: ActionDexSettings
+    - name: ActionPSEScore
+    - name: ActionPSEScheduledDistributions
+    - name: ActionPSEScheduledDistribution
+    - name: ActionPSEAllocation
+    - name: ActionPSEClearingAccountBalances
+    - name: ActionPSEBalance
+    - name: ActionPSEParams
+    - name: ActionPSEParamsData
+    - name: ActionPSEClearingAccountMapping
   scalars:
     - name: ActionCoin
     - name: ActionDelegation

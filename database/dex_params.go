@@ -7,7 +7,7 @@ import (
 	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/types"
 
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
 )
 
 // SaveDEXParams allows to store the given params into the database.

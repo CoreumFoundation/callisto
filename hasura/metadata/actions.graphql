@@ -43,6 +43,31 @@ type Query {
 }
 
 type Query {
+  action_pse_clearing_account_balances(
+    height: Int
+  ): ActionPSEClearingAccountBalances
+}
+
+type Query {
+  action_pse_scheduled_distributions(
+    height: Int
+  ): ActionPSEScheduledDistributions
+}
+
+type Query {
+  action_pse_params(
+    height: Int
+  ): ActionPSEParams
+}
+
+type Query {
+  action_pse_score(
+    address: String!
+    height: Int
+  ): ActionPSEScore
+}
+
+type Query {
   action_redelegation(
     address: String!
     height: Int
@@ -138,6 +163,49 @@ type ActionValidatorCommissionAmount {
 type ActionDexSettings {
   unified_ref_amount: Float!
   whitelisted_denoms: [String]
+}
+
+type ActionPSEScore {
+  address: String!
+  height: Int!
+  score: String
+}
+
+type ActionPSEScheduledDistributions {
+  scheduled_distributions: [ActionPSEScheduledDistribution]
+}
+
+type ActionPSEScheduledDistribution {
+  timestamp: String!
+  allocations: [ActionPSEAllocation]
+}
+
+type ActionPSEAllocation {
+  clearing_account: String!
+  amount: String!
+}
+
+type ActionPSEClearingAccountBalances {
+  balances: [ActionPSEBalance]
+}
+
+type ActionPSEBalance {
+  clearing_account: String!
+  balance: String!
+}
+
+type ActionPSEParams {
+  params: ActionPSEParamsData!
+}
+
+type ActionPSEParamsData {
+  excluded_addresses: [String]
+  clearing_account_mappings: [ActionPSEClearingAccountMapping]
+}
+
+type ActionPSEClearingAccountMapping {
+  clearing_account: String!
+  recipient_addresses: [String]
 }
 
 scalar ActionCoin

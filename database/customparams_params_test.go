@@ -6,7 +6,7 @@ import (
 	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/types"
 
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
 )
 
 func (suite *DbTestSuite) TestSaveCustomParamsParams() {

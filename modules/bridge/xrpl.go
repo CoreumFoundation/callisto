@@ -9,11 +9,14 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	relayertypes "github.com/CoreumFoundation/coreumbridge-xrpl/relayer/coreum"
-
 	bridgesource "github.com/forbole/callisto/v4/modules/bridge/source"
 	"github.com/forbole/callisto/v4/types"
 	eventsutil "github.com/forbole/callisto/v4/utils/events"
+)
+
+const (
+	sendToXrplEvent   = "send_to_xrpl"
+	saveEvidenceEvent = "save_evidence"
 )
 
 const (
@@ -78,11 +81,11 @@ func (h *XrplMsgHandler) HandleMsg() error {
 			continue
 		}
 		switch actionAttr.Value {
-		case string(relayertypes.ExecSendToXRPL):
+		case sendToXrplEvent:
 			if err := h.handleCoreumToXrplEvent(msgEvent); err != nil {
 				return fmt.Errorf("extracting coreum to xrpl transaction: %w", err)
 			}
-		case string(relayertypes.ExecMethodSaveEvidence):
+		case saveEvidenceEvent:
 			if err := h.handleSaveEvidenceEvent(msgEvent); err != nil {
 				return fmt.Errorf("handling save evidence: %w", err)
 			}

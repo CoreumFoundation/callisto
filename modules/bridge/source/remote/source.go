@@ -36,7 +36,7 @@ func (s Source) Name() string {
 // GetOutgoingPendingOperationSequence returns the operation sequence of the outgoing operations
 // Implementation is based on the actual bridge relayer logic, for simple replication of the code in the future,
 // the same style of the reference code is used.
-// https://github.com/CoreumFoundation/coreumbridge-xrpl/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
+// https://github.com/tokenize-x/tx-xrpl-bridge/blob/be8b90d4d8cde0eb74c60ea14edfe06397e8c31f/relayer/coreum/contract.go#L1361
 func (s Source) GetOutgoingPendingOperationSequence(
 	contractAddress string,
 	recipient string,

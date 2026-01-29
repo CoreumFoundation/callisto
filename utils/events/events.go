@@ -98,3 +98,29 @@ func BuildAttributesMap(event sdk.StringEvent, requiredAttributes []string, opti
 
 	return result, nil
 }
+
+// ConvertABCIEventToStringEvent converts an abci.Event into an sdk.StringEvent so it can
+// be consumed by helpers like BuildAttributesMap.
+func ConvertABCIEventToStringEvent(event abci.Event) sdk.StringEvent {
+	se := sdk.StringEvent{Type: event.Type}
+	for _, attr := range event.Attributes {
+		se.Attributes = append(se.Attributes, sdk.NewAttribute(string(attr.Key), string(attr.Value)))
+	}
+	return se
+}
+
+// RemoveAttributeFromEvent removes an attribute with the given key from all events.
+func RemoveAttributeFromEvent(events []abci.Event, key string) []abci.Event {
+	newEvents := make([]abci.Event, 0, len(events))
+	for _, evt := range events {
+		newAttrs := make([]abci.EventAttribute, 0, len(evt.Attributes))
+		for _, attr := range evt.Attributes {
+			if attr.Key != key {
+				newAttrs = append(newAttrs, attr)
+			}
+		}
+		evt.Attributes = newAttrs
+		newEvents = append(newEvents, evt)
+	}
+	return newEvents
+}

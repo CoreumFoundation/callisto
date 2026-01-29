@@ -4,7 +4,7 @@ import (
 	dexsource "github.com/forbole/callisto/v4/modules/dex/source"
 	"github.com/forbole/juno/v6/node/remote"
 
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
 )
 
 var _ dexsource.Source = &Source{}

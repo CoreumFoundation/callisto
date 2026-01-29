@@ -4,7 +4,7 @@ import (
 	assetnftsource "github.com/forbole/callisto/v4/modules/assetnft/source"
 	"github.com/forbole/juno/v6/node/remote"
 
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
 )
 
 var _ assetnftsource.Source = &Source{}

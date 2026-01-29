@@ -42,6 +42,8 @@ import (
 	mintsource "github.com/forbole/callisto/v4/modules/mint/source"
 	localmintsource "github.com/forbole/callisto/v4/modules/mint/source/local"
 	remotemintsource "github.com/forbole/callisto/v4/modules/mint/source/remote"
+	psesource "github.com/forbole/callisto/v4/modules/pse/source"
+	remotepsesource "github.com/forbole/callisto/v4/modules/pse/source/remote"
 	slashingsource "github.com/forbole/callisto/v4/modules/slashing/source"
 	localslashingsource "github.com/forbole/callisto/v4/modules/slashing/source/local"
 	remoteslashingsource "github.com/forbole/callisto/v4/modules/slashing/source/remote"
@@ -53,11 +55,12 @@ import (
 	"github.com/forbole/juno/v6/node/local"
 	"github.com/forbole/juno/v6/node/remote"
 
-	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
+	assetfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/ft/types"
+	assetnfttypes "github.com/tokenize-x/tx-chain/v6/x/asset/nft/types"
+	customparamstypes "github.com/tokenize-x/tx-chain/v6/x/customparams/types"
+	dextypes "github.com/tokenize-x/tx-chain/v6/x/dex/types"
+	feemodeltypes "github.com/tokenize-x/tx-chain/v6/x/feemodel/types"
+	psetypes "github.com/tokenize-x/tx-chain/v6/x/pse/types"
 )
 
 type Sources struct {
@@ -74,6 +77,7 @@ type Sources struct {
 	AssetNFTSource     assetnftsource.Source
 	DEXSource          dexsource.Source
 	BridgeSource       bridgesource.Source
+	PSESource          psesource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
@@ -139,5 +143,6 @@ func buildRemoteSources(cfg *remote.Details, cdc codec.Codec) (*Sources, error) 
 		AssetNFTSource:     remoteassetnftsource.NewSource(source, assetnfttypes.NewQueryClient(source.GrpcConn)),
 		DEXSource:          remotedexsource.NewSource(source, dextypes.NewQueryClient(source.GrpcConn)),
 		BridgeSource:       remotebridgesource.NewSource(source, wasmtypes.NewQueryClient(source.GrpcConn)),
+		PSESource:          remotepsesource.NewSource(source, psetypes.NewQueryClient(source.GrpcConn)),
 	}, nil
 }

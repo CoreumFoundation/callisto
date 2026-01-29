@@ -27,6 +27,12 @@ func (m *Module) RunAdditionalOperations() error {
 	worker.RegisterHandler("/delegator_withdraw_address", handlers.DelegatorWithdrawAddressHandler)
 	worker.RegisterHandler("/validator_commission_amount", handlers.ValidatorCommissionAmountHandler)
 
+	// -- PSE --
+	worker.RegisterHandler("/pse_score", handlers.PSEScoreHandler)
+	worker.RegisterHandler("/pse_scheduled_distributions", handlers.PSEScheduledDistributionsHandler)
+	worker.RegisterHandler("/pse_clearing_account_balances", handlers.PSEClearingAccountBalancesHandler)
+	worker.RegisterHandler("/pse_params", handlers.PSEParamsHandler)
+
 	// -- Staking Delegator --
 	worker.RegisterHandler("/delegation", handlers.DelegationHandler)
 	worker.RegisterHandler("/delegation_total", handlers.TotalDelegationAmountHandler)

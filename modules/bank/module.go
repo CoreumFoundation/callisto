@@ -7,7 +7,7 @@ import (
 	"github.com/forbole/juno/v6/modules"
 	junomessages "github.com/forbole/juno/v6/modules/messages"
 
-	"github.com/CoreumFoundation/coreum/v5/pkg/config/constant"
+	"github.com/tokenize-x/tx-chain/v6/pkg/config/constant"
 )
 
 var (
