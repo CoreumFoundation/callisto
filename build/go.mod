@@ -10,8 +10,8 @@ toolchain go1.24.6
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
 require (
-	github.com/tokenize-x/tx-crust v0.0.0-20251225123722-dd141dffcb7b
-	github.com/tokenize-x/tx-crust/znet v0.0.0-20251225123722-dd141dffcb7b
+	github.com/tokenize-x/tx-crust v0.0.0-20260129072642-443b98cfb118
+	github.com/tokenize-x/tx-crust/znet v0.0.0-20260129072642-443b98cfb118
 )
 
 require (
