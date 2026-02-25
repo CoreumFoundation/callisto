@@ -5,8 +5,13 @@ import (
 
 	evidencetypes "cosmossdk.io/x/evidence/types"
 	"cosmossdk.io/x/feegrant"
-	nft "cosmossdk.io/x/nft"
+	"cosmossdk.io/x/nft"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
+	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
+	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
+	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
+	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -34,12 +39,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibctypes "github.com/cosmos/ibc-go/v8/modules/core/types"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-
-	assetfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/ft/types"
-	assetnfttypes "github.com/CoreumFoundation/coreum/v5/x/asset/nft/types"
-	customparamstypes "github.com/CoreumFoundation/coreum/v5/x/customparams/types"
-	dextypes "github.com/CoreumFoundation/coreum/v5/x/dex/types"
-	feemodeltypes "github.com/CoreumFoundation/coreum/v5/x/feemodel/types"
 )
 
 var (
@@ -98,4 +97,13 @@ func UnpackMessage[T proto.Message](cdc codec.Codec, bz []byte, ptr T) T {
 		panic(err)
 	}
 	return cosmosMsg.(T)
+}
+
+func AnyToJsonAny[T proto.Message](bz []byte, ptr T) []byte {
+	cdc.MustUnmarshal(bz, ptr)
+	anyMsg, err := codectypes.NewAnyWithValue(ptr)
+	if err != nil {
+		panic(err)
+	}
+	return cdc.MustMarshalJSON(anyMsg)
 }

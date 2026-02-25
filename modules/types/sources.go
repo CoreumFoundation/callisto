@@ -11,6 +11,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -39,6 +40,8 @@ import (
 	govsource "github.com/forbole/callisto/v4/modules/gov/source"
 	localgovsource "github.com/forbole/callisto/v4/modules/gov/source/local"
 	remotegovsource "github.com/forbole/callisto/v4/modules/gov/source/remote"
+	groupsource "github.com/forbole/callisto/v4/modules/group/source"
+	remotegroupsource "github.com/forbole/callisto/v4/modules/group/source/remote"
 	mintsource "github.com/forbole/callisto/v4/modules/mint/source"
 	localmintsource "github.com/forbole/callisto/v4/modules/mint/source/local"
 	remotemintsource "github.com/forbole/callisto/v4/modules/mint/source/remote"
@@ -74,6 +77,7 @@ type Sources struct {
 	AssetNFTSource     assetnftsource.Source
 	DEXSource          dexsource.Source
 	BridgeSource       bridgesource.Source
+	GroupSource        groupsource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
@@ -139,5 +143,6 @@ func buildRemoteSources(cfg *remote.Details, cdc codec.Codec) (*Sources, error) 
 		AssetNFTSource:     remoteassetnftsource.NewSource(source, assetnfttypes.NewQueryClient(source.GrpcConn)),
 		DEXSource:          remotedexsource.NewSource(source, dextypes.NewQueryClient(source.GrpcConn)),
 		BridgeSource:       remotebridgesource.NewSource(source, wasmtypes.NewQueryClient(source.GrpcConn)),
+		GroupSource:        remotegroupsource.NewSource(source, grouptypes.NewQueryClient(source.GrpcConn)),
 	}, nil
 }

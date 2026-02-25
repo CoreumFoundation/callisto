@@ -45,3 +45,7 @@ type AssetNFTModule interface {
 type DEXModule interface {
 	UpdateParams(height int64) error
 }
+
+type GroupModule interface {
+	GetProposal(proposalID uint64, height int64) (*types.GroupProposal, error)
+}

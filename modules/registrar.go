@@ -18,6 +18,7 @@ import (
 	"github.com/forbole/callisto/v4/modules/feegrant"
 	"github.com/forbole/callisto/v4/modules/feemodel"
 	"github.com/forbole/callisto/v4/modules/gov"
+	"github.com/forbole/callisto/v4/modules/group"
 	messagetype "github.com/forbole/callisto/v4/modules/message_type"
 	"github.com/forbole/callisto/v4/modules/mint"
 	"github.com/forbole/callisto/v4/modules/modules"
@@ -90,6 +91,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	assetFTModule := assetft.NewModule(sources.AssetFTSource, r.cdc, db)
 	assetNFTModule := assetnft.NewModule(sources.AssetNFTSource, r.cdc, db)
 	dexModule := dex.NewModule(sources.DEXSource, r.cdc, db)
+	groupModule := group.NewModule(sources.GroupSource, r.cdc, db)
 	govModule := gov.NewModule(
 		sources.GovSource,
 		authModule,
@@ -102,6 +104,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		assetFTModule,
 		assetNFTModule,
 		dexModule,
+		groupModule,
 		r.cdc,
 		db,
 	)
@@ -122,6 +125,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		distrModule,
 		feegrantModule,
 		govModule,
+		groupModule,
 		mintModule,
 		modules.NewModule(ctx.JunoConfig.Chain, db),
 		pricefeed.NewModule(ctx.JunoConfig, r.cdc, db),

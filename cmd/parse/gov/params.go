@@ -11,6 +11,7 @@ import (
 	"github.com/forbole/callisto/v4/modules/distribution"
 	"github.com/forbole/callisto/v4/modules/feemodel"
 	"github.com/forbole/callisto/v4/modules/gov"
+	"github.com/forbole/callisto/v4/modules/group"
 	"github.com/forbole/callisto/v4/modules/mint"
 	"github.com/forbole/callisto/v4/modules/slashing"
 	"github.com/forbole/callisto/v4/modules/staking"
@@ -68,6 +69,7 @@ func buildGovModule(
 	assetFTModule := assetft.NewModule(sources.AssetFTSource, cdc, db)
 	assetNFTModule := assetnft.NewModule(sources.AssetNFTSource, cdc, db)
 	dexModule := dex.NewModule(sources.DEXSource, cdc, db)
+	groupModule := group.NewModule(sources.GroupSource, cdc, db)
 
 	// Build the gov module
 	govModule := gov.NewModule(
@@ -82,6 +84,7 @@ func buildGovModule(
 		assetFTModule,
 		assetNFTModule,
 		dexModule,
+		groupModule,
 		cdc,
 		db,
 	)

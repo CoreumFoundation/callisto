@@ -30,6 +30,7 @@ type Module struct {
 	assetFTModule      AssetFTModule
 	assetNFTModule     AssetNFTModule
 	dexModule          DEXModule
+	GroupModule        GroupModule
 }
 
 // NewModule returns a new Module instance
@@ -45,6 +46,7 @@ func NewModule(
 	assetFTModule AssetNFTModule,
 	assetNFTModule AssetNFTModule,
 	dexModule DEXModule,
+	groupModule GroupModule,
 	cdc codec.Codec,
 	db *database.Db,
 ) *Module {
@@ -61,6 +63,7 @@ func NewModule(
 		assetFTModule:      assetFTModule,
 		assetNFTModule:     assetNFTModule,
 		dexModule:          dexModule,
+		GroupModule:        groupModule,
 		db:                 db,
 	}
 }
